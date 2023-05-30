@@ -1,0 +1,23 @@
+included:
+  - Competence-matrix-ios
+
+excluded:
+
+cyclomatic_complexity:
+  ignores_case_statements: true
+
+disabled_rules:
+  - line_length
+  - trailing_whitespace
+  - function_body_length
+  - file_length
+  - type_body_length
+  - legacy_constructor
+  - colon
+  - force_try
+  - force_cast
+  - type_name
+  - shorthand_operator
+  - void_function_in_ternary
+  - identifier_name
+  - large_tuple
