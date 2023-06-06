@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct NoisyApp: App {
+    @StateObject var coordinator = MainCoordinator()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainCoordinatorView(coordinator: coordinator)
         }
     }
 }
