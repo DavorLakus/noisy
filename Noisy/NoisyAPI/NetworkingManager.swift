@@ -41,10 +41,9 @@ public class NetworkingManager {
         guard let response = output.response as? HTTPURLResponse
         else { throw NetworkError.unknown }
         
-//        debugPrint(response: response, router: router)
-        
         if response.statusCode < 200 || response.statusCode > 300 {
-            throw NetworkError.badURLResponse(router: router, statusCode: response.statusCode)
+            debugPrint(response: response, router: router)
+//            throw NetworkError.badURLResponse(router: router, statusCode: response.statusCode)
         }
         
         return output.data
@@ -83,7 +82,9 @@ public class NetworkingManager {
     
     static func handleBadURLResponse(for router: NoisyHTTPRouter, statusCode: Int) {
         switch router {
-        case .base:
+        case .profile, .authorize:
+            break
+        case .token, .refreshToken:
             break
         }
     }

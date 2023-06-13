@@ -23,17 +23,22 @@ final class RootCoordinator: ObservableObject {
     @Published var tab = RootTab.home
 
     // MARK: - Public properties
-    var onDidEnd = PassthroughSubject<Void, Never>()
+    let onDidEnd = PassthroughSubject<Void, Never>()
 
-    // MARK: - Private properties
-
+    // MARK: - Services
+    private let homeService: HomeService
+    
+    // MARK: - Coordinators
+    private lazy var homeCoordinator = HomeCoordinator(homeService: homeService)
+    
     // MARK: - Class lifecycle
-    init() {
+    init(homeService: HomeService) {
+        self.homeService = homeService
     }
 
     // Grafika muzike, statistike, itd.
     func homeTab() -> some View {
-        Color.yellow
+        HomeCoordinatorView(coordinator: homeCoordinator)
     }
     
     func discoverTab() -> some View {

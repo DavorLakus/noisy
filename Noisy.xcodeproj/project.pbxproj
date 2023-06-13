@@ -11,6 +11,17 @@
 		413EEAC02A2F2DDC00DC9727 /* HomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413EEABF2A2F2DDC00DC9727 /* HomeService.swift */; };
 		413EEAC22A2F2DE200DC9727 /* DiscoverService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413EEAC12A2F2DE200DC9727 /* DiscoverService.swift */; };
 		413EEAC42A2F2DE900DC9727 /* SearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413EEAC32A2F2DE900DC9727 /* SearchService.swift */; };
+		41B647772A38419000C1485C /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B647762A38419000C1485C /* AuthView.swift */; };
+		41B647792A38419600C1485C /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B647782A38419600C1485C /* AuthViewModel.swift */; };
+		41B6477C2A384CB400C1485C /* LoginService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B6477B2A384CB400C1485C /* LoginService.swift */; };
+		41B647802A38912200C1485C /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B6477F2A38912200C1485C /* Token.swift */; };
+		41B647832A389FC300C1485C /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B647822A389FC300C1485C /* Profile.swift */; };
+		41D3A29B2A31E141000AC6FE /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D3A29A2A31E141000AC6FE /* DiscoverView.swift */; };
+		41D3A29D2A31E152000AC6FE /* DiscoverViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D3A29C2A31E152000AC6FE /* DiscoverViewModel.swift */; };
+		41D3A29F2A31E18A000AC6FE /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D3A29E2A31E18A000AC6FE /* SearchView.swift */; };
+		41D3A2A12A31E193000AC6FE /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D3A2A02A31E193000AC6FE /* SearchViewModel.swift */; };
+		41D3A2A32A32500A000AC6FE /* RadioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D3A2A22A32500A000AC6FE /* RadioView.swift */; };
+		41D3A2A52A32500F000AC6FE /* RadioViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D3A2A42A32500F000AC6FE /* RadioViewModel.swift */; };
 		41DFEBF72A26356000CC3420 /* NoisyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DFEBF62A26356000CC3420 /* NoisyApp.swift */; };
 		41DFEBFB2A26356200CC3420 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 41DFEBFA2A26356200CC3420 /* Assets.xcassets */; };
 		41F8F5272A26436300F7A2B8 /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5262A26436300F7A2B8 /* MainCoordinator.swift */; };
@@ -74,6 +85,17 @@
 		413EEABF2A2F2DDC00DC9727 /* HomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeService.swift; sourceTree = "<group>"; };
 		413EEAC12A2F2DE200DC9727 /* DiscoverService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverService.swift; sourceTree = "<group>"; };
 		413EEAC32A2F2DE900DC9727 /* SearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchService.swift; sourceTree = "<group>"; };
+		41B647762A38419000C1485C /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
+		41B647782A38419600C1485C /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		41B6477B2A384CB400C1485C /* LoginService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginService.swift; sourceTree = "<group>"; };
+		41B6477F2A38912200C1485C /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
+		41B647822A389FC300C1485C /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
+		41D3A29A2A31E141000AC6FE /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
+		41D3A29C2A31E152000AC6FE /* DiscoverViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverViewModel.swift; sourceTree = "<group>"; };
+		41D3A29E2A31E18A000AC6FE /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		41D3A2A02A31E193000AC6FE /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		41D3A2A22A32500A000AC6FE /* RadioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioView.swift; sourceTree = "<group>"; };
+		41D3A2A42A32500F000AC6FE /* RadioViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioViewModel.swift; sourceTree = "<group>"; };
 		41DFEBF32A26356000CC3420 /* Noisy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Noisy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		41DFEBF62A26356000CC3420 /* NoisyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoisyApp.swift; sourceTree = "<group>"; };
 		41DFEBFA2A26356200CC3420 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -159,6 +181,8 @@
 		413EEABB2A2F2D3400DC9727 /* Discover */ = {
 			isa = PBXGroup;
 			children = (
+				41D3A29A2A31E141000AC6FE /* DiscoverView.swift */,
+				41D3A29C2A31E152000AC6FE /* DiscoverViewModel.swift */,
 			);
 			path = Discover;
 			sourceTree = "<group>";
@@ -166,6 +190,8 @@
 		413EEABC2A2F2D4300DC9727 /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				41D3A29E2A31E18A000AC6FE /* SearchView.swift */,
+				41D3A2A02A31E193000AC6FE /* SearchViewModel.swift */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -173,6 +199,8 @@
 		413EEABD2A2F2D6400DC9727 /* Radio */ = {
 			isa = PBXGroup;
 			children = (
+				41D3A2A22A32500A000AC6FE /* RadioView.swift */,
+				41D3A2A42A32500F000AC6FE /* RadioViewModel.swift */,
 			);
 			path = Radio;
 			sourceTree = "<group>";
@@ -182,6 +210,40 @@
 			children = (
 			);
 			path = Settings;
+			sourceTree = "<group>";
+		};
+		41B6477A2A38419B00C1485C /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				41B647762A38419000C1485C /* AuthView.swift */,
+				41B647782A38419600C1485C /* AuthViewModel.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		41B6477D2A38910B00C1485C /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				41B647812A389FBF00C1485C /* Home */,
+				41B6477E2A38911200C1485C /* Login */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		41B6477E2A38911200C1485C /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				41B6477F2A38912200C1485C /* Token.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
+		41B647812A389FBF00C1485C /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				41B647822A389FC300C1485C /* Profile.swift */,
+			);
+			path = Home;
 			sourceTree = "<group>";
 		};
 		41DFEBEA2A26356000CC3420 = {
@@ -242,6 +304,7 @@
 				413EEABF2A2F2DDC00DC9727 /* HomeService.swift */,
 				413EEAC12A2F2DE200DC9727 /* DiscoverService.swift */,
 				413EEAC32A2F2DE900DC9727 /* SearchService.swift */,
+				41B6477B2A384CB400C1485C /* LoginService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -315,6 +378,7 @@
 		41F8F5392A2646F000F7A2B8 /* Defines */ = {
 			isa = PBXGroup;
 			children = (
+				41B6477D2A38910B00C1485C /* Models */,
 			);
 			path = Defines;
 			sourceTree = "<group>";
@@ -332,6 +396,7 @@
 		41F8F5642A26500C00F7A2B8 /* Login */ = {
 			isa = PBXGroup;
 			children = (
+				41B6477A2A38419B00C1485C /* Auth */,
 				41F8F5652A26501300F7A2B8 /* LoginView.swift */,
 				41F8F5672A26501800F7A2B8 /* LoginViewModel.swift */,
 			);
@@ -497,13 +562,19 @@
 				41F8F53E2A26471D00F7A2B8 /* NoisyService.swift in Sources */,
 				41F8F5362A2643C300F7A2B8 /* HomeCoordinatorView.swift in Sources */,
 				41F8F5462A26473D00F7A2B8 /* NetworkingManager.swift in Sources */,
+				41D3A29D2A31E152000AC6FE /* DiscoverViewModel.swift in Sources */,
+				41D3A29F2A31E18A000AC6FE /* SearchView.swift in Sources */,
+				41B647802A38912200C1485C /* Token.swift in Sources */,
 				41F8F55B2A2649DE00F7A2B8 /* Appearance.swift in Sources */,
+				41D3A2A32A32500A000AC6FE /* RadioView.swift in Sources */,
 				41F8F5342A2643BB00F7A2B8 /* RootCoordinatorView.swift in Sources */,
 				41F8F5572A2649CB00F7A2B8 /* NoisyDateFormatter.swift in Sources */,
+				41D3A2A12A31E193000AC6FE /* SearchViewModel.swift in Sources */,
 				41F8F5422A26473300F7A2B8 /* Encodable+Extension.swift in Sources */,
 				41F8F53B2A26470E00F7A2B8 /* State.swift in Sources */,
 				413EEAC02A2F2DDC00DC9727 /* HomeService.swift in Sources */,
 				41F8F5532A2649B800F7A2B8 /* Data+Extension.swift in Sources */,
+				41B647792A38419600C1485C /* AuthViewModel.swift in Sources */,
 				41F8F56E2A26507D00F7A2B8 /* HomeView.swift in Sources */,
 				41F8F5292A26437800F7A2B8 /* RootCoordinator.swift in Sources */,
 				41F8F5442A26473800F7A2B8 /* APIEndpoint.swift in Sources */,
@@ -512,10 +583,12 @@
 				41F8F5682A26501800F7A2B8 /* LoginViewModel.swift in Sources */,
 				413EEAC22A2F2DE200DC9727 /* DiscoverService.swift in Sources */,
 				41F8F5552A2649C000F7A2B8 /* AnyPublisher+Extension.swift in Sources */,
+				41B647772A38419000C1485C /* AuthView.swift in Sources */,
 				41F8F59D2A29D2B600F7A2B8 /* SplashView.swift in Sources */,
 				41F8F5662A26501300F7A2B8 /* LoginView.swift in Sources */,
 				41F8F52B2A26438000F7A2B8 /* LoginCoordinator.swift in Sources */,
 				41F8F55F2A2649E700F7A2B8 /* Preferences.swift in Sources */,
+				41B6477C2A384CB400C1485C /* LoginService.swift in Sources */,
 				413EEAB92A2F29BB00DC9727 /* Icons.swift in Sources */,
 				41F8F5942A2678F700F7A2B8 /* Fonts.swift in Sources */,
 				41F8F5592A2649D600F7A2B8 /* String+Extension.swift in Sources */,
@@ -525,9 +598,12 @@
 				41F8F5322A2643B500F7A2B8 /* LoginCoordinatorView.swift in Sources */,
 				41F8F5272A26436300F7A2B8 /* MainCoordinator.swift in Sources */,
 				41F8F5982A27434E00F7A2B8 /* Colors.swift in Sources */,
+				41D3A29B2A31E141000AC6FE /* DiscoverView.swift in Sources */,
+				41D3A2A52A32500F000AC6FE /* RadioViewModel.swift in Sources */,
 				41F8F55D2A2649E300F7A2B8 /* ViewModifiers.swift in Sources */,
 				41F8F5402A26472800F7A2B8 /* NoisyHTTPRouter.swift in Sources */,
 				413EEAC42A2F2DE900DC9727 /* SearchService.swift in Sources */,
+				41B647832A389FC300C1485C /* Profile.swift in Sources */,
 				41F8F59A2A27534500F7A2B8 /* View+Extension.swift in Sources */,
 				41F8F54F2A2649AC00F7A2B8 /* String+Localization.swift in Sources */,
 			);

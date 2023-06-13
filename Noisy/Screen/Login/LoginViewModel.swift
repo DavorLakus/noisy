@@ -10,6 +10,7 @@ import SwiftUI
 
 final class LoginViewModel: ObservableObject {
     // MARK: - Coordinator actions
+    let onViewDidAppear = PassthroughSubject<Void, Never>()
     let onDidTapLogin = PassthroughSubject<Void, Never>()
     
     // MARK: - Published properties
@@ -27,6 +28,10 @@ final class LoginViewModel: ObservableObject {
 
 // MARK: - Public extensions
 extension LoginViewModel {
+    func viewDidAppear() {
+        
+    }
+    
     func loginTapped() {
         onDidTapLogin.send()
 //        if email.isEmpty {

@@ -15,6 +15,10 @@ extension Image {
         static let liveMusic = Image(systemName: "music.mic.circle.fill")
         static let radio = Image(systemName: "radio.fill")
         static let settings = Image(systemName: "gear.circle.fill")
-
+    }
+    
+    struct Home {
+        static let sparkles = Image(systemName: "sparkles")
+        static let profile = Image(systemName: "person.circle.fill")
     }
 }

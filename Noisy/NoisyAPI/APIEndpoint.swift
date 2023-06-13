@@ -8,6 +8,8 @@
 import Foundation
 
 public protocol APIEndpoint {
+    var baseURL: String { get }
+    var basePath: String { get }
     var path: String { get }
     var method: HTTPMethod { get }
     var headers: [String: Any]? { get }
@@ -19,16 +21,15 @@ public protocol APIEndpoint {
 extension APIEndpoint {
     var url: URL {
         var components = URLComponents()
-        components.scheme = APIConstants.scheme
-        components.host = APIConstants.host
-        components.port = APIConstants.port
-        components.path = APIConstants.basePath + path
+        components.scheme = "https"
+        components.host = baseURL
+        components.path = basePath + path
         components.queryItems = parameters
         
         guard let url = components.url else {
             preconditionFailure("Invalid URL components: \(components)")
         }
-
+        
         return url
     }
 

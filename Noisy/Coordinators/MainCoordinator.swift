@@ -13,8 +13,8 @@ enum Flow: Equatable {
     case login(fromSplash: Bool = false)
     case home(fromSplash: Bool = false)
     
-    static func isAuthorized(_ isAuthorized: Bool = false) -> Self {
-        isAuthorized ? .home() : .login()
+    static func isAuthorized() -> Self {
+        UserDefaults.standard.string(forKey: .KeyChain.accessToken) != nil ? .home() : .login()
     }
 }
 
@@ -25,6 +25,9 @@ final class MainCoordinator: ObservableObject {
     @Published var state: AppState = .loaded
 
     // MARK: - Private properties
+    private lazy var loginSerice = LoginService(api: api)
+    private lazy var homeService = HomeService(api: api)
+    private lazy var api: NoisyAPIProtocol = NoisyService()
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -55,7 +58,7 @@ final class MainCoordinator: ObservableObject {
     }
     
     func presentRootFlow() -> some View {
-        let coordinator = RootCoordinator()
+        let coordinator = RootCoordinator(homeService: homeService)
         
         coordinator.onDidEnd
             .sink { [weak self] in
@@ -67,29 +70,14 @@ final class MainCoordinator: ObservableObject {
     }
 
     func presentLoginFlow() -> some View {
-        let viewModel = LoginViewModel()
-        let view = LoginView(viewModel: viewModel)
+        let coordinator = LoginCoordinator(loginService: loginSerice)
         
-        viewModel.onDidTapLogin
+        coordinator.onDidEnd
             .sink { [weak self] in
-                
-//                if let user = try? JSONEncoder().encode(user) {
-//                    UserDefaults.standard.set(user, forKey: .Login.user)
-//                }
                 self?.flow = .home()
             }
             .store(in: &cancellables)
         
-        NetworkingManager.showError
-            .sink { router in
-//                if case .login = router {
-//                    viewModel.errorMessage = .Login.incorrectEmailError
-//                    viewModel.presentError = true
-//                }
-            }
-            .store(in: &cancellables)
-        
-        return view
+        return LoginCoordinatorView(coordinator: coordinator)
     }
 }
-

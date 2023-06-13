@@ -12,6 +12,13 @@ extension String {
     static let cancel = "Cancel"
     static let close = "Close"
     static let noData = "N/A"
+    
+    struct KeyChain {
+        static let code = "code"
+        static let codeVerifier = "code_verifier"
+        static let refreshToken = "refresh_token"
+        static let accessToken = "access_token"
+    }
 
     struct Login {
         static let user = "User"
