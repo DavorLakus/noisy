@@ -12,11 +12,6 @@ struct HomeView: View {
     @ObservedObject var viewModel: HomeViewModel
     @Environment(\.colorScheme) var appearance
     
-    let columns: [GridItem] = [
-        GridItem(.flexible(), spacing: Constants.margin, alignment: nil),
-        GridItem(.flexible(), spacing: Constants.margin, alignment: nil)
-    ]
-    
     var body: some View {
         ZStack(alignment: .top) {
             Color.appBackground.ignoresSafeArea()
@@ -24,13 +19,17 @@ struct HomeView: View {
             navigationBarBottomBorder()
             
             ScrollView {
-                Text("Welcome " + (viewModel.profile?.displayName ?? .empty))
-//                LazyVGrid(columns: columns, spacing: Constants.margin) {
-//                    ForEach(Array(zip(viewModel.stats.indices, viewModel.stats)), id: \.0) { index, item in
-//                        createCard(for: item, index: index)
-//                    }
-//                }
-//                .padding(Constants.margin)
+                VStack(alignment: .leading, spacing: .zero) {
+                    if let name = viewModel.profile?.displayName {
+                        Text("Welcome \(name)")
+                            .foregroundColor(.gray900)
+                            .font(.nutinoBold(size: 24))
+                            .padding(Constants.margin)
+                    }
+                    
+                    topTracksAccordion()
+                    topArtistsAccordion()
+                }
             }
         }
         .onAppear(perform: viewModel.viewDidAppear)
@@ -38,6 +37,160 @@ struct HomeView: View {
             leadingLargeTitle(title: String.Tabs.home)
             trailingNavigationBarItem()
         }
+    }
+}
+
+// MARK: - Body components
+private extension HomeView {
+    func topTracksAccordion() -> some View {
+        LazyVStack(alignment: .leading, spacing: 10) {
+            Button {
+                viewModel.topTracksTapped()
+            } label: {
+                HStack {
+                    Text(String.Home.topTracks)
+                        .padding()
+                        .foregroundColor(.gray700)
+                        .font(.nutinoBold(size: 20))
+                    
+                    Spacer()
+                    
+                    if viewModel.isTopTracksExpanded {
+                        Image.Shared.chevronDown
+                    } else {
+                        Image.Shared.chevronRight
+                    }
+                }
+            }
+            
+            if viewModel.isTopTracksExpanded {
+                HStack {
+                    Text(String.Home.pickerTitle)
+                        .font(.nutinoRegular(size: 14))
+                    Picker(String.Home.pickerTitle, selection: $viewModel.topTracksTimeRange) {
+                        ForEach(TimeRange.allCases, id: \.self) {
+                            Text($0.displayName)
+                                .font(.nutinoRegular(size: 14))
+                        }
+                    }
+                }
+                HStack(spacing: Constants.smallSpacing) {
+                    Text(String.Home.sliderCount)
+                        .font(.nutinoRegular(size: 14))
+                    Text("1")
+                        .font(.nutinoRegular(size: 12))
+                        .foregroundColor(.gray500)
+                    Slider(value: $viewModel.topTracksCount, in: 1...50)
+                    Text("50")
+                        .font(.nutinoRegular(size: 12))
+                        .foregroundColor(.gray500)
+                }
+                ForEach(Array(viewModel.topTracks.enumerated()), id: \.offset, content: trackRow)
+            }
+        }
+        .padding(Constants.margin)
+        .cardBackground()
+        .padding(Constants.margin)
+    }
+    
+    func trackRow(for track: EnumeratedSequence<[Track]>.Iterator.Element) -> some View {
+        HStack(spacing: Constants.margin) {
+            Text("\(track.offset + 1)")
+                .foregroundColor(.gray500)
+                .font(.nutinoRegular(size: 14))
+            
+            LoadImage(url: URL(string: track.element.album.images.first?.url ?? .empty))
+                .scaledToFit()
+                .cornerRadius(18)
+                .frame(width: 36, height: 36)
+            
+            VStack(alignment: .leading, spacing: .zero) {
+                Text(track.element.artists.first?.name ?? .empty)
+                    .foregroundColor(.gray700)
+                    .font(.nutinoBold(size: 16))
+                Text(track.element.name)
+                    .foregroundColor(.gray700)
+                    .font(.nutinoSemiBold(size: 14))
+                    .frame(maxHeight: .infinity)
+                
+            }
+            Spacer()
+            
+        }
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+    }
+}
+
+// MARK: - Artists accordion
+extension HomeView {
+    func topArtistsAccordion() -> some View {
+        LazyVStack(alignment: .leading, spacing: 10) {
+            Button {
+                viewModel.topArtistsTapped()
+            } label: {
+                HStack {
+                    Text(String.Home.topArtists)
+                        .padding()
+                        .foregroundColor(.gray700)
+                        .font(.nutinoBold(size: 20))
+                    
+                    Spacer()
+                    
+                    if viewModel.isTopArtistsExpanded {
+                        Image.Shared.chevronDown
+                    } else {
+                        Image.Shared.chevronRight
+                    }
+                }
+            }
+            
+            if viewModel.isTopArtistsExpanded {
+                HStack {
+                    Text(String.Home.pickerTitle)
+                        .font(.nutinoRegular(size: 14))
+                    Picker(String.Home.pickerTitle, selection: $viewModel.topArtistsTimeRange) {
+                        ForEach(TimeRange.allCases, id: \.self) {
+                            Text($0.displayName)
+                                .font(.nutinoRegular(size: 14))
+                        }
+                    }
+                }
+                HStack(spacing: Constants.smallSpacing) {
+                    Text(String.Home.sliderCount)
+                        .font(.nutinoRegular(size: 14))
+                    Text("1")
+                        .font(.nutinoRegular(size: 12))
+                        .foregroundColor(.gray500)
+                    Slider(value: $viewModel.topArtistsCount, in: 1...50)
+                    Text("50")
+                        .font(.nutinoRegular(size: 12))
+                        .foregroundColor(.gray500)
+                }
+                
+                ForEach(Array(viewModel.topArtists.enumerated()), id: \.offset, content: artistRow)
+            }
+        }
+        .padding(Constants.margin)
+        .cardBackground()
+        .padding(Constants.margin)
+    }
+    
+    func artistRow(for artist: EnumeratedSequence<[Artist]>.Iterator.Element) -> some View {
+        HStack(spacing: Constants.margin) {
+            Text("\(artist.offset + 1)")
+                .foregroundColor(.gray500)
+                .font(.nutinoRegular(size: 14))
+            LoadImage(url: URL(string: artist.element.images?.first?.url ?? .empty))
+                .scaledToFit()
+                .cornerRadius(18)
+                .frame(width: 36, height: 36)
+            Text(artist.element.name)
+                .foregroundColor(.gray700)
+                .font(.nutinoBold(size: 16))
+            Spacer()
+            
+        }
+        .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 }
 
@@ -68,50 +221,6 @@ private extension HomeView {
                 }
             }
             .padding(8)
-        }
-    }
-}
-
-// MARK: - Body components
-private extension HomeView {
-    func createCard(for item: HomeStats, index: Int) -> some View {
-        VStack(alignment: .leading, spacing: Constants.spacing) {
-            Text("\(item.count)")
-                .foregroundColor(cardForegroundColor(for: index))
-                .font(.nutinoSemiBold(size: 20))
-                .frame(width: 56, height: 56)
-                .background(cardBackgroundColor(for: index))
-                .cornerRadius(28)
-            
-            Text(item.title)
-                .foregroundColor(.gray700)
-                .font(.nutinoSemiBold(size: 12))
-                .padding(.top, 14)
-            
-            Spacer()
-            
-        }
-        .frame(height: 136)
-        .frame(maxWidth: .infinity, alignment: .topLeading)
-        .padding(Constants.spacing)
-        .cardBackground()
-    }
-    
-    func cardForegroundColor(for index: Int) -> Color {
-        switch index % 4 {
-        case 0: return Color.green400
-        case 1: return Color.purple600
-        case 2: return Color.blue400
-        default: return Color.cream50
-        }
-    }
-    
-    func cardBackgroundColor(for index: Int) -> Color {
-        switch index % 4 {
-        case 0: return Color.green200
-        case 1: return Color.purple100
-        case 2: return Color.blue50
-        default: return Color.orange400
         }
     }
 }

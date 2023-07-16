@@ -2,6 +2,7 @@ included:
   - Noisy
 
 excluded:
+    - Noisy/Screen/Examples
 
 cyclomatic_complexity:
   ignores_case_statements: true

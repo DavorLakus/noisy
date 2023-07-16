@@ -8,12 +8,6 @@
 import Foundation
 
 struct Profile: Codable {
-    struct Image: Codable {
-        let url: String
-        let width: Int?
-        let height: Int?
-    }
-    
     struct ExternalUrls: Codable {
         let spotify: String
     }
@@ -23,7 +17,7 @@ struct Profile: Codable {
         let href: String?
     }
     
-    let images: [Image]
+    let images: [SpotifyImage]
     let id: String
     let externalUrls: ExternalUrls
     let followers: Followers

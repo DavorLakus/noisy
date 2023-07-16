@@ -13,6 +13,9 @@ public protocol NoisyAPIProtocol {
     func postToken(verifier: String, code: String) -> AnyPublisher<Data, Error>
     func postRefreshToken(with refreshToken: String) -> AnyPublisher<Data, Error>
     func getProfile() -> AnyPublisher<Data, Error>
+    func getTopTracks(count: Int, timeRange: String) -> AnyPublisher<Data, Error>
+    func getTopArtists(count: Int, timeRange: String) -> AnyPublisher<Data, Error>
+
 }
 
 public final class NoisyService: NoisyAPIProtocol {
@@ -34,9 +37,19 @@ extension NoisyService {
     public func postRefreshToken(with refreshToken: String) -> AnyPublisher<Data, Error> {
         NetworkingManager.download(.refreshToken(refreshToken))
     }
-    
+}
+
+// MARK: - Home
+extension NoisyService {
     public func getProfile() -> AnyPublisher<Data, Error> {
         NetworkingManager.download(.profile)
+    }
+
+    public func getTopTracks(count: Int, timeRange: String) -> AnyPublisher<Data, Error> {
+        NetworkingManager.download(.myTop("tracks", count, timeRange))
+    }
+    public func getTopArtists(count: Int, timeRange: String) -> AnyPublisher<Data, Error> {
+        NetworkingManager.download(.myTop("artists", count, timeRange))
     }
 }
 

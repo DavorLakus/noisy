@@ -6,12 +6,8 @@ enum ExamplePath: Hashable {
     case secondLevelDetail
 }
 
-protocol AlertCoordinatorProtocol: ObservableObject {
-    var isAlertPresented: Bool { get set }
-    func presentAlert() -> Alert
-}
 
-final class ExampleCoordinator: VerticalCoordinatorProtocol, AlertCoordinatorProtocol {
+final class ExampleCoordinator: VerticalCoordinatorProtocol {
     @Published var navigationPath = NavigationPath()
     @Published var isAlertPresented: Bool = false
     private var cancellables = Set<AnyCancellable>()
@@ -47,9 +43,9 @@ final class ExampleCoordinator: VerticalCoordinatorProtocol, AlertCoordinatorPro
         }
     }
     
-    func presentAlert() -> Alert {
-        Alert(title: Text("Text"), primaryButton: .cancel(), secondaryButton: .default(Text("OK")))
-    }
+//    func presentAlert() -> Alert {
+//        Alert(title: Text("Text"), primaryButton: .cancel(), secondaryButton: .default(Text("OK")))
+//    }
     
     @ViewBuilder
     func navigationDestination(_ path: ExamplePath) -> some View {
@@ -105,12 +101,11 @@ final class ExampleCoordinator: VerticalCoordinatorProtocol, AlertCoordinatorPro
     }
 }
 
-struct ExampleCoordinatorView<Coordinator: VerticalCoordinatorProtocol & AlertCoordinatorProtocol>: CoordinatorViewProtocol {
+struct ExampleCoordinatorView<Coordinator: VerticalCoordinatorProtocol>: CoordinatorViewProtocol {
     @ObservedObject var coordinator: Coordinator
 
     var body: some View {
         NavigationStack(path: $coordinator.navigationPath, root: coordinator.rootView)
-            .alert(isPresented: $coordinator.isAlertPresented, content: coordinator.presentAlert)
     }
 }
 

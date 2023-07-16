@@ -14,6 +14,7 @@ public protocol APIEndpoint {
     var method: HTTPMethod { get }
     var headers: [String: Any]? { get }
     var parameters: [URLQueryItem]? { get }
+    var authToken: [String : Any]? { get }
 
     func body() throws -> Data?
 }
@@ -45,5 +46,13 @@ extension APIEndpoint {
         }
         
         return request
+    }
+    
+    public var authToken: [String : Any]? {
+        if let token = UserDefaults.standard.string(forKey: .KeyChain.accessToken) {
+            return ["Authorization" : "Bearer \(token)"]
+        } else {
+            return nil
+        }
     }
 }

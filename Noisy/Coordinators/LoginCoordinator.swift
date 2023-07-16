@@ -32,7 +32,7 @@ final class LoginCoordinator: CoordinatorProtocol {
     }
     
     func start() -> some View {
-        loginView()
+        LoginCoordinatorView(coordinator: self)
     }
 
     @ViewBuilder

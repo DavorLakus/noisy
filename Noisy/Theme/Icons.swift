@@ -17,6 +17,12 @@ extension Image {
         static let settings = Image(systemName: "gear.circle.fill")
     }
     
+    struct Shared {
+        static let close = Image(systemName: "xmark")
+        static let chevronRight = Image(systemName: "chevron.right")
+        static let chevronDown = Image(systemName: "chevron.down")
+    }
+    
     struct Home {
         static let sparkles = Image(systemName: "sparkles")
         static let profile = Image(systemName: "person.circle.fill")

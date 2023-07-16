@@ -16,7 +16,7 @@ extension View {
         ZStack {
             self
             if isPresented.wrappedValue {
-                ProgressView()
+                SpinnerView()
             }
         }
     }
@@ -93,6 +93,16 @@ extension View {
                     radius: 6, x: 1, y: 4)
     }
     
+    func bottomBorder() -> some View {
+        overlay {
+            VStack(spacing: .zero) {
+                Spacer()
+                Color.gray100
+                    .frame(height: 1)
+            }
+        }
+    }
+    
     func navigationBarBottomBorder() -> some View {
         Color.gray300
             .padding(.top, 3.5)
@@ -100,6 +110,28 @@ extension View {
             .frame(maxWidth: .infinity)
             .background(Color.appBackground)
             .zIndex(5)
+    }
+    
+    @ViewBuilder
+    func modalSheet<Content: View>(isPresented: Binding<Bool>, content: () -> Content) -> some View {
+        ZStack {
+            self
+            if isPresented.wrappedValue {
+                    content()
+            }
+        }
+    }
+}
+
+struct LoadImage: View {
+    let url: URL?
+    
+    var body: some View {
+        AsyncImage(url: url) { image in
+            image.resizable()
+        } placeholder: {
+            Image.Home.profile.resizable()
+        }
     }
 }
 

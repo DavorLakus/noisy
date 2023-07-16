@@ -21,7 +21,7 @@ extension String {
     }
 
     struct Login {
-        static let user = "User"
+        static let profile = "Profile"
         static let title = "noisy"
         static let subtitle = "Sign in with your Spotify account to continue"
         static let email = "Email"
@@ -42,26 +42,18 @@ extension String {
         static let radio = "Radio"
         static let settings = "Settings"
     }
+    
+    struct Account {
+        static let viewProfile = "View profile"
+        static let general = "General"
+        static let about = "About"
+    }
 
     struct Home {
-        static let techComp = "Technical Competencies"
-        static let nonTechComp = "Non-Technical Competencies"
-        static let lang = "Languages we speak"
-        static let engineers = "Software Engineers"
-        static let designers = "Designers"
-        static let delManagers = "Delivery Managers"
-        static let businessDevs = "Business Developers"
-        static let marketing = "Marketing Experts"
-        static let people = "People & Culture Specialists"
-        static let businessSupport = "Business Support"
-        static let finance = "Finance Managers"
-        static let notifications = "Notifications"
-        static let emptyTitle = "There's nothing here yet."
-        static let emptyDescription = "You don't have any notifications."
-        static let unknown = "Unknown user"
-        static let request = "requested a review."
-        static let approve = "approved your review request."
-        static let reject = "rejected your review request."
+        static let pickerTitle = "In:"
+        static let sliderCount = "Count:"
+        static let topTracks = "Your top tracks"
+        static let topArtists = "Your top artists"
     }
 
     struct Employees {

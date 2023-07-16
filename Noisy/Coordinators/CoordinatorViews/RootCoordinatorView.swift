@@ -28,8 +28,8 @@ struct RootCoordinatorView: View {
             coordinator.settingsTab()
                 .tabItem { tab(name: .Tabs.settings, icon: .Tabs.settings) }
                 .tag(RootTab.settings)
-
         }
+        .modalSheet(isPresented: $coordinator.presentAccountDrawer, content: coordinator.presentAccountView) 
         .tint(.orange400)
     }
 }
