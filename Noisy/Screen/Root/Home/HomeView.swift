@@ -57,10 +57,14 @@ private extension HomeView {
                 Button {
                     viewModel.profileButtonTapped()
                 } label: {
-                    Image.Home.profile
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 36, height: 36)
+                    AsyncImage(url: URL(string: viewModel.profile?.images.first?.url ?? .empty)) { image in
+                        image.resizable()
+                    } placeholder: {
+                        Image.Home.profile.resizable()
+                    }
+                    .scaledToFit()
+                    .cornerRadius(18)
+                    .frame(width: 36, height: 36)
                 }
             }
             .padding(8)

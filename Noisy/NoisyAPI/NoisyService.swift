@@ -11,6 +11,7 @@ import Combine
 public protocol NoisyAPIProtocol {
     func getAuthURL(verifier: String) -> URL
     func postToken(verifier: String, code: String) -> AnyPublisher<Data, Error>
+    func postRefreshToken(with refreshToken: String) -> AnyPublisher<Data, Error>
     func getProfile() -> AnyPublisher<Data, Error>
 }
 
@@ -28,6 +29,10 @@ extension NoisyService {
     
     public func postToken(verifier: String, code: String) -> AnyPublisher<Data, Error> {
         NetworkingManager.download(.token(verifier, code))
+    }
+    
+    public func postRefreshToken(with refreshToken: String) -> AnyPublisher<Data, Error> {
+        NetworkingManager.download(.refreshToken(refreshToken))
     }
     
     public func getProfile() -> AnyPublisher<Data, Error> {

@@ -18,7 +18,7 @@ enum Flow: Equatable {
     }
 }
 
-final class MainCoordinator: ObservableObject {
+final class MainCoordinator: CoordinatorProtocol {
     // MARK: - Published properties
     @Published var flow: Flow = .splash
     @Published var isLoading = false
@@ -36,12 +36,41 @@ final class MainCoordinator: ObservableObject {
         bindAppState()
     }
     
+    @ViewBuilder
+    func start() -> some View {
+        MainCoordinatorView(coordinator: self)
+    }
+    
     func bindAppState() {
         NetworkingManager.state
             .sink { [weak self] state in
                 self?.isLoading = state == .loading
             }
             .store(in: &cancellables)
+        
+        NetworkingManager.unauthorizedAccess
+            .sink { [weak self] in
+                UserDefaults.standard.set(nil, forKey: .KeyChain.accessToken)
+                self?.attemptRefreshToken()
+            }
+            .store(in: &cancellables)
+    }
+    
+    func attemptRefreshToken() {
+        if let refreshToken = UserDefaults.standard.string(forKey: .KeyChain.refreshToken) {
+            loginSerice.refreshToken(with: refreshToken)
+                .sink { [weak self] response in
+                    UserDefaults.standard.set(response.accessToken, forKey: .KeyChain.accessToken)
+                    withAnimation {
+                        self?.flow = .home()
+                    }
+                }
+                .store(in: &cancellables)
+        } else {
+            withAnimation {
+                flow = .login()
+            }
+        }
     }
 
     func showSplashView() -> some View {
@@ -66,7 +95,7 @@ final class MainCoordinator: ObservableObject {
             }
             .store(in: &cancellables)
         
-        return RootCoordinatorView(coordinator: coordinator)
+        return coordinator.start()
     }
 
     func presentLoginFlow() -> some View {
@@ -78,6 +107,6 @@ final class MainCoordinator: ObservableObject {
             }
             .store(in: &cancellables)
         
-        return LoginCoordinatorView(coordinator: coordinator)
+        return coordinator.start()
     }
 }

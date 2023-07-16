@@ -17,7 +17,7 @@ enum RootTab {
     case settings
 }
 
-final class RootCoordinator: ObservableObject {
+final class RootCoordinator: CoordinatorProtocol {
 
     // MARK: - Published properties
     @Published var tab = RootTab.home
@@ -34,6 +34,10 @@ final class RootCoordinator: ObservableObject {
     // MARK: - Class lifecycle
     init(homeService: HomeService) {
         self.homeService = homeService
+    }
+    
+    func start() -> some View {
+        RootCoordinatorView(coordinator: self)
     }
 
     // Grafika muzike, statistike, itd.

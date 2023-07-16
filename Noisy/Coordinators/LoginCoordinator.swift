@@ -8,7 +8,7 @@
 import Combine
 import SwiftUI
 
-final class LoginCoordinator: ObservableObject {
+final class LoginCoordinator: CoordinatorProtocol {
 
     // MARK: - Published properties
     @Published var path = NavigationPath()
@@ -29,6 +29,10 @@ final class LoginCoordinator: ObservableObject {
     init(loginService: LoginService) {
         self.loginService = loginService
         bindLoginViewModel()
+    }
+    
+    func start() -> some View {
+        loginView()
     }
 
     @ViewBuilder

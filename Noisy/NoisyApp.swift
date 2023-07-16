@@ -13,7 +13,7 @@ struct NoisyApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MainCoordinatorView(coordinator: coordinator)
+            coordinator.start()
         }
     }
 }

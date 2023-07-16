@@ -27,7 +27,7 @@ extension LoginService {
     }
     
     func postToken(code: String) -> PassthroughSubject<TokenResponse, Never> {
-     let token = PassthroughSubject<TokenResponse, Never>()
+        let token = PassthroughSubject<TokenResponse, Never>()
         
         if let codeVerifier = UserDefaults.standard.string(forKey: .KeyChain.codeVerifier) {
             
@@ -42,6 +42,20 @@ extension LoginService {
                 .store(in: &cancellables)
         }
         
+        return token
+    }
+    
+    func refreshToken(with refreshToken: String) -> PassthroughSubject<TokenResponse, Never> {
+        let token = PassthroughSubject<TokenResponse, Never>()
+        api.postRefreshToken(with: refreshToken)
+            .debugPrint()
+            .decode(type: TokenResponse.self, decoder: JSONDecoder())
+            .sink(
+                receiveCompletion: NetworkingManager.handleCompletion,
+                receiveValue: { [weak self] response in
+                    token.send(response)
+                })
+            .store(in: &cancellables)
         return token
     }
 }

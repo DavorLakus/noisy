@@ -11,6 +11,17 @@
 		413EEAC02A2F2DDC00DC9727 /* HomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413EEABF2A2F2DDC00DC9727 /* HomeService.swift */; };
 		413EEAC22A2F2DE200DC9727 /* DiscoverService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413EEAC12A2F2DE200DC9727 /* DiscoverService.swift */; };
 		413EEAC42A2F2DE900DC9727 /* SearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413EEAC32A2F2DE900DC9727 /* SearchService.swift */; };
+		419DD1B82A5736E6005A6708 /* NoisyAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 419DD1B22A5736E6005A6708 /* NoisyAPI.framework */; };
+		419DD1B92A5736E6005A6708 /* NoisyAPI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 419DD1B22A5736E6005A6708 /* NoisyAPI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		419DD1C72A573862005A6708 /* APIConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F54C2A26480100F7A2B8 /* APIConstants.swift */; };
+		419DD1C82A573862005A6708 /* Encodable+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5412A26473300F7A2B8 /* Encodable+Extension.swift */; };
+		419DD1C92A573862005A6708 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F54A2A2647F200F7A2B8 /* NetworkError.swift */; };
+		419DD1CA2A573862005A6708 /* NoisyHTTPRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F53F2A26472800F7A2B8 /* NoisyHTTPRouter.swift */; };
+		419DD1CB2A573862005A6708 /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5482A2647E100F7A2B8 /* HTTPMethod.swift */; };
+		419DD1CC2A573862005A6708 /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F53A2A26470E00F7A2B8 /* State.swift */; };
+		419DD1CD2A573862005A6708 /* NoisyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F53D2A26471D00F7A2B8 /* NoisyService.swift */; };
+		419DD1CE2A573862005A6708 /* APIEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5432A26473800F7A2B8 /* APIEndpoint.swift */; };
+		419DD1CF2A573862005A6708 /* NetworkingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5452A26473D00F7A2B8 /* NetworkingManager.swift */; };
 		41B647772A38419000C1485C /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B647762A38419000C1485C /* AuthView.swift */; };
 		41B647792A38419600C1485C /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B647782A38419600C1485C /* AuthViewModel.swift */; };
 		41B6477C2A384CB400C1485C /* LoginService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B6477B2A384CB400C1485C /* LoginService.swift */; };
@@ -22,8 +33,11 @@
 		41D3A2A12A31E193000AC6FE /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D3A2A02A31E193000AC6FE /* SearchViewModel.swift */; };
 		41D3A2A32A32500A000AC6FE /* RadioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D3A2A22A32500A000AC6FE /* RadioView.swift */; };
 		41D3A2A52A32500F000AC6FE /* RadioViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D3A2A42A32500F000AC6FE /* RadioViewModel.swift */; };
+		41DE39CD2A63FCD50048CB51 /* CoordinatorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DE39CC2A63FCD50048CB51 /* CoordinatorProtocol.swift */; };
 		41DFEBF72A26356000CC3420 /* NoisyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DFEBF62A26356000CC3420 /* NoisyApp.swift */; };
 		41DFEBFB2A26356200CC3420 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 41DFEBFA2A26356200CC3420 /* Assets.xcassets */; };
+		41EA877F2A604353005DD0C2 /* Examples.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41EA877E2A604353005DD0C2 /* Examples.swift */; };
+		41EA87812A61CC61005DD0C2 /* Examples2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41EA87802A61CC60005DD0C2 /* Examples2.swift */; };
 		41F8F5272A26436300F7A2B8 /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5262A26436300F7A2B8 /* MainCoordinator.swift */; };
 		41F8F5292A26437800F7A2B8 /* RootCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5282A26437800F7A2B8 /* RootCoordinator.swift */; };
 		41F8F52B2A26438000F7A2B8 /* LoginCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F52A2A26438000F7A2B8 /* LoginCoordinator.swift */; };
@@ -32,15 +46,6 @@
 		41F8F5322A2643B500F7A2B8 /* LoginCoordinatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5312A2643B500F7A2B8 /* LoginCoordinatorView.swift */; };
 		41F8F5342A2643BB00F7A2B8 /* RootCoordinatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5332A2643BB00F7A2B8 /* RootCoordinatorView.swift */; };
 		41F8F5362A2643C300F7A2B8 /* HomeCoordinatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5352A2643C300F7A2B8 /* HomeCoordinatorView.swift */; };
-		41F8F53B2A26470E00F7A2B8 /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F53A2A26470E00F7A2B8 /* State.swift */; };
-		41F8F53E2A26471D00F7A2B8 /* NoisyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F53D2A26471D00F7A2B8 /* NoisyService.swift */; };
-		41F8F5402A26472800F7A2B8 /* NoisyHTTPRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F53F2A26472800F7A2B8 /* NoisyHTTPRouter.swift */; };
-		41F8F5422A26473300F7A2B8 /* Encodable+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5412A26473300F7A2B8 /* Encodable+Extension.swift */; };
-		41F8F5442A26473800F7A2B8 /* APIEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5432A26473800F7A2B8 /* APIEndpoint.swift */; };
-		41F8F5462A26473D00F7A2B8 /* NetworkingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5452A26473D00F7A2B8 /* NetworkingManager.swift */; };
-		41F8F5492A2647E100F7A2B8 /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5482A2647E100F7A2B8 /* HTTPMethod.swift */; };
-		41F8F54B2A2647F200F7A2B8 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F54A2A2647F200F7A2B8 /* NetworkError.swift */; };
-		41F8F54D2A26480100F7A2B8 /* APIConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F54C2A26480100F7A2B8 /* APIConstants.swift */; };
 		41F8F54F2A2649AC00F7A2B8 /* String+Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F54E2A2649AC00F7A2B8 /* String+Localization.swift */; };
 		41F8F5512A2649B000F7A2B8 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5502A2649B000F7A2B8 /* Constants.swift */; };
 		41F8F5532A2649B800F7A2B8 /* Data+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5522A2649B800F7A2B8 /* Data+Extension.swift */; };
@@ -80,11 +85,36 @@
 		41F8F59F2A29D2C200F7A2B8 /* SplashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F59E2A29D2C200F7A2B8 /* SplashViewModel.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		419DD1B62A5736E6005A6708 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 41DFEBEB2A26356000CC3420 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 419DD1B12A5736E6005A6708;
+			remoteInfo = NoisyAPI;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		419DD1BD2A5736E6005A6708 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				419DD1B92A5736E6005A6708 /* NoisyAPI.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		413EEAB82A2F29BB00DC9727 /* Icons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icons.swift; sourceTree = "<group>"; };
 		413EEABF2A2F2DDC00DC9727 /* HomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeService.swift; sourceTree = "<group>"; };
 		413EEAC12A2F2DE200DC9727 /* DiscoverService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverService.swift; sourceTree = "<group>"; };
 		413EEAC32A2F2DE900DC9727 /* SearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchService.swift; sourceTree = "<group>"; };
+		419DD1B22A5736E6005A6708 /* NoisyAPI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NoisyAPI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		41B647762A38419000C1485C /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		41B647782A38419600C1485C /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		41B6477B2A384CB400C1485C /* LoginService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginService.swift; sourceTree = "<group>"; };
@@ -96,9 +126,12 @@
 		41D3A2A02A31E193000AC6FE /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		41D3A2A22A32500A000AC6FE /* RadioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioView.swift; sourceTree = "<group>"; };
 		41D3A2A42A32500F000AC6FE /* RadioViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioViewModel.swift; sourceTree = "<group>"; };
+		41DE39CC2A63FCD50048CB51 /* CoordinatorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoordinatorProtocol.swift; sourceTree = "<group>"; };
 		41DFEBF32A26356000CC3420 /* Noisy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Noisy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		41DFEBF62A26356000CC3420 /* NoisyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoisyApp.swift; sourceTree = "<group>"; };
 		41DFEBFA2A26356200CC3420 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		41EA877E2A604353005DD0C2 /* Examples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Examples.swift; sourceTree = "<group>"; };
+		41EA87802A61CC60005DD0C2 /* Examples2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Examples2.swift; sourceTree = "<group>"; };
 		41F8F5262A26436300F7A2B8 /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
 		41F8F5282A26437800F7A2B8 /* RootCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootCoordinator.swift; sourceTree = "<group>"; };
 		41F8F52A2A26438000F7A2B8 /* LoginCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginCoordinator.swift; sourceTree = "<group>"; };
@@ -156,10 +189,18 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		419DD1AF2A5736E6005A6708 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		41DFEBF02A26356000CC3420 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				419DD1B82A5736E6005A6708 /* NoisyAPI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -246,6 +287,15 @@
 			path = Home;
 			sourceTree = "<group>";
 		};
+		41DE39CB2A63FC8F0048CB51 /* Examples */ = {
+			isa = PBXGroup;
+			children = (
+				41EA877E2A604353005DD0C2 /* Examples.swift */,
+				41EA87802A61CC60005DD0C2 /* Examples2.swift */,
+			);
+			path = Examples;
+			sourceTree = "<group>";
+		};
 		41DFEBEA2A26356000CC3420 = {
 			isa = PBXGroup;
 			children = (
@@ -258,6 +308,7 @@
 			isa = PBXGroup;
 			children = (
 				41DFEBF32A26356000CC3420 /* Noisy.app */,
+				419DD1B22A5736E6005A6708 /* NoisyAPI.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -324,6 +375,7 @@
 		41F8F5232A26431600F7A2B8 /* Screen */ = {
 			isa = PBXGroup;
 			children = (
+				41DE39CB2A63FC8F0048CB51 /* Examples */,
 				41F8F59B2A29D2A800F7A2B8 /* Splash */,
 				41F8F5642A26500C00F7A2B8 /* Login */,
 				413EEABA2A2F2D2A00DC9727 /* Root */,
@@ -339,6 +391,7 @@
 				41F8F52A2A26438000F7A2B8 /* LoginCoordinator.swift */,
 				41F8F5282A26437800F7A2B8 /* RootCoordinator.swift */,
 				41F8F52C2A26438600F7A2B8 /* HomeCoordinator.swift */,
+				41DE39CC2A63FCD50048CB51 /* CoordinatorProtocol.swift */,
 			);
 			path = Coordinators;
 			sourceTree = "<group>";
@@ -446,7 +499,35 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		419DD1AD2A5736E6005A6708 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		419DD1B12A5736E6005A6708 /* NoisyAPI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 419DD1BA2A5736E6005A6708 /* Build configuration list for PBXNativeTarget "NoisyAPI" */;
+			buildPhases = (
+				419DD1AD2A5736E6005A6708 /* Headers */,
+				419DD1AE2A5736E6005A6708 /* Sources */,
+				419DD1AF2A5736E6005A6708 /* Frameworks */,
+				419DD1B02A5736E6005A6708 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NoisyAPI;
+			productName = NoisyAPI;
+			productReference = 419DD1B22A5736E6005A6708 /* NoisyAPI.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		41DFEBF22A26356000CC3420 /* Noisy */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 41DFEC012A26356200CC3420 /* Build configuration list for PBXNativeTarget "Noisy" */;
@@ -455,10 +536,12 @@
 				41DFEBF02A26356000CC3420 /* Frameworks */,
 				41DFEBF12A26356000CC3420 /* Resources */,
 				41F8F51F2A26385800F7A2B8 /* ShellScript */,
+				419DD1BD2A5736E6005A6708 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				419DD1B72A5736E6005A6708 /* PBXTargetDependency */,
 			);
 			name = Noisy;
 			productName = Noisy;
@@ -475,6 +558,9 @@
 				LastSwiftUpdateCheck = 1430;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					419DD1B12A5736E6005A6708 = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
 					41DFEBF22A26356000CC3420 = {
 						CreatedOnToolsVersion = 14.3;
 					};
@@ -494,11 +580,19 @@
 			projectRoot = "";
 			targets = (
 				41DFEBF22A26356000CC3420 /* Noisy */,
+				419DD1B12A5736E6005A6708 /* NoisyAPI */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		419DD1B02A5736E6005A6708 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		41DFEBF12A26356000CC3420 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -549,19 +643,26 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		419DD1AE2A5736E6005A6708 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		41DFEBEF2A26356000CC3420 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				41F8F54B2A2647F200F7A2B8 /* NetworkError.swift in Sources */,
+				419DD1CF2A573862005A6708 /* NetworkingManager.swift in Sources */,
 				41F8F59F2A29D2C200F7A2B8 /* SplashViewModel.swift in Sources */,
+				419DD1C82A573862005A6708 /* Encodable+Extension.swift in Sources */,
 				41F8F5702A26508500F7A2B8 /* HomeViewModel.swift in Sources */,
 				41F8F5632A2649F400F7A2B8 /* Array+Extension.swift in Sources */,
 				41F8F5612A2649EC00F7A2B8 /* ToolbarBuilder.swift in Sources */,
+				41EA87812A61CC61005DD0C2 /* Examples2.swift in Sources */,
 				41DFEBF72A26356000CC3420 /* NoisyApp.swift in Sources */,
-				41F8F53E2A26471D00F7A2B8 /* NoisyService.swift in Sources */,
 				41F8F5362A2643C300F7A2B8 /* HomeCoordinatorView.swift in Sources */,
-				41F8F5462A26473D00F7A2B8 /* NetworkingManager.swift in Sources */,
 				41D3A29D2A31E152000AC6FE /* DiscoverViewModel.swift in Sources */,
 				41D3A29F2A31E18A000AC6FE /* SearchView.swift in Sources */,
 				41B647802A38912200C1485C /* Token.swift in Sources */,
@@ -570,17 +671,16 @@
 				41F8F5342A2643BB00F7A2B8 /* RootCoordinatorView.swift in Sources */,
 				41F8F5572A2649CB00F7A2B8 /* NoisyDateFormatter.swift in Sources */,
 				41D3A2A12A31E193000AC6FE /* SearchViewModel.swift in Sources */,
-				41F8F5422A26473300F7A2B8 /* Encodable+Extension.swift in Sources */,
-				41F8F53B2A26470E00F7A2B8 /* State.swift in Sources */,
+				41EA877F2A604353005DD0C2 /* Examples.swift in Sources */,
 				413EEAC02A2F2DDC00DC9727 /* HomeService.swift in Sources */,
 				41F8F5532A2649B800F7A2B8 /* Data+Extension.swift in Sources */,
 				41B647792A38419600C1485C /* AuthViewModel.swift in Sources */,
 				41F8F56E2A26507D00F7A2B8 /* HomeView.swift in Sources */,
 				41F8F5292A26437800F7A2B8 /* RootCoordinator.swift in Sources */,
-				41F8F5442A26473800F7A2B8 /* APIEndpoint.swift in Sources */,
 				41F8F5302A2643AE00F7A2B8 /* MainCoordinatorView.swift in Sources */,
 				41F8F52D2A26438600F7A2B8 /* HomeCoordinator.swift in Sources */,
 				41F8F5682A26501800F7A2B8 /* LoginViewModel.swift in Sources */,
+				419DD1CC2A573862005A6708 /* State.swift in Sources */,
 				413EEAC22A2F2DE200DC9727 /* DiscoverService.swift in Sources */,
 				41F8F5552A2649C000F7A2B8 /* AnyPublisher+Extension.swift in Sources */,
 				41B647772A38419000C1485C /* AuthView.swift in Sources */,
@@ -588,21 +688,25 @@
 				41F8F5662A26501300F7A2B8 /* LoginView.swift in Sources */,
 				41F8F52B2A26438000F7A2B8 /* LoginCoordinator.swift in Sources */,
 				41F8F55F2A2649E700F7A2B8 /* Preferences.swift in Sources */,
+				419DD1CE2A573862005A6708 /* APIEndpoint.swift in Sources */,
+				419DD1CB2A573862005A6708 /* HTTPMethod.swift in Sources */,
 				41B6477C2A384CB400C1485C /* LoginService.swift in Sources */,
 				413EEAB92A2F29BB00DC9727 /* Icons.swift in Sources */,
 				41F8F5942A2678F700F7A2B8 /* Fonts.swift in Sources */,
+				419DD1CD2A573862005A6708 /* NoisyService.swift in Sources */,
 				41F8F5592A2649D600F7A2B8 /* String+Extension.swift in Sources */,
-				41F8F5492A2647E100F7A2B8 /* HTTPMethod.swift in Sources */,
-				41F8F54D2A26480100F7A2B8 /* APIConstants.swift in Sources */,
 				41F8F5512A2649B000F7A2B8 /* Constants.swift in Sources */,
+				41DE39CD2A63FCD50048CB51 /* CoordinatorProtocol.swift in Sources */,
+				419DD1CA2A573862005A6708 /* NoisyHTTPRouter.swift in Sources */,
 				41F8F5322A2643B500F7A2B8 /* LoginCoordinatorView.swift in Sources */,
 				41F8F5272A26436300F7A2B8 /* MainCoordinator.swift in Sources */,
 				41F8F5982A27434E00F7A2B8 /* Colors.swift in Sources */,
 				41D3A29B2A31E141000AC6FE /* DiscoverView.swift in Sources */,
 				41D3A2A52A32500F000AC6FE /* RadioViewModel.swift in Sources */,
 				41F8F55D2A2649E300F7A2B8 /* ViewModifiers.swift in Sources */,
-				41F8F5402A26472800F7A2B8 /* NoisyHTTPRouter.swift in Sources */,
 				413EEAC42A2F2DE900DC9727 /* SearchService.swift in Sources */,
+				419DD1C72A573862005A6708 /* APIConstants.swift in Sources */,
+				419DD1C92A573862005A6708 /* NetworkError.swift in Sources */,
 				41B647832A389FC300C1485C /* Profile.swift in Sources */,
 				41F8F59A2A27534500F7A2B8 /* View+Extension.swift in Sources */,
 				41F8F54F2A2649AC00F7A2B8 /* String+Localization.swift in Sources */,
@@ -611,7 +715,83 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		419DD1B72A5736E6005A6708 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 419DD1B12A5736E6005A6708 /* NoisyAPI */;
+			targetProxy = 419DD1B62A5736E6005A6708 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		419DD1BB2A5736E6005A6708 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = VR2BQT75XX;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.test.NoisyAPI;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		419DD1BC2A5736E6005A6708 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = VR2BQT75XX;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.test.NoisyAPI;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		41DFEBFF2A26356200CC3420 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -793,6 +973,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		419DD1BA2A5736E6005A6708 /* Build configuration list for PBXNativeTarget "NoisyAPI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				419DD1BB2A5736E6005A6708 /* Debug */,
+				419DD1BC2A5736E6005A6708 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		41DFEBEE2A26356000CC3420 /* Build configuration list for PBXProject "Noisy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
