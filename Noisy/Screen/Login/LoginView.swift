@@ -50,34 +50,6 @@ private extension LoginView {
     @ViewBuilder
     var loginInfo: some View {
         VStack(spacing: 48) {
-            ZStack(alignment: .bottomLeading) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(String.Login.email)
-                        .font(.nutinoSemiBold(size: 14))
-                        .foregroundColor(.gray800)
-                        .frame(alignment: .leading)
-                    TextField(String.Login.textfieldPlaceholder, text: $viewModel.email)
-                        .focused($isEditing)
-                        .font(.nutinoRegular(size: 14))
-                        .foregroundColor(.gray700)
-                        .padding(Constants.spacing)
-                        .cornerRadius(Constants.smallCornerRadius)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                        .background {
-                            RoundedRectangle(cornerRadius: Constants.smallCornerRadius)
-                                .stroke(viewModel.presentError ? Color.red400 : isEditing ? Color.orange400 : Color.gray200)
-                        }
-                        .padding(.bottom, 24)
-                }
-                if viewModel.presentError {
-                    Text(viewModel.errorMessage)
-                        .foregroundColor(.red400)
-                        .font(.nutinoRegular(size: 12))
-                        .zStackTransition(.opacity)
-                }
-            }
-            
             Button {
                 viewModel.loginTapped()
             } label: {

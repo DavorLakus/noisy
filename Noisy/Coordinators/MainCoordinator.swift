@@ -44,7 +44,9 @@ final class MainCoordinator: CoordinatorProtocol {
     func bindAppState() {
         NetworkingManager.state
             .sink { [weak self] state in
-                self?.isLoading = state == .loading
+                withAnimation {
+                    self?.isLoading = state == .loading
+                }
             }
             .store(in: &cancellables)
         

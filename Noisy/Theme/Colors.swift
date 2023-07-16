@@ -10,6 +10,7 @@ import SwiftUI
 extension Color {
     static let appBackground = Color("appBackground")
     static let cardBackground = Color("cardBackground")
+    static let alertShadow = Color("alertShadow")
     static let cream50 = Color("cream50")
     static let gray50 = Color("gray50")
     static let gray100 = Color("gray100")

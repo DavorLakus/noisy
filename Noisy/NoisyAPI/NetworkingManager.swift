@@ -86,9 +86,7 @@ public class NetworkingManager {
     
     static func handleBadURLResponse(for router: NoisyHTTPRouter, statusCode: Int) {
         switch router {
-        case .profile, .authorize:
-            break
-        case .token, .refreshToken:
+        case .token, .refreshToken, .profile, .authorize, .myTop:
             break
         }
     }
