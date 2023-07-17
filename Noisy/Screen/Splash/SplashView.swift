@@ -16,7 +16,7 @@ struct SplashView: View {
 
             VStack(alignment: .center, spacing: Constants.margin) {
                 Text(viewModel.title)
-                    .font(.nutinoBold(size: 24))
+                    .font(.nunitoBold(size: 24))
                     .foregroundColor(.cream50)
                     .frame(width: 264, alignment: .leading)
             }

@@ -44,14 +44,14 @@ private extension AlertView {
                 if let title = viewModel.title {
                     Text(title)
                         .foregroundColor(.gray800)
-                        .font(.nutinoSemiBold(size: 16))
+                        .font(.nunitoSemiBold(size: 16))
                         .animation(.none)
                 }
                 if let message = viewModel.message {
                     Text(message)
                         .foregroundColor(.gray600)
                         .multilineTextAlignment(.center)
-                        .font(.nutinoRegular(size: 14))
+                        .font(.nunitoRegular(size: 14))
                         .padding(.bottom, 8)
                 }
                 
@@ -80,7 +80,7 @@ private extension AlertView {
             } label: {
                 Text(viewModel.secondaryActionText ?? String.cancel)
                     .tint(.gray900)
-                    .font(.nutinoRegular(size: 16))
+                    .font(.nunitoRegular(size: 16))
                     .frame(maxWidth: viewModel.primaryActionText == nil ? .infinity : nil)
             }
             .padding(.horizontal, 16)
@@ -95,7 +95,7 @@ private extension AlertView {
                     }
                 } label: {
                     Text(viewModel.primaryActionText ?? String.Profile.signOutTitle)
-                        .font(.nutinoSemiBold(size: 16))
+                        .font(.nunitoSemiBold(size: 16))
                         .tint(.appBackground)
                 }
                 .padding(.horizontal, 16)

@@ -29,12 +29,8 @@ struct RootCoordinatorView: View {
                 .tabItem { tab(name: .Tabs.settings, icon: .Tabs.settings) }
                 .tag(RootTab.settings)
         }
-        .modalSheet(isPresented: $coordinator.presentAccountDrawer, content: coordinator.presentAccountView) 
+        .modalSheet(isPresented: $coordinator.isProfileDrawerPresented, content: coordinator.presentProfileView)
+        .alert(isPresented: $coordinator.isAlertPresented, alert: coordinator.presentAlertView)
         .tint(.orange400)
     }
-}
-
-// MARK: Tabs
-extension RootCoordinatorView {
-    
 }

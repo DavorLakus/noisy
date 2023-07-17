@@ -121,6 +121,36 @@ extension View {
             }
         }
     }
+    
+    func highlightedText(_ text: String, query: String) -> some View {
+        guard !text.isEmpty && !query.isEmpty else { return Text(text) }
+
+        var result: Text?
+        let components = text.lowercased().components(separatedBy: query.lowercased())
+        let indicesOfQuery = text.lowercased().ranges(of: query.lowercased())
+
+        components.indices.forEach { index in
+            if let range = text.lowercased().range(of: components[index].lowercased()) {
+                let currentSubstring = String(text[range])
+
+                if let currentResult = result {
+                    result = currentResult + Text(currentSubstring)
+                } else {
+                    result = Text(currentSubstring)
+                }
+            } else if result == nil {
+                result = Text(String.empty)
+            }
+
+            if index != components.count - 1,
+               let currentResult = result {
+                result = currentResult + Text(text[indicesOfQuery[index]])
+                    .foregroundColor(.mint)
+                    .font(.nunitoSemiBold(size: 14))
+            }
+        }
+        return result ?? Text(text)
+    }
 }
 
 struct LoadImage: View {

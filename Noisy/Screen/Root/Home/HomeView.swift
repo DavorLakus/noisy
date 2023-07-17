@@ -23,7 +23,7 @@ struct HomeView: View {
                     if let name = viewModel.profile?.displayName {
                         Text("Welcome \(name)")
                             .foregroundColor(.gray900)
-                            .font(.nutinoBold(size: 24))
+                            .font(.nunitoBold(size: 24))
                             .padding(Constants.margin)
                     }
                     
@@ -31,6 +31,7 @@ struct HomeView: View {
                     topArtistsAccordion()
                 }
             }
+            .refreshable(action: viewModel.viewDidAppear)
         }
         .onAppear(perform: viewModel.viewDidAppear)
         .toolbar {
@@ -51,7 +52,7 @@ private extension HomeView {
                     Text(String.Home.topTracks)
                         .padding()
                         .foregroundColor(.gray700)
-                        .font(.nutinoBold(size: 20))
+                        .font(.nunitoBold(size: 20))
                     
                     Spacer()
                     
@@ -62,52 +63,56 @@ private extension HomeView {
                     }
                 }
             }
+            .buttonStyle(.plain)
             
             if viewModel.isTopTracksExpanded {
                 HStack {
                     Text(String.Home.pickerTitle)
-                        .font(.nutinoRegular(size: 14))
+                        .font(.nunitoRegular(size: 14))
                     Picker(String.Home.pickerTitle, selection: $viewModel.topTracksTimeRange) {
                         ForEach(TimeRange.allCases, id: \.self) {
                             Text($0.displayName)
-                                .font(.nutinoRegular(size: 14))
+                                .font(.nunitoRegular(size: 14))
                         }
                     }
                 }
                 HStack(spacing: Constants.smallSpacing) {
                     Text(String.Home.sliderCount)
-                        .font(.nutinoRegular(size: 14))
+                        .font(.nunitoRegular(size: 14))
                     Text("1")
-                        .font(.nutinoRegular(size: 12))
+                        .font(.nunitoRegular(size: 12))
                         .foregroundColor(.gray500)
                     Slider(value: $viewModel.topTracksCount, in: 1...50)
                     Text("50")
-                        .font(.nutinoRegular(size: 12))
+                        .font(.nunitoRegular(size: 12))
                         .foregroundColor(.gray500)
                 }
-                
-                ForEach(viewModel.topTracks, id: \.id, content: trackRow)
+                ForEach(Array(viewModel.topTracks.enumerated()), id: \.offset, content: trackRow)
             }
         }
-        .padding(.horizontal, Constants.margin)
+        .padding(Constants.margin)
         .cardBackground()
         .padding(Constants.margin)
     }
     
-    func trackRow(for track: Track) -> some View {
+    func trackRow(for track: EnumeratedSequence<[Track]>.Iterator.Element) -> some View {
         HStack(spacing: Constants.margin) {
-            LoadImage(url: URL(string: track.album.images.first?.url ?? .empty))
+            Text("\(track.offset + 1)")
+                .foregroundColor(.gray500)
+                .font(.nunitoRegular(size: 14))
+            
+            LoadImage(url: URL(string: track.element.album.images.first?.url ?? .empty))
                 .scaledToFit()
                 .cornerRadius(18)
                 .frame(width: 36, height: 36)
             
             VStack(alignment: .leading, spacing: .zero) {
-                Text(track.artists.first?.name ?? .empty)
+                Text(track.element.artists.first?.name ?? .empty)
                     .foregroundColor(.gray700)
-                    .font(.nutinoBold(size: 16))
-                Text(track.name)
+                    .font(.nunitoBold(size: 16))
+                Text(track.element.name)
                     .foregroundColor(.gray700)
-                    .font(.nutinoSemiBold(size: 14))
+                    .font(.nunitoSemiBold(size: 14))
                     .frame(maxHeight: .infinity)
                 
             }
@@ -129,7 +134,7 @@ extension HomeView {
                     Text(String.Home.topArtists)
                         .padding()
                         .foregroundColor(.gray700)
-                        .font(.nutinoBold(size: 20))
+                        .font(.nunitoBold(size: 20))
                     
                     Spacer()
                     
@@ -140,47 +145,51 @@ extension HomeView {
                     }
                 }
             }
+            .buttonStyle(.plain)
             
             if viewModel.isTopArtistsExpanded {
                 HStack {
                     Text(String.Home.pickerTitle)
-                        .font(.nutinoRegular(size: 14))
+                        .font(.nunitoRegular(size: 14))
                     Picker(String.Home.pickerTitle, selection: $viewModel.topArtistsTimeRange) {
                         ForEach(TimeRange.allCases, id: \.self) {
                             Text($0.displayName)
-                                .font(.nutinoRegular(size: 14))
+                                .font(.nunitoRegular(size: 14))
                         }
                     }
                 }
                 HStack(spacing: Constants.smallSpacing) {
                     Text(String.Home.sliderCount)
-                        .font(.nutinoRegular(size: 14))
+                        .font(.nunitoRegular(size: 14))
                     Text("1")
-                        .font(.nutinoRegular(size: 12))
+                        .font(.nunitoRegular(size: 12))
                         .foregroundColor(.gray500)
                     Slider(value: $viewModel.topArtistsCount, in: 1...50)
                     Text("50")
-                        .font(.nutinoRegular(size: 12))
+                        .font(.nunitoRegular(size: 12))
                         .foregroundColor(.gray500)
                 }
                 
-                ForEach(viewModel.topArtists, id: \.id, content: artistRow)
+                ForEach(Array(viewModel.topArtists.enumerated()), id: \.offset, content: artistRow)
             }
         }
-        .padding(.horizontal, Constants.margin)
+        .padding(Constants.margin)
         .cardBackground()
         .padding(Constants.margin)
     }
     
-    func artistRow(for artist: Artist) -> some View {
+    func artistRow(for artist: EnumeratedSequence<[Artist]>.Iterator.Element) -> some View {
         HStack(spacing: Constants.margin) {
-            LoadImage(url: URL(string: artist.images?.first?.url ?? .empty))
+            Text("\(artist.offset + 1)")
+                .foregroundColor(.gray500)
+                .font(.nunitoRegular(size: 14))
+            LoadImage(url: URL(string: artist.element.images?.first?.url ?? .empty))
                 .scaledToFit()
                 .cornerRadius(18)
                 .frame(width: 36, height: 36)
-            Text(artist.name)
+            Text(artist.element.name)
                 .foregroundColor(.gray700)
-                .font(.nutinoBold(size: 16))
+                .font(.nunitoBold(size: 16))
             Spacer()
             
         }

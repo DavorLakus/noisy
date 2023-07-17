@@ -38,10 +38,10 @@ private extension LoginView {
     var title: some View {
         VStack(spacing: Constants.largeSpacing) {
             Text(String.Login.title)
-                .font(.nutinoBold(size: 54))
+                .font(.nunitoBold(size: 54))
                 .foregroundColor(.green900)
             Text(String.Login.subtitle)
-                .font(.nutinoRegular(size: 16))
+                .font(.nunitoRegular(size: 16))
                 .foregroundColor(.gray600)
         }
         .padding(.vertical, Constants.margin)
@@ -56,7 +56,7 @@ private extension LoginView {
                 Text(String.Login.loginButtonTitle)
                     .frame(maxWidth: .infinity)
                     .padding(10)
-                    .font(.nutinoSemiBold(size: 18))
+                    .font(.nunitoSemiBold(size: 18))
                     .foregroundColor(.appBackground)
                     .background(
                         Color.green400
@@ -74,7 +74,7 @@ private extension LoginView {
         VStack(spacing: 0) {
             Text(String.Login.footer)
                 .foregroundColor(.gray600)
-                .font(.nutinoRegular(size: 14))
+                .font(.nunitoRegular(size: 14))
         }
     }
 }

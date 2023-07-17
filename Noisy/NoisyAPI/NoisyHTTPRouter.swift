@@ -44,7 +44,7 @@ extension NoisyHTTPRouter: APIEndpoint {
             return "/me"
         case .token, .refreshToken:
             return "/token"
-        case .myTop(let type, let count, _):
+        case .myTop(let type, _, _):
             return "/me/top/\(type)"
         }
     }

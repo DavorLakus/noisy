@@ -21,6 +21,11 @@ extension Image {
         static let close = Image(systemName: "xmark")
         static let chevronRight = Image(systemName: "chevron.right")
         static let chevronDown = Image(systemName: "chevron.down")
+        static let magnifyingGlass = Image(systemName: "magnifyingglass")
+        static let checkbox = Image(systemName: "square")
+        static let checkboxFill = Image(systemName: "x.square.fill")
+        static let filter = Image(systemName: "slider.horizontal.3")
+        static let sort = Image(systemName: "arrow.up.arrow.down")
     }
     
     struct Home {

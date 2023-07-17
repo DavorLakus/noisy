@@ -29,7 +29,7 @@ extension HomeService {
             .decode(type: Profile.self, decoder: JSONDecoder())
             .sink(
                 receiveCompletion: NetworkingManager.handleCompletion,
-                receiveValue: { [weak self] result in
+                receiveValue: { result in
                     user.send(result)
                 })
             .store(in: &cancellables)
@@ -52,7 +52,7 @@ extension HomeService {
     
     func getTopArtists(count: Int, timeRange: TimeRange) -> PassthroughSubject<MyTopArtistsResponse, Never> {
         let topTracks = PassthroughSubject<MyTopArtistsResponse, Never>()
-        print(count)
+
         api.getTopArtists(count: count, timeRange: timeRange.codingKey)
             .decode(type: MyTopArtistsResponse.self, decoder: JSONDecoder())
             .sink(receiveCompletion: NetworkingManager.handleCompletion) { response in
@@ -63,7 +63,6 @@ extension HomeService {
         return topTracks
     }
 }
-
 
 struct MyTopArtistsResponse: Codable {
     let href: String
