@@ -31,6 +31,7 @@ struct HomeView: View {
                     topArtistsAccordion()
                 }
             }
+            .refreshable(action: viewModel.viewDidAppear)
         }
         .onAppear(perform: viewModel.viewDidAppear)
         .toolbar {
@@ -62,6 +63,7 @@ private extension HomeView {
                     }
                 }
             }
+            .buttonStyle(.plain)
             
             if viewModel.isTopTracksExpanded {
                 HStack {
@@ -143,6 +145,7 @@ extension HomeView {
                     }
                 }
             }
+            .buttonStyle(.plain)
             
             if viewModel.isTopArtistsExpanded {
                 HStack {

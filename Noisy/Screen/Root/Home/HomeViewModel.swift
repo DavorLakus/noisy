@@ -73,6 +73,7 @@ final class HomeViewModel: ObservableObject {
 // MARK: - Public extension
 extension HomeViewModel {
     
+    @Sendable
     func viewDidAppear() {
         getProfile()
         getTopTracks()

@@ -36,7 +36,7 @@ extension LoginService {
                 .decode(type: TokenResponse.self, decoder: JSONDecoder())
                 .sink(
                     receiveCompletion: NetworkingManager.handleCompletion,
-                    receiveValue: { [weak self] response in
+                    receiveValue: { response in
                         token.send(response)
                     })
                 .store(in: &cancellables)

@@ -29,7 +29,7 @@ extension HomeService {
             .decode(type: Profile.self, decoder: JSONDecoder())
             .sink(
                 receiveCompletion: NetworkingManager.handleCompletion,
-                receiveValue: { [weak self] result in
+                receiveValue: { result in
                     user.send(result)
                 })
             .store(in: &cancellables)

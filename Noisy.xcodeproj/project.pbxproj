@@ -43,6 +43,8 @@
 		41DFEBFB2A26356200CC3420 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 41DFEBFA2A26356200CC3420 /* Assets.xcassets */; };
 		41E0FB1C2A6442EB00991D31 /* Scope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB1B2A6442EB00991D31 /* Scope.swift */; };
 		41E0FB1E2A6452B800991D31 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB1D2A6452B800991D31 /* LoadingIndicator.swift */; };
+		41E0FB232A656DCE00991D31 /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB222A656DCE00991D31 /* SearchBar.swift */; };
+		41E0FB252A656DF200991D31 /* FirstResponderTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB242A656DF200991D31 /* FirstResponderTextView.swift */; };
 		41EA877F2A604353005DD0C2 /* Examples.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41EA877E2A604353005DD0C2 /* Examples.swift */; };
 		41EA87812A61CC61005DD0C2 /* Examples2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41EA87802A61CC60005DD0C2 /* Examples2.swift */; };
 		41F8F5272A26436300F7A2B8 /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5262A26436300F7A2B8 /* MainCoordinator.swift */; };
@@ -144,6 +146,8 @@
 		41DFEBFA2A26356200CC3420 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		41E0FB1B2A6442EB00991D31 /* Scope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scope.swift; sourceTree = "<group>"; };
 		41E0FB1D2A6452B800991D31 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
+		41E0FB222A656DCE00991D31 /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
+		41E0FB242A656DF200991D31 /* FirstResponderTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstResponderTextView.swift; sourceTree = "<group>"; };
 		41EA877E2A604353005DD0C2 /* Examples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Examples.swift; sourceTree = "<group>"; };
 		41EA87802A61CC60005DD0C2 /* Examples2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Examples2.swift; sourceTree = "<group>"; };
 		41F8F5262A26436300F7A2B8 /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
@@ -314,6 +318,7 @@
 		41DE39D02A6436CF0048CB51 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				41E0FB212A656DC800991D31 /* Search */,
 				41DE39D62A64389F0048CB51 /* Alert */,
 				41DE39D12A6436DA0048CB51 /* Account */,
 				41E0FB1D2A6452B800991D31 /* LoadingIndicator.swift */,
@@ -371,6 +376,15 @@
 				41DFEBFA2A26356200CC3420 /* Assets.xcassets */,
 			);
 			path = Noisy;
+			sourceTree = "<group>";
+		};
+		41E0FB212A656DC800991D31 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				41E0FB222A656DCE00991D31 /* SearchBar.swift */,
+				41E0FB242A656DF200991D31 /* FirstResponderTextView.swift */,
+			);
+			path = Search;
 			sourceTree = "<group>";
 		};
 		41F8F5202A2642F800F7A2B8 /* Utilities */ = {
@@ -720,6 +734,7 @@
 				41F8F5342A2643BB00F7A2B8 /* RootCoordinatorView.swift in Sources */,
 				41F8F5572A2649CB00F7A2B8 /* NoisyDateFormatter.swift in Sources */,
 				41D3A2A12A31E193000AC6FE /* SearchViewModel.swift in Sources */,
+				41E0FB232A656DCE00991D31 /* SearchBar.swift in Sources */,
 				41EA877F2A604353005DD0C2 /* Examples.swift in Sources */,
 				413EEAC02A2F2DDC00DC9727 /* HomeService.swift in Sources */,
 				41F8F5532A2649B800F7A2B8 /* Data+Extension.swift in Sources */,
@@ -748,6 +763,7 @@
 				41F8F5592A2649D600F7A2B8 /* String+Extension.swift in Sources */,
 				41F8F5512A2649B000F7A2B8 /* Constants.swift in Sources */,
 				41DE39CD2A63FCD50048CB51 /* CoordinatorProtocol.swift in Sources */,
+				41E0FB252A656DF200991D31 /* FirstResponderTextView.swift in Sources */,
 				419DD1CA2A573862005A6708 /* NoisyHTTPRouter.swift in Sources */,
 				41F8F5322A2643B500F7A2B8 /* LoginCoordinatorView.swift in Sources */,
 				41F8F5272A26436300F7A2B8 /* MainCoordinator.swift in Sources */,
