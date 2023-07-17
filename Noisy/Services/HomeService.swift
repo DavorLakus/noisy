@@ -64,7 +64,6 @@ extension HomeService {
     }
 }
 
-
 struct MyTopArtistsResponse: Codable {
     let href: String
     let limit: Int

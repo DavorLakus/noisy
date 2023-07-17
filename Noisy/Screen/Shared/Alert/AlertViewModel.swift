@@ -15,10 +15,10 @@ final class AlertViewModel: ObservableObject {
     let onViewDidAppear = PassthroughSubject<Void, Never>()
     
     // MARK: - Public properties
-    var title: String?
-    var message: String?
-    var primaryActionText: String?
-    var secondaryActionText: String?
+    @Published var title: String?
+    @Published var message: String?
+    @Published var primaryActionText: String?
+    @Published var secondaryActionText: String?
     var primaryBackground: Color?
     var cancellables = Set<AnyCancellable>()
     

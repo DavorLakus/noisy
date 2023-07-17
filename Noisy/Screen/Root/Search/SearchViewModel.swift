@@ -31,37 +31,41 @@ enum EmployeeSort: CaseIterable {
 final class SearchViewModel: ObservableObject {
     
     // MARK: - Coordinator actions
-    let onDidTapAccountButton = PassthroughSubject<Void, Never>()
-    let onDidTapEmployee = PassthroughSubject<Employee, Never>()
+    let onDidTapProfileButton = PassthroughSubject<Void, Never>()
     
     // MARK: - Published properties
     @Published var searchIsActive = false
-    @Published var presentedEmployees: [Employee] = []
+    @Published var presentedTracks: [Track] = []
     @Published var query = String.empty
     @Published var tabBarVisibility: Visibility = .visible
     @Published var isFilterPresented: Bool = false
     @Published var isSortPresented: Bool = false
     @Published var state: AppState = .loaded
+    var profile: Profile? {
+        guard let profile  = UserDefaults.standard.object(forKey: .Login.profile) as? Data
+        else { return nil }
+        return try? JSONDecoder().decode(Profile.self, from: profile)
+    }
     
     // MARK: - Public properties
-    var departments: [Department] = []
+//    var departments: [Department] = []
     var filteringOptions: [String] = []
     var sortingOption: EmployeeSort = .name
-    var employees: [Employee] = []
+    var tracks: [Track] = []
     var noData: Bool {
-        searchIsActive && presentedEmployees.isEmpty && !query.isEmpty
+        searchIsActive && presentedTracks.isEmpty && !query.isEmpty
     }
 
     // MARK: - Private properties
-    private let employeesService: EmployeesService
+    private let searchService: SearchService
     private let filteringOptionsSelected = PassthroughSubject<Void, Never>()
     private let sortingOptionSelected = PassthroughSubject<Void, Never>()
 
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Class llifecycle
-    init(employeesService: EmployeesService) {
-        self.employeesService = employeesService
+    init(searchService: SearchService) {
+        self.searchService = searchService
         
         bindState()
         bindSearch()
@@ -79,20 +83,20 @@ private extension SearchViewModel {
     }
     
     func fetchEmployees() {
-        employeesService.getEmployees()
-            .sink { [weak self] employees in
-                self?.employees = employees
-                self?.reloadEmployees()
-            }
-            .store(in: &cancellables)
+//        trac.getEmployees()
+//            .sink { [weak self] employees in
+//                self?.employees = employees
+//                self?.reloadEmployees()
+//            }
+//            .store(in: &cancellables)
     }
     
     func getDepartments() {
-        employeesService.getDepartments()
-            .sink { [weak self] departments in
-                self?.departments = departments
-            }
-            .store(in: &cancellables)
+//        employeesService.getDepartments()
+//            .sink { [weak self] departments in
+//                self?.departments = departments
+//            }
+//            .store(in: &cancellables)
     }
     
     func bindSearch() {
@@ -142,40 +146,28 @@ private extension SearchViewModel {
     }
     
     func reloadEmployees(searchActivated: Bool = false) {
-        if searchIsActive || searchActivated || !query.isEmpty {
-            presentedEmployees = employees
-                .sorted(by: { $0.surname < $1.surname })
-                .filter { employee in
-                    employee.name.lowercased().contains(query.lowercased()) || employee.surname.lowercased().contains(query.lowercased())
-                }
-        } else {
-            presentedEmployees = employees.sorted(by: sortEmployees).filter(filterEmployees)
-        }
-        withAnimation {
-            state = noData ? .empty : .loaded
-        }
+//        if searchIsActive || searchActivated || !query.isEmpty {
+//            presentedEmployees = employees
+//                .sorted(by: { $0.surname < $1.surname })
+//                .filter { employee in
+//                    employee.name.lowercased().contains(query.lowercased()) || employee.surname.lowercased().contains(query.lowercased())
+//                }
+//        } else {
+//            presentedEmployees = employees.sorted(by: sortEmployees).filter(filterEmployees)
+//        }
+//        withAnimation {
+//            state = noData ? .empty : .loaded
+//        }
     }
     
-    func filterEmployees(_ employee: Employee) -> Bool {
-        filteringOptions.isEmpty ? true : filteringOptions.contains(employee.departmentName)
+    func filterEmployees(_ track: Track) -> Bool {
+        true
+//        filteringOptions.isEmpty ? true : filteringOptions.contains(employee.departmentName)
     }
     
-    func sortEmployees(_ first: Employee, _ second: Employee) -> Bool {
-        switch sortingOption {
-        case .name:
-            return first.name < second.name
-        case .surname:
-            return first.surname < second.surname
-        case .department:
-            return first.departmentName < second.departmentName
-        case .lead:
-            if let firstTeamLeadName = employees.filter({ first.teamLeadId == $0.id }).first?.name,
-               let secondTeamLeadName = employees.filter({ second.teamLeadId == $0.id }).first?.name {
-                return firstTeamLeadName < secondTeamLeadName
-            }
-            
-            return (first.teamLeadId == nil && second.teamLeadId != nil) ? false : true
-        }
+    func sortEmployees(_ first: Track, _ second: Track) -> Bool {
+            first.name < second.name
+        
     }
 }
 
@@ -187,7 +179,7 @@ extension SearchViewModel {
     }
     
     func accountButtonTapped() {
-        onDidTapAccountButton.send()
+        onDidTapProfileButton.send()
     }
     
     func filterButtonTapped() {
@@ -214,14 +206,7 @@ extension SearchViewModel {
         sortingOptionSelected.send()
     }
     
-    func employeeRowSelected(_ employee: Employee) {
-        onDidTapEmployee.send(employee)
-    }
-    
-    func getTeamLeadName(for teamLeadId: Int?) -> String? {
-        employees
-            .map { (id: $0.id, name: "\($0.name) \($0.surname)") }
-            .first(where: { teamLeadId == $0.id})?
-            .name
+    func trackRowSelected(_ employee: Track) {
+//        onDidTapEmployee.send(employee)
     }
 }

@@ -27,9 +27,12 @@ final class MainCoordinator: CoordinatorProtocol {
     // MARK: - Private properties
     private lazy var loginSerice = LoginService(api: api)
     private lazy var homeService = HomeService(api: api)
+    private lazy var searchService = SearchService(api: api)
+    private lazy var discoverSerivce = DiscoverService(api: api)
     private lazy var api: NoisyAPIProtocol = NoisyService()
 
     private var cancellables = Set<AnyCancellable>()
+    private var badResponseCancellable: AnyCancellable?
 
     // MARK: - Class lifecycle
     init() {
@@ -50,12 +53,13 @@ final class MainCoordinator: CoordinatorProtocol {
             }
             .store(in: &cancellables)
         
-        NetworkingManager.unauthorizedAccess
+        badResponseCancellable = NetworkingManager.unauthorizedAccess
+            .first()
             .sink { [weak self] in
                 UserDefaults.standard.set(nil, forKey: .KeyChain.accessToken)
                 self?.attemptRefreshToken()
+                self?.badResponseCancellable?.cancel()
             }
-            .store(in: &cancellables)
     }
     
     func attemptRefreshToken() {
@@ -89,10 +93,12 @@ final class MainCoordinator: CoordinatorProtocol {
     }
     
     func presentRootFlow() -> some View {
-        let coordinator = RootCoordinator(homeService: homeService)
+        let coordinator = RootCoordinator(homeService: homeService, searchService: searchService, discoverService: discoverSerivce)
         
         coordinator.onDidEnd
             .sink { [weak self] in
+                UserDefaults.standard.set(nil, forKey: .KeyChain.accessToken)
+                UserDefaults.standard.set(nil, forKey: .KeyChain.refreshToken)
                 self?.flow = .login()
             }
             .store(in: &cancellables)

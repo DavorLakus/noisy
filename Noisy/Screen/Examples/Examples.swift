@@ -96,7 +96,6 @@ final class ExampleCoordinator: VerticalCoordinatorProtocol {
     func pushSecondLevelDetailView() -> some View {
         if let secondLevelDetailViewModel {
             SecondLevelDetailView(viewModel: secondLevelDetailViewModel)
-            
         }
     }
 }

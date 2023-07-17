@@ -6,3 +6,16 @@
 //
 
 import Foundation
+import Combine
+
+final class DiscoverService {
+    // MARK: - Private properties
+    private var cancellables = Set<AnyCancellable>()
+    
+    private let api: NoisyAPIProtocol
+    
+    // MARK: - Class lifecycle
+    public init(api: NoisyAPIProtocol) {
+        self.api = api
+    }
+}

@@ -1,5 +1,5 @@
 //
-//  AccountView.swift
+//  ProfileView.swift
 //  Noisy
 //
 //  Created by Davor Lakus on 16.07.2023..
@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct AccountView: View {
-    @StateObject var viewModel: AccountViewModel
+struct ProfileView: View {
+    @StateObject var viewModel: ProfileViewModel
     @State var width: CGFloat = .zero
     
     var body: some View {
@@ -30,7 +30,7 @@ struct AccountView: View {
 }
 
 // MARK: - Body
-extension AccountView {
+extension ProfileView {
     @ViewBuilder
     func bodyView() -> some View {
         ZStack(alignment: .topTrailing) {
@@ -78,10 +78,10 @@ extension AccountView {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(profile.displayName)
-                        .font(.nutinoSemiBold(size: 14))
+                        .font(.nunitoSemiBold(size: 14))
                         .foregroundColor(.gray900)
                     Text(String.Account.viewProfile)
-                        .font(.nutinoSemiBold(size: 12))
+                        .font(.nunitoSemiBold(size: 12))
                         .underline()
                         .foregroundColor(.gray600)
                 }
@@ -102,18 +102,18 @@ extension AccountView {
     func generalView() -> some View {
         VStack(alignment: .leading, spacing: .zero) {
             Text(String.Account.general)
-                .font(.nutinoSemiBold(size: 14))
+                .font(.nunitoSemiBold(size: 14))
                 .foregroundColor(.gray700)
             Group {
                 Text(String.Account.about)
-                    .font(.nutinoRegular(size: 16))
+                    .font(.nunitoRegular(size: 16))
                     .foregroundColor(.gray500)
                 
                 Button {
                     viewModel.signOutTapped()
                 } label: {
                     Text(String.Profile.signOutTitle)
-                        .font(.nutinoRegular(size: 16))
+                        .font(.nunitoRegular(size: 16))
                         .foregroundColor(.gray600)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }

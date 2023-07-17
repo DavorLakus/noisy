@@ -14,7 +14,7 @@ struct SearchBar: View {
     var body: some View {
         HStack {
             HStack {
-                Image.magnifyingGlass
+                Image.Shared.magnifyingGlass
                 
                 FirstResponderTextView(text: query, isFirstResponder: isActive)
                     .onTapGesture {
@@ -29,14 +29,14 @@ struct SearchBar: View {
                             query.wrappedValue = String.empty
                         }
                     } label: {
-                        Image.close
+                        Image.Shared.close
                     }
                     .frame(height: 20)
                     .foregroundColor(.gray400)
                 }
             }
             .padding(8)
-            .background(Color.gray75)
+            .background(Color.gray50)
             .cornerRadius(Constants.cornerRadius)
             
             if isActive.wrappedValue {
@@ -47,7 +47,7 @@ struct SearchBar: View {
                 } label: {
                     Text(String.cancel)
                 }
-                .foregroundColor(Color.universalMint)
+                .foregroundColor(Color.green300)
             }
         }
     }

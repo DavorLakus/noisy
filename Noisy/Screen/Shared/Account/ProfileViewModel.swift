@@ -1,5 +1,5 @@
 //
-//  AccountViewModel.swift
+//  ProfileViewModel.swift
 //  Noisy
 //
 //  Created by Davor Lakus on 16.07.2023..
@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-final class AccountViewModel: ObservableObject {
+final class ProfileViewModel: ObservableObject {
     // MARK: - Coordinator actions
     let onDidTapBackButton = PassthroughSubject<Void, Never>()
     let onDidTapProfileView = PassthroughSubject<Void, Never>()
@@ -27,7 +27,7 @@ final class AccountViewModel: ObservableObject {
 }
 
 // MARK: - Public extension
-extension AccountViewModel {
+extension ProfileViewModel {
     func viewDidAppear() {
         withAnimation {
             viewLoaded = true
@@ -36,11 +36,11 @@ extension AccountViewModel {
     
     func viewWillDisappear(isPushNavigation: Bool = false) {
         self.isPushNavigation = isPushNavigation
-        withAnimation(.easeInOut(duration: 0.3)) {
+        withAnimation(.easeInOut(duration: 0.25)) {
             viewLoaded = false
         }
         
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.35) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.25) { [weak self] in
             self?.closeButtonTapped()
         }
     }

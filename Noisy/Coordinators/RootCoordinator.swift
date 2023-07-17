@@ -25,8 +25,8 @@ final class RootCoordinator: CoordinatorProtocol {
     
     // MARK: - Published properties
     @Published var tab = RootTab.home
-    @Published var presentAlert = false
-    @Published var presentAccountDrawer = false
+    @Published var isAlertPresented = false
+    @Published var isProfileDrawerPresented = false
     @Published var alert: Alert = .signout
     
     // MARK: - Public properties
@@ -34,24 +34,32 @@ final class RootCoordinator: CoordinatorProtocol {
     
     // MARK: - Services
     private let homeService: HomeService
+    private let searchService: SearchService
+    private let discoverSerivce: DiscoverService
     
     // MARK: - Coordinators
     private lazy var homeCoordinator = HomeCoordinator(homeService: homeService)
+    private lazy var searchCoordinator = SearchCoordinator(searchService: searchService)
+    private lazy var discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce)
     
     // MARK: - Private properties
-    private var accountViewModel: AccountViewModel?
-    private var alertViewModel: AlertViewModel?
+    private var profileViewModel: ProfileViewModel?
+    private lazy var alertViewModel = AlertViewModel(isPresented: _isAlertPresented)
+    
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Class lifecycle
-    init(homeService: HomeService) {
+    init(homeService: HomeService, searchService: SearchService, discoverService: DiscoverService) {
         self.homeService = homeService
+        self.searchService = searchService
+        self.discoverSerivce = discoverService
+        
+        bindCoordinators()
     }
     
     func start() -> some View {
         RootCoordinatorView(coordinator: self)
     }
-    
 }
 
 // MARK: - Tabs
@@ -59,15 +67,15 @@ extension RootCoordinator {
 
     // Grafika muzike, statistike, itd.
     func homeTab() -> some View {
-        HomeCoordinatorView(coordinator: homeCoordinator)
+        homeCoordinator.start()
     }
     
     func discoverTab() -> some View {
-        Color.green400
+        discoverCoordinator.start()
     }
     
     func searchTab() -> some View {
-        Color.green500
+        searchCoordinator.start()
     }
     
     func liveMusicTab() -> some View {
@@ -83,39 +91,72 @@ extension RootCoordinator {
     }
 }
 
-// MARK: - Account
+// MARK: - Private extension
+private extension RootCoordinator {
+    func bindCoordinators() {
+        bindHomeCoordinator()
+        bindSearchCoordinator()
+        bindDiscoverCoordinator()
+    }
+    
+    func bindHomeCoordinator() {
+        homeCoordinator.onDidTapProfileButton
+            .sink { [weak self] in
+                self?.bindProfileViewModel()
+            }
+            .store(in: &cancellables)
+    }
+    
+    func bindSearchCoordinator() {
+        searchCoordinator.onDidTapProfileButton
+            .sink { [weak self] in
+                self?.bindProfileViewModel()
+            }
+            .store(in: &cancellables)
+    }
+    
+    func bindDiscoverCoordinator() {
+        discoverCoordinator.onDidTapProfileButton
+            .sink { [weak self] in
+                self?.bindProfileViewModel()
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Profile
 extension RootCoordinator {
     @ViewBuilder
-    func presentAccountView() -> some View {
-        if let accountViewModel {
-            AccountView(viewModel: accountViewModel)
+    func presentProfileView() -> some View {
+        if let profileViewModel {
+            ProfileView(viewModel: profileViewModel)
         }
     }
     
-    func bindAccountViewModel() {
-        let accountViewModel = AccountViewModel()
+    func bindProfileViewModel() {
+        profileViewModel = ProfileViewModel()
+        isProfileDrawerPresented = false
         
-        accountViewModel.onDidTapBackButton
+        profileViewModel?.onDidTapBackButton
             .sink { [weak self] in
                 withAnimation {
-                    self?.presentAccountDrawer = false
-                    self?.accountViewModel = nil
+                    self?.isProfileDrawerPresented = false
                 }
             }
             .store(in: &cancellables)
         
-        accountViewModel.onDidTapProfileView
+        profileViewModel?.onDidTapProfileView
             .flatMap({ [weak self] in
-                self?.accountViewModel?.viewWillDisappear(isPushNavigation: true)
+                self?.profileViewModel?.viewWillDisappear(isPushNavigation: true)
                 return Just($0)
             })
             .debounce(for: .seconds(0.02), scheduler: DispatchQueue.main)
             .sink { [weak self] in
-//                self?.profileButtonTapped()
+                //                self?.profileButtonTapped()
             }
             .store(in: &cancellables)
         
-        accountViewModel.onDidTapSignOut
+        profileViewModel?.onDidTapSignOut
             .sink { [weak self] in
                 self?.alert = .signout
                 withAnimation {
@@ -124,27 +165,33 @@ extension RootCoordinator {
             }
             .store(in: &cancellables)
         
-        self.accountViewModel = accountViewModel
         withAnimation {
-            self.presentAccountDrawer = true
+            isProfileDrawerPresented = true
         }
+    }
+}
+
+// MARK: - Alert
+extension RootCoordinator {
+    @ViewBuilder
+    func presentAlertView() -> some View {
+        AlertView(viewModel: alertViewModel)
     }
     
     func bindAlertViewModel() {
-        alertViewModel = AlertViewModel(isPresented: _presentAlert)
-
-        alertViewModel?.onViewDidAppear
-            .sink { [weak self] in
-                guard let self else { return }
-                switch self.alert {
-                case .signout:
-                    self.alertViewModel?.onDidTapPrimaryAction = self.onDidEnd
-                }
-            }
-            .store(in: &cancellables)
+        alertViewModel = AlertViewModel(isPresented: _isAlertPresented)
+        
+        switch self.alert {
+        case .signout:
+            alertViewModel.title = .Profile.signOutTitle
+            alertViewModel.message = .Profile.signOutMessage
+            alertViewModel.primaryActionText = .Profile.signOutTitle
+            alertViewModel.onDidTapPrimaryAction = onDidEnd
+        }
+        
         
         withAnimation {
-            self.presentAlert = true
+            self.isAlertPresented = true
         }
     }
 }

@@ -19,6 +19,11 @@ extension String {
         static let refreshToken = "refresh_token"
         static let accessToken = "access_token"
     }
+    
+    struct Track {
+        static let name = "Name: "
+        static let artist = "Artist: "
+    }
 
     struct Login {
         static let profile = "Profile"

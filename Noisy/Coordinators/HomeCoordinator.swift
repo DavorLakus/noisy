@@ -8,15 +8,23 @@
 import Combine
 import SwiftUI
 
-final class HomeCoordinator: ObservableObject {
+enum HomePath: Hashable, Identifiable {
+    case details
 
+    var id: String {
+        String(describing: self)
+    }
+}
+
+final class HomeCoordinator: VerticalCoordinatorProtocol {
     // MARK: - Published properties
-    @Published var path = NavigationPath()
+    @Published var navigationPath = NavigationPath()
     
     // MARK: - Public properties
+    let onDidTapProfileButton = PassthroughSubject<Void, Never>()
     
     // MARK: - Private properties
-    private lazy var homeViewModel = HomeViewModel(homeService: homeService)
+    private var homeViewModel: HomeViewModel?
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Services
@@ -27,19 +35,44 @@ final class HomeCoordinator: ObservableObject {
         self.homeService = homeService
         bindHomeViewModel()
     }
+    
+    func start() -> some CoordinatorViewProtocol {
+        HomeCoordinatorView(coordinator: self)
+    }
 
-    // Grafika muzike, statistike, itd.
-    func homeView() -> some View {
-        HomeView(viewModel: self.homeViewModel)
+    @ViewBuilder
+    func rootView() -> some View {
+        if let homeViewModel {
+            HomeView(viewModel: homeViewModel)
+                .navigationDestination(for: HomePath.self, destination: navigationDestination)
+        }
+    }
+    
+    @ViewBuilder
+    func navigationDestination(_ path: HomePath) -> some View {
+        switch path {
+        case .details:
+            Color.red
+        }
+    }
+    
+    func push(_ path: HomePath) {
+        navigationPath.append(path)
+    }
+    
+    func pop() {
+        navigationPath.removeLast()
     }
 }
 
 // MARK: - Binding
 extension HomeCoordinator {
     func bindHomeViewModel() {
-        homeViewModel.homeModuleDidAppear
-            .sink {
-
+        homeViewModel = HomeViewModel(homeService: homeService)
+        
+        homeViewModel?.onDidTapProfileButton
+            .sink { [weak self] in
+                self?.onDidTapProfileButton.send()
             }
             .store(in: &cancellables)
     }
@@ -53,5 +86,19 @@ extension HomeCoordinator {
     
     func viewDidDisappear() {
 //        errorAlertCancellable = nil
+    }
+}
+
+// MARK: - CoordinatorView
+struct HomeCoordinatorView<Coordinator: VerticalCoordinatorProtocol>: CoordinatorViewProtocol {
+    @ObservedObject var coordinator: Coordinator
+    
+    var body: some View {
+        NavigationStack(path: $coordinator.navigationPath, root: coordinator.rootView)
+//        .alert(isPresented: $coordinator.alertIsPresented) {
+//            coordinator.presentAlert()
+//        }
+//        .onAppear(perform: coordinator.viewDidAppear)
+//        .onDisappear(perform: coordinator.viewDidDisappear)
     }
 }

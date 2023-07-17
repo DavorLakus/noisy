@@ -11,35 +11,27 @@ struct SearchView: View {
     @StateObject var viewModel: SearchViewModel
     @GestureState var gestureOffset: CGFloat = 0
 
-    var background: Color {
-        .appBackground
-    }
-
     var body: some View {
         VStack(spacing: .zero) {
             SearchBar(isActive: $viewModel.searchIsActive, query: $viewModel.query)
                 .frame(height: 40)
                 .padding(.horizontal, Constants.margin)
                 .padding(.vertical, 8)
-                .background { Color.cmxWhite }
+                .background { Color.appBackground }
             
             switch viewModel.state {
             case .loading:
-                Color.cmxWhite
+                Color.appBackground
             case .loaded:
                 loadedStateView()
-            case .empty:
-                emptyStateView()
             }
         }
         .toolbar {
             leadingLargeTitle(title: String.Tabs.search)
-            accountButton(avatar: .avatar, action: viewModel.accountButtonTapped)
+            accountButton(avatar: LoadImage(url: URL(string: viewModel.profile?.images.first?.url ?? .empty)), action: viewModel.accountButtonTapped)
         }
         .onAppear(perform: viewModel.pullToRefresh)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar(viewModel.searchIsActive ? .hidden : .visible, for: .navigationBar)
-        .background(background)
     }
 }
 
@@ -60,9 +52,9 @@ private extension SearchView {
         VStack(spacing: 16) {
             Group {
                 Text(String.Employees.emptyStateTitle)
-                    .font(.poppinsSemiBold16)
+                    .font(.nunitoSemiBold(size: 16))
                 Text(String.Employees.emptyStateDescription)
-                    .font(.poppinsRegular14)
+                    .font(.nunitoRegular(size: 14))
             }
             .multilineTextAlignment(.center)
             .foregroundColor(.gray700)
@@ -80,18 +72,18 @@ private extension SearchView {
                 filteringButtons()
             }
             
-            List {
-                ForEach(viewModel.presentedEmployees, id: \.id) { employee in
-                    employeeCard(for: employee)
-                }
-                Spacer()
-                    .frame(height: 120)
-                    .listRowBackground(background)
-                    .listRowSeparator(.hidden)
-            }
-            .padding(.top, 24)
-            .listStyle(.plain)
-            .refreshable(action: viewModel.pullToRefresh)
+//            List {
+//                ForEach(viewModel.presentedTracks, id: \.id) { track in
+//                    trackCard(for: track)
+//                }
+//                Spacer()
+//                    .frame(height: 120)
+//                    .listRowBackground(background)
+//                    .listRowSeparator(.hidden)
+//            }
+//            .padding(.top, 24)
+//            .listStyle(.plain)
+////            .refreshable(action: viewModel.pullToRefresh)
         }
         .zStackTransition(.opacity)
     }
@@ -102,17 +94,16 @@ private extension SearchView {
             navigationBarBottomBorder()
             
             HStack(spacing: Constants.margin) {
-                filteringButton(title: String.Employees.selectDepartment, image: .filter, flexible: true, badgeToggled: !viewModel.filteringOptions.isEmpty) {
+                filteringButton(title: String.Employees.selectDepartment, image: .Shared.filter, flexible: true, badgeToggled: !viewModel.filteringOptions.isEmpty) {
                     viewModel.filterButtonTapped()
                 }
                 .sheet(isPresented: $viewModel.isFilterPresented) {
                     FilterSheetView(viewModel: viewModel, isSheetPresented: $viewModel.isFilterPresented, isSort: false)
                         .presentationDetents([.fraction(0.9), .fraction(0.9)])
-        //                .interactiveDismissDisabled(true)
                         .presentationDragIndicator(.hidden)
                 }
 
-                filteringButton(title: String.Employees.sortBy, image: .sort, badgeToggled: viewModel.sortingOption != .name) {
+                filteringButton(title: String.Employees.sortBy, image: .Shared.sort, badgeToggled: viewModel.sortingOption != .name) {
                     viewModel.sortingButtonTapped()
                 }
                 .sheet(isPresented: $viewModel.isSortPresented) {
@@ -133,7 +124,7 @@ private extension SearchView {
             action()
         } label: {
             Text(title)
-                .font(.poppinsSemiBold14)
+                .font(.nunitoSemiBold(size: 14))
                 .foregroundColor(.gray600)
             image
                 .foregroundColor(.gray400)
@@ -147,25 +138,23 @@ private extension SearchView {
     }
     
     @ViewBuilder
-    func employeeCard(for employee: Employee) -> some View {
+    func trackCard(for track: Track) -> some View {
         VStack(spacing: 13.5) {
-            employeeCardRow(label: String.Employees.name, value: employee.name, isHighlightable: true)
-            employeeCardRow(label: String.Employees.surname, value: employee.surname, isHighlightable: true)
-            employeeCardRow(label: String.Employees.department, value: employee.departmentName)
-            employeeCardRow(label: String.Employees.lead, value: viewModel.getTeamLeadName(for: employee.teamLeadId) ?? .noData)
+            trackCardRow(label: String.Track.name, value: track.name, isHighlightable: true)
+            trackCardRow(label: String.Track.artist, value: track.artists.first?.name ?? .noData, isHighlightable: true)
         }
-        .padding(16)
-        .cardBackground(borderColor: .gray100)
-        .listRowBackground(background)
-        .listRowSeparator(.hidden)
-        .onTapGesture { viewModel.employeeRowSelected(employee) }
+//        .cardBackground()
+//        .padding(16)
+//        .listRowBackground(background)
+//        .listRowSeparator(.hidden)
+//        .onTapGesture { viewModel.track(employee) }
     }
     
     @ViewBuilder
-    func employeeCardRow(label: String, value: String, isHighlightable: Bool = false) -> some View {
+    func trackCardRow(label: String, value: String, isHighlightable: Bool = false) -> some View {
         HStack {
             Text(label)
-                .font(.poppinsSemiBold12)
+                .font(.nunitoSemiBold(size: 12))
                 .foregroundColor(.gray500)
             Spacer()
             
@@ -176,7 +165,7 @@ private extension SearchView {
                     Text(value)
                 }
             }
-            .font(.poppinsRegular14)
+            .font(.nunitoRegular(size: 14))
             .foregroundColor(.gray700)
         }
     }
@@ -194,7 +183,7 @@ extension View {
                             .fill(Color.appBackground)
                             .frame(width: 10, height: 10)
                         Circle()
-                            .fill(Color.universalMint)
+                            .fill(Color.green200)
                             .frame(width: 8, height: 8)
                     }
                     .offset(x: 1.5, y: -1.5)
