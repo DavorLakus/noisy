@@ -11,6 +11,25 @@ struct DiscoverView: View {
     @ObservedObject var viewModel: DiscoverViewModel
     
     var body: some View {
-        Color.red
+        bodyView()
+            .toolbar(content: toolbarContent)
+    }
+}
+
+// MARK: - Body view
+extension DiscoverView {
+    func bodyView() -> some View {
+        ZStack {
+            Color.appBackground.ignoresSafeArea()
+            Color.red400.ignoresSafeArea(edges: [.horizontal, .top])
+        }
+    }
+}
+
+// MARK: - Toolbar
+extension DiscoverView {
+    @ToolbarContentBuilder
+    func toolbarContent() -> some ToolbarContent {
+        centeredTitle(.Tabs.discover)
     }
 }

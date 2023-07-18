@@ -22,15 +22,10 @@ struct RootCoordinatorView: View {
             coordinator.searchTab()
                 .tabItem { tab(name: .Tabs.search, icon: .Tabs.search) }
                 .tag(RootTab.search)
-            coordinator.radio()
-                .tabItem { tab(name: .Tabs.radio, icon: .Tabs.radio) }
-                .tag(RootTab.radio)
-            coordinator.settingsTab()
-                .tabItem { tab(name: .Tabs.settings, icon: .Tabs.settings) }
-                .tag(RootTab.settings)
         }
         .modalSheet(isPresented: $coordinator.isProfileDrawerPresented, content: coordinator.presentProfileView)
         .alert(isPresented: $coordinator.isAlertPresented, alert: coordinator.presentAlertView)
         .tint(.orange400)
+        .fullScreenCover(isPresented: $coordinator.isPlayerCoordinatorViewPresented, content: coordinator.presentPlayerCoordinatorView)
     }
 }

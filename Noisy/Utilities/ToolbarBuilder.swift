@@ -31,7 +31,7 @@ extension View {
     func centeredTitle(_ title: String) -> some ToolbarContent {
         ToolbarItem(placement: .principal) {
             Text(title)
-                .font(.nunitoSemiBold(size: 14))
+                .font(.nunitoBold(size: 14))
                 .foregroundColor(.gray700)
         }
     }

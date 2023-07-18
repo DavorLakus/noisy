@@ -204,7 +204,7 @@ private extension HomeView {
         ToolbarItem(placement: .navigationBarTrailing) {
             HStack(spacing: 16) {
                 Button {
-                    viewModel.onNotificationTap()
+                    viewModel.starstButtonTapped()
                 } label: {
                     Image.Home.sparkles
                         .foregroundColor(.gray700)

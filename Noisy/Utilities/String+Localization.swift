@@ -30,13 +30,17 @@ extension String {
         static let title = "noisy"
         static let subtitle = "Sign in with your Spotify account to continue"
         static let email = "Email"
-        static let roles = "Roles"
         static let id = "ID"
         static let textfieldPlaceholder = "Enter here"
         static let loginButtonTitle = "Sign in"
         static let footer = "Davor Lakuš, 2023 ©"
         static let emptyEmailError = "Please enter your email address."
         static let incorrectEmailError = "Incorrect email. Please try again."
+    }
+    
+    struct Player {
+        static let queue = "Queue"
+        static let currentQueue = "Current Queue"
     }
 
     struct Tabs {

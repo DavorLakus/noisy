@@ -12,18 +12,22 @@ struct SearchView: View {
     @GestureState var gestureOffset: CGFloat = 0
 
     var body: some View {
-        VStack(spacing: .zero) {
-            SearchBar(isActive: $viewModel.searchIsActive, query: $viewModel.query)
-                .frame(height: 40)
-                .padding(.horizontal, Constants.margin)
-                .padding(.vertical, 8)
-                .background { Color.appBackground }
+        ZStack {
+            Color.appBackground.ignoresSafeArea()
             
-            switch viewModel.state {
-            case .loading:
-                Color.appBackground
-            case .loaded:
-                loadedStateView()
+            VStack(spacing: .zero) {
+                SearchBar(isActive: $viewModel.searchIsActive, query: $viewModel.query)
+                    .frame(height: 40)
+                    .padding(.horizontal, Constants.margin)
+                    .padding(.vertical, 8)
+                    .background { Color.appBackground }
+                
+                switch viewModel.state {
+                case .loading:
+                    Color.appBackground
+                case .loaded:
+                    loadedStateView()
+                }
             }
         }
         .toolbar {
@@ -72,6 +76,7 @@ private extension SearchView {
                 filteringButtons()
             }
             
+            Spacer()
 //            List {
 //                ForEach(viewModel.presentedTracks, id: \.id) { track in
 //                    trackCard(for: track)

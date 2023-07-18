@@ -56,7 +56,7 @@ final class HomeViewModel: ObservableObject {
     // MARK: - Coordinator actions
     let homeModuleDidAppear = PassthroughSubject<Void, Never>()
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
-    let didSelectNotifications = PassthroughSubject<Void, Never>()
+    var onDidTapStarsButton: PassthroughSubject<Void, Never>?
 
     // MARK: - Private properties
     private let homeService: HomeService
@@ -96,8 +96,8 @@ extension HomeViewModel {
         onDidTapProfileButton.send()
     }
 
-    func onNotificationTap() {
-        didSelectNotifications.send()
+    func starstButtonTapped() {
+        onDidTapStarsButton?.send()
     }
 }
 

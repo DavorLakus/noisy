@@ -11,6 +11,7 @@ import SwiftUI
 public class NetworkingManager {
     public static let showError = PassthroughSubject<NoisyHTTPRouter, Never>()
     public static let unauthorizedAccess = PassthroughSubject<Void, Never>()
+    public static let invalidToken = PassthroughSubject<Void, Never>()
     public static let state = CurrentValueSubject<AppState, Never>(.loaded)
     
     static func download(_ router: NoisyHTTPRouter) -> AnyPublisher<Data, Error> {
@@ -45,6 +46,11 @@ public class NetworkingManager {
         if response.statusCode < 200 || response.statusCode > 300 {
             debugPrint(response: response, router: router)
             if response.statusCode == 401 {
+                unauthorizedAccess.send()
+            }
+            
+            if case .token = router,
+               response.statusCode == 400 {
                 unauthorizedAccess.send()
             }
 //            throw NetworkError.badURLResponse(router: router, statusCode: response.statusCode)

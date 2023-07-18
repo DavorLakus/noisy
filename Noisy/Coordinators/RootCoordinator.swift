@@ -12,9 +12,6 @@ enum RootTab {
     case home
     case discover
     case search
-    case liveMusic
-    case radio
-    case settings
 }
 
 enum Alert {
@@ -27,6 +24,7 @@ final class RootCoordinator: CoordinatorProtocol {
     @Published var tab = RootTab.home
     @Published var isAlertPresented = false
     @Published var isProfileDrawerPresented = false
+    @Published var isPlayerCoordinatorViewPresented = false
     @Published var alert: Alert = .signout
     
     // MARK: - Public properties
@@ -36,28 +34,25 @@ final class RootCoordinator: CoordinatorProtocol {
     private let homeService: HomeService
     private let searchService: SearchService
     private let discoverSerivce: DiscoverService
+    private let playerService: PlayerService
     
     // MARK: - Coordinators
     private lazy var homeCoordinator = HomeCoordinator(homeService: homeService)
     private lazy var searchCoordinator = SearchCoordinator(searchService: searchService)
     private lazy var discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce)
+    private lazy var playerCoordinator = PlayerCoordinator(playerService: playerService)
     
     // MARK: - Private properties
     private var profileViewModel: ProfileViewModel?
     private lazy var alertViewModel = AlertViewModel(isPresented: _isAlertPresented)
-    
-    private var cancellables = Set<AnyCancellable>()
-    
-    // MARK: - Private properties
-    private var accountViewModel: AccountViewModel?
-    private var alertViewModel: AlertViewModel?
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Class lifecycle
-    init(homeService: HomeService, searchService: SearchService, discoverService: DiscoverService) {
+    init(homeService: HomeService, searchService: SearchService, discoverService: DiscoverService, playerService: PlayerService) {
         self.homeService = homeService
         self.searchService = searchService
         self.discoverSerivce = discoverService
+        self.playerService = playerService
         
         bindCoordinators()
     }
@@ -83,17 +78,7 @@ extension RootCoordinator {
         searchCoordinator.start()
     }
     
-    func liveMusicTab() -> some View {
-        Color.purple600
-    }
-    
-    func radio() -> some View {
-        Color.purple600
-    }
-    
-    func settingsTab() -> some View {
-        Color.orange400
-    }
+    // možda music map
 }
 
 // MARK: - Private extension
@@ -108,6 +93,12 @@ private extension RootCoordinator {
         homeCoordinator.onDidTapProfileButton
             .sink { [weak self] in
                 self?.bindProfileViewModel()
+            }
+            .store(in: &cancellables)
+        
+        homeCoordinator.onDidTapPlayerButton
+            .sink { [weak self] in
+                self?.bindPlayerCoordinator()
             }
             .store(in: &cancellables)
     }
@@ -129,6 +120,30 @@ private extension RootCoordinator {
     }
 }
 
+// MARK: - Player
+extension RootCoordinator {
+    @ViewBuilder
+    func presentPlayerCoordinatorView() -> some View {
+        playerCoordinator.start()
+    }
+    
+    func bindPlayerCoordinator() {
+        playerCoordinator = PlayerCoordinator(playerService: playerService)
+        
+        playerCoordinator.onShoudEnd
+            .sink { [weak self] in
+                withAnimation {
+                    self?.isPlayerCoordinatorViewPresented = false
+                }
+            }
+            .store(in: &cancellables)
+        
+        withAnimation {
+            isPlayerCoordinatorViewPresented = true
+        }
+    }
+}
+
 // MARK: - Profile
 extension RootCoordinator {
     @ViewBuilder
@@ -147,17 +162,6 @@ extension RootCoordinator {
                 withAnimation {
                     self?.isProfileDrawerPresented = false
                 }
-            }
-            .store(in: &cancellables)
-        
-        profileViewModel?.onDidTapProfileView
-            .flatMap({ [weak self] in
-                self?.profileViewModel?.viewWillDisappear(isPushNavigation: true)
-                return Just($0)
-            })
-            .debounce(for: .seconds(0.02), scheduler: DispatchQueue.main)
-            .sink { [weak self] in
-                //                self?.profileButtonTapped()
             }
             .store(in: &cancellables)
         
@@ -193,7 +197,6 @@ extension RootCoordinator {
             alertViewModel.primaryActionText = .Profile.signOutTitle
             alertViewModel.onDidTapPrimaryAction = onDidEnd
         }
-        
         
         withAnimation {
             self.isAlertPresented = true
