@@ -46,17 +46,21 @@ final class HomeViewModel: ObservableObject {
     @Published var profile: Profile?
     @Published var topTracks: [Track] = []
     @Published var topArtists: [Artist] = []
+    @Published var playlists: [Playlist] = []
     @Published var isTopTracksExpanded = false
     @Published var isTopArtistsExpanded = false
+    @Published var isPlaylistsExpanded =  false
     @Published var topTracksTimeRange: TimeRange = .shortTerm
     @Published var topArtistsTimeRange: TimeRange = .shortTerm
     @Published var topTracksCount: Double = 10
     @Published var topArtistsCount: Double = 10
+    @Published var playlistsCount: Double = 10
 
     // MARK: - Coordinator actions
-    let homeModuleDidAppear = PassthroughSubject<Void, Never>()
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
-    var onDidTapStarsButton: PassthroughSubject<Void, Never>?
+    var onDidSelectTrackRow: PassthroughSubject<Track, Never>?
+    let onDidTapArtistRow = PassthroughSubject<Artist, Never>()
+    let onDidTapPlaylistRow = PassthroughSubject<Playlist, Never>()
 
     // MARK: - Private properties
     private let homeService: HomeService
@@ -80,6 +84,10 @@ extension HomeViewModel {
         getTopArtists()
     }
     
+    func profileButtonTapped() {
+        onDidTapProfileButton.send()
+    }
+    
     func topTracksTapped() {
         withAnimation {
             isTopTracksExpanded.toggle()
@@ -92,12 +100,16 @@ extension HomeViewModel {
         }
     }
     
-    func profileButtonTapped() {
-        onDidTapProfileButton.send()
+    func trackRowSelected(for track: Track) {
+        onDidSelectTrackRow?.send(track)
     }
-
-    func starstButtonTapped() {
-        onDidTapStarsButton?.send()
+    
+    func artistRowSelected(for artist: Artist) {
+        onDidTapArtistRow.send(artist)
+    }
+    
+    func playlistRowSelected(for playlist: Playlist) {
+        onDidTapPlaylistRow.send(playlist)
     }
 }
 
@@ -132,6 +144,14 @@ private extension HomeViewModel {
                 self?.getTopArtists()
             }
             .store(in: &cancellables)
+        
+        $playlistsCount
+            .dropFirst()
+            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.getPlaylists()
+            }
+            .store(in: &cancellables)
     }
     
     func getProfile() {
@@ -142,6 +162,8 @@ private extension HomeViewModel {
                 if let profile = try? JSONEncoder().encode(profile) {
                     UserDefaults.standard.set(profile, forKey: .Login.profile)
                 }
+                
+                self?.getPlaylists()
             }
             .store(in: &cancellables)
         
@@ -162,6 +184,16 @@ private extension HomeViewModel {
             .sink { [weak self] artistsResponse in
                 withAnimation {
                     self?.topArtists = artistsResponse.items
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func getPlaylists() {
+        homeService.getMyPlaylists(count: Int(playlistsCount))
+            .sink { [weak self] playlistsResponse in
+                withAnimation {
+                    self?.playlists = playlistsResponse.items
                 }
             }
             .store(in: &cancellables)

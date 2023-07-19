@@ -54,14 +54,14 @@ private extension SearchView {
     @ViewBuilder
     func emptyStateView() -> some View {
         VStack(spacing: 16) {
-            Group {
-                Text(String.Employees.emptyStateTitle)
-                    .font(.nunitoSemiBold(size: 16))
-                Text(String.Employees.emptyStateDescription)
-                    .font(.nunitoRegular(size: 14))
-            }
-            .multilineTextAlignment(.center)
-            .foregroundColor(.gray700)
+//            Group {
+//                Text(String.Employees.emptyStateTitle)
+//                    .font(.nunitoSemiBold(size: 16))
+//                Text(String.Employees.emptyStateDescription)
+//                    .font(.nunitoRegular(size: 14))
+//            }
+//            .multilineTextAlignment(.center)
+//            .foregroundColor(.gray700)
         }
         .refreshGesture(offset: $gestureOffset, action: viewModel.pullToRefresh)
         .padding(Constants.margin)
@@ -99,7 +99,7 @@ private extension SearchView {
             navigationBarBottomBorder()
             
             HStack(spacing: Constants.margin) {
-                filteringButton(title: String.Employees.selectDepartment, image: .Shared.filter, flexible: true, badgeToggled: !viewModel.filteringOptions.isEmpty) {
+                filteringButton(title: String.Search.filters, image: .Shared.filter, flexible: true, badgeToggled: !viewModel.filteringOptions.isEmpty) {
                     viewModel.filterButtonTapped()
                 }
                 .sheet(isPresented: $viewModel.isFilterPresented) {
@@ -108,7 +108,7 @@ private extension SearchView {
                         .presentationDragIndicator(.hidden)
                 }
 
-                filteringButton(title: String.Employees.sortBy, image: .Shared.sort, badgeToggled: viewModel.sortingOption != .name) {
+                filteringButton(title: String.Search.sortBy, image: .Shared.sort, badgeToggled: viewModel.sortingOption != .name) {
                     viewModel.sortingButtonTapped()
                 }
                 .sheet(isPresented: $viewModel.isSortPresented) {

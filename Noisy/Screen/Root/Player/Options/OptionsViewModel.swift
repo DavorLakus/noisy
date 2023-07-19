@@ -13,7 +13,7 @@ final class OptionsViewModel: ObservableObject {
     
     // MARK: - Public properties
     let onDidTapBackButton = PassthroughSubject<Void, Never>()
-    let onDidTapPlaylistsButton = PassthroughSubject<Void, Never>()
+    let onDidTapPlaylistsButton = PassthroughSubject<[Album], Never>()
     
     // MARK: - Private properties
     private var cancellables = Set<AnyCancellable>()
@@ -31,6 +31,6 @@ extension OptionsViewModel {
     }
     
     func addToPlaylistButtonTapped() {
-        onDidTapPlaylistsButton.send()
+        onDidTapPlaylistsButton.send([])
     }
 }

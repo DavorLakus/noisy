@@ -14,7 +14,7 @@ enum Flow: Equatable {
     case home(fromSplash: Bool = false)
     
     static func isAuthorized() -> Self {
-        UserDefaults.standard.string(forKey: .KeyChain.accessToken) != nil ? .home() : .login()
+        UserDefaults.standard.string(forKey: .UserDefaults.accessToken) != nil ? .home() : .login()
     }
 }
 
@@ -30,6 +30,7 @@ final class MainCoordinator: CoordinatorProtocol {
     private lazy var searchService = SearchService(api: api)
     private lazy var discoverSerivce = DiscoverService(api: api)
     private lazy var playerService = PlayerService(api: api)
+    private lazy var musicDetailsService = MusicDetailsService(api: api)
     private lazy var api: NoisyAPIProtocol = NoisyService()
 
     private var cancellables = Set<AnyCancellable>()
@@ -57,7 +58,7 @@ final class MainCoordinator: CoordinatorProtocol {
         badResponseCancellable = NetworkingManager.unauthorizedAccess
             .first()
             .sink { [weak self] in
-                UserDefaults.standard.set(nil, forKey: .KeyChain.accessToken)
+                UserDefaults.standard.set(nil, forKey: .UserDefaults.accessToken)
                 self?.attemptRefreshToken()
                 self?.badResponseCancellable?.cancel()
             }
@@ -65,8 +66,8 @@ final class MainCoordinator: CoordinatorProtocol {
         NetworkingManager.invalidToken
             .sink { [weak self] in
                 print("refresh token no longer valid, logging out")
-                UserDefaults.standard.set(nil, forKey: .KeyChain.accessToken)
-                UserDefaults.standard.set(nil, forKey: .KeyChain.refreshToken)
+                UserDefaults.standard.set(nil, forKey: .UserDefaults.accessToken)
+                UserDefaults.standard.set(nil, forKey: .UserDefaults.refreshToken)
                 withAnimation {
                     self?.flow = .login()
                 }
@@ -75,10 +76,10 @@ final class MainCoordinator: CoordinatorProtocol {
     }
     
     func attemptRefreshToken() {
-        if let refreshToken = UserDefaults.standard.string(forKey: .KeyChain.refreshToken) {
+        if let refreshToken = UserDefaults.standard.string(forKey: .UserDefaults.refreshToken) {
             loginSerice.refreshToken(with: refreshToken)
                 .sink { [weak self] response in
-                    UserDefaults.standard.set(response.accessToken, forKey: .KeyChain.accessToken)
+                    UserDefaults.standard.set(response.accessToken, forKey: .UserDefaults.accessToken)
                     withAnimation {
                         self?.flow = .home()
                     }
@@ -105,12 +106,12 @@ final class MainCoordinator: CoordinatorProtocol {
     }
     
     func presentRootFlow() -> some View {
-        let coordinator = RootCoordinator(homeService: homeService, searchService: searchService, discoverService: discoverSerivce, playerService: playerService)
+        let coordinator = RootCoordinator(homeService: homeService, searchService: searchService, discoverService: discoverSerivce, playerService: playerService, musicDetailsService: musicDetailsService)
         
         coordinator.onDidEnd
             .sink { [weak self] in
-                UserDefaults.standard.set(nil, forKey: .KeyChain.accessToken)
-                UserDefaults.standard.set(nil, forKey: .KeyChain.refreshToken)
+                UserDefaults.standard.set(nil, forKey: .UserDefaults.accessToken)
+                UserDefaults.standard.set(nil, forKey: .UserDefaults.refreshToken)
                 self?.flow = .login()
             }
             .store(in: &cancellables)

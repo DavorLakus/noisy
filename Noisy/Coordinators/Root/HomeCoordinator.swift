@@ -9,31 +9,41 @@ import Combine
 import SwiftUI
 
 enum HomePath: Hashable, Identifiable {
-    case details
+    case artist(Artist)
+    case playlist(Playlist)
 
     var id: String {
         String(describing: self)
     }
 }
 
-final class HomeCoordinator: VerticalCoordinatorProtocol {
+final class HomeCoordinator: MusicDetailsCoordinatorProtocol {
     // MARK: - Published properties
     @Published var navigationPath = NavigationPath()
     
     // MARK: - Public properties
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
-    let onDidTapPlayerButton = PassthroughSubject<Void, Never>()
+    let onDidTapPlayerButton = PassthroughSubject<Track, Never>()
     
+    // MARK: - Internal properties
+    internal var artistViewModel: ArtistViewModel?
+    internal var albumViewModel: AlbumViewModel?
+    internal var playlistViewModel: PlaylistViewModel?
+    internal var playlistsViewModel: PlaylistsViewModel?
+    internal var musicDetailsService: MusicDetailsService
+    internal var cancellables = Set<AnyCancellable>()
+
     // MARK: - Private properties
     private var homeViewModel: HomeViewModel?
-    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Services
     private let homeService: HomeService
     
     // MARK: - Class lifecycle
-    init(homeService: HomeService) {
+    init(homeService: HomeService, musicDetailsService: MusicDetailsService) {
         self.homeService = homeService
+        self.musicDetailsService = musicDetailsService
+        
         bindHomeViewModel()
     }
     
@@ -52,12 +62,21 @@ final class HomeCoordinator: VerticalCoordinatorProtocol {
     @ViewBuilder
     func navigationDestination(_ path: HomePath) -> some View {
         switch path {
-        case .details:
-            Color.red
+        case .artist:
+            presentArtistView()
+        case .playlist:
+            presentPlaylistView()
         }
     }
     
     func push(_ path: HomePath) {
+        switch path {
+        case .artist(let artist):
+            bindArtistViewModel(for: artist)
+        case .playlist(let playlist):
+            bindPlaylistViewModel(for: playlist)
+        }
+        
         navigationPath.append(path)
     }
     
@@ -77,7 +96,19 @@ extension HomeCoordinator {
             }
             .store(in: &cancellables)
         
-        homeViewModel?.onDidTapStarsButton = onDidTapPlayerButton
+        homeViewModel?.onDidTapArtistRow
+            .sink { [weak self] artist in
+                self?.push(.artist(artist))
+            }
+            .store(in: &cancellables)
+        
+        homeViewModel?.onDidTapPlaylistRow
+            .sink { [weak self] playlist in
+                self?.push(.playlist(playlist))
+            }
+            .store(in: &cancellables)
+        
+        homeViewModel?.onDidSelectTrackRow = onDidTapPlayerButton
     }
 }
 

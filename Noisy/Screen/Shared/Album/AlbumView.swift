@@ -1,14 +1,14 @@
 //
-//  PlaylistsView.swift
+//  AlbumView.swift
 //  Noisy
 //
-//  Created by Davor Lakus on 18.07.2023..
+//  Created by Davor Lakus on 19.07.2023..
 //
 
 import SwiftUI
 
-struct PlaylistsView: View {
-    @ObservedObject var viewModel: PlaylistsViewModel
+struct AlbumView: View {
+    @ObservedObject var viewModel: AlbumViewModel
     
     var body: some View {
         bodyView()
@@ -19,12 +19,13 @@ struct PlaylistsView: View {
 }
 
 // MARK: - Body view
-extension PlaylistsView {
+extension AlbumView {
     func bodyView() -> some View {
         ZStack {
-            Color.yellow100.ignoresSafeArea()
+            Color.appBackground.ignoresSafeArea()
+            Color.purple100.ignoresSafeArea(edges: [.horizontal, .top])
             VStack {
-                Text("Playlist")
+                Text("Album")
             }
             .padding(Constants.margin)
         }
@@ -33,11 +34,11 @@ extension PlaylistsView {
 }
 
 // MARK: - Toolbar
-extension PlaylistsView {
+extension AlbumView {
     @ToolbarContentBuilder
     func toolbarContent() -> some ToolbarContent {
         leadingToolbarButton()
-        centeredTitle("Playlists")
+        centeredTitle("Album name")
     }
     
     @ToolbarContentBuilder

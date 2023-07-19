@@ -13,6 +13,13 @@ public enum NoisyHTTPRouter {
     case refreshToken(String)
     case profile
     case myTop(String, Int, String)
+    case artist(String)
+    case album(String)
+    case playlist(String)
+    case playlists(String, Int)
+    case artistsTopTracks(String)
+    case artistsAlbums(String)
+    case artistsRelatedArtists(String)
 }
 
 extension NoisyHTTPRouter: APIEndpoint {
@@ -20,7 +27,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize, .token, .refreshToken:
             return "accounts.spotify.com"
-        case .profile, .myTop:
+        case .profile, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return "api.spotify.com"
         }
     }
@@ -31,7 +38,7 @@ extension NoisyHTTPRouter: APIEndpoint {
             return .empty
         case .token, .refreshToken:
             return "/api"
-        case .profile, .myTop:
+        case .profile, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return "/v1"
         }
     }
@@ -46,12 +53,26 @@ extension NoisyHTTPRouter: APIEndpoint {
             return "/token"
         case .myTop(let type, _, _):
             return "/me/top/\(type)"
+        case .playlists(let id, _):
+            return "/users/\(id)/playlists"
+        case .album(let id):
+            return "/albums/\(id)"
+        case .playlist(let id):
+            return "/playlists/\(id)"
+        case .artist(let id):
+            return "/artists/\(id)"
+        case .artistsAlbums(let artistId):
+            return "/artists/\(artistId)/albums"
+        case .artistsTopTracks(let artistId):
+            return "/artists/\(artistId)/top-tracks"
+        case .artistsRelatedArtists(let artistId):
+            return "/artists/\(artistId)/related-artists"
         }
     }
     
     public var method: HTTPMethod {
         switch self {
-        case .profile, .authorize, .myTop:
+        case .profile, .authorize, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return .get
         case .token, .refreshToken:
             return .post
@@ -62,7 +83,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize:
             return nil
-        case .profile, .myTop:
+        case .profile, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return authToken
         case .token, .refreshToken:
             return ["Content-Type" : "application/x-www-form-urlencoded"]
@@ -71,7 +92,7 @@ extension NoisyHTTPRouter: APIEndpoint {
     
     public func body() throws -> Data? {
         switch self {
-        case .authorize, .token, .refreshToken, .myTop, .profile:
+        case .authorize, .token, .refreshToken, .myTop, .profile, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return nil
         }
     }
@@ -87,13 +108,6 @@ extension NoisyHTTPRouter: APIEndpoint {
                 URLQueryItem(name: "scope", value: Scope.allCases.map(\.rawValue).reduce(.empty, {"\($0!) \($1)"})),
                 URLQueryItem(name:"code_challenge", value: challenge)
             ]
-        case .profile:
-            return nil
-        case .myTop(_, let count, let timeRange):
-            return [
-                URLQueryItem(name: "limit", value: "\(count)"),
-                URLQueryItem(name: "time_range", value: "\(timeRange)")
-            ]
         case .token(let verifier, let code):
             return [
                 URLQueryItem(name:"grant_type", value: "authorization_code"),
@@ -108,6 +122,17 @@ extension NoisyHTTPRouter: APIEndpoint {
                 URLQueryItem(name:"refresh_token", value: refreshToken),
                 URLQueryItem(name:"client_id", value: APIConstants.clientID)
             ]
+        case .myTop(_, let count, let timeRange):
+            return [
+                URLQueryItem(name: "limit", value: "\(count)"),
+                URLQueryItem(name: "time_range", value: "\(timeRange)")
+            ]
+        case .playlists(_, let count):
+            return [URLQueryItem(name: "limit", value: "\(count)")]
+        case .artistsTopTracks:
+            return [URLQueryItem(name: "market", value: "HR")]
+        case .profile, .artist, .playlist, .album, .artistsAlbums, .artistsRelatedArtists:
+            return nil
         }
     }
 }

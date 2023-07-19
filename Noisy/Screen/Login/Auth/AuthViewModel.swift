@@ -23,7 +23,7 @@ class AuthViewModel: ObservableObject {
     // MARK: - Class lifecycle
     init(loginService: LoginService) {
         let codeVerifier = NoisyCrypto.generateRandomString(length: 127)
-        UserDefaults.standard.set(codeVerifier, forKey: .KeyChain.codeVerifier)
+        UserDefaults.standard.set(codeVerifier, forKey: .UserDefaults.codeVerifier)
         self.link = loginService.getAuthURL(verifier: codeVerifier)
         self.loginService = loginService
     }
@@ -34,8 +34,8 @@ extension AuthViewModel {
     func codeReceived(_ code: String) {
         loginService.postToken(code: code)
             .sink { [weak self ] token in
-                UserDefaults.standard.set(token.refreshToken, forKey: .KeyChain.refreshToken)
-                UserDefaults.standard.set(token.accessToken, forKey: .KeyChain.accessToken)
+                UserDefaults.standard.set(token.refreshToken, forKey: .UserDefaults.refreshToken)
+                UserDefaults.standard.set(token.accessToken, forKey: .UserDefaults.accessToken)
                 self?.onDidAuthorize.send()
             }
             .store(in: &cancellables)

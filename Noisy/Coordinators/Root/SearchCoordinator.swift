@@ -12,22 +12,31 @@ enum SearchPath: Hashable {
     case details
 }
 
-final class SearchCoordinator: VerticalCoordinatorProtocol {
+final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
     // MARK: - Published properties
     @Published var navigationPath = NavigationPath()
     
     // MARK: - Public properties
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
     
+    // MARK: - Internal properties
+    internal var artistViewModel: ArtistViewModel?
+    internal var albumViewModel: AlbumViewModel?
+    internal var playlistViewModel: PlaylistViewModel?
+    internal var playlistsViewModel: PlaylistsViewModel?
+    internal var musicDetailsService: MusicDetailsService
+    internal var cancellables = Set<AnyCancellable>()
+    
     // MARK: - Private properties
     private var searchService: SearchService
     
     private var searchViewModel: SearchViewModel?
-    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Class lifecycle
-    init(searchService: SearchService) {
+    init(searchService: SearchService, musicDetailsService: MusicDetailsService) {
         self.searchService = searchService
+        self.musicDetailsService = musicDetailsService
+        
         bindSearchViewModel()
     }
     

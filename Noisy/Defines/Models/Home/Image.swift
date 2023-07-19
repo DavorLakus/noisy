@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SpotifyImage: Codable {
+struct SpotifyImage: Codable, Equatable, Hashable {
     let url: String
     let width: Int?
     let height: Int?

@@ -12,22 +12,31 @@ enum DiscoverPath: Hashable {
     case detail
 }
 
-final class DiscoverCoordinator: VerticalCoordinatorProtocol {
+final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     // MARK: - Published properties
     @Published var navigationPath = NavigationPath()
     
     // MARK: - Public properties
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
     
+    // MARK: - Internal properties
+    internal var artistViewModel: ArtistViewModel?
+    internal var albumViewModel: AlbumViewModel?
+    internal var playlistViewModel: PlaylistViewModel?
+    internal var playlistsViewModel: PlaylistsViewModel?
+    internal var musicDetailsService: MusicDetailsService
+    internal var cancellables = Set<AnyCancellable>()
+    
     // MARK: - Private properties
     private var discoverViewModel: DiscoverViewModel?
     private var discoverService: DiscoverService
     
-    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Class lifecycle
-    init(discoverService: DiscoverService) {
+    init(discoverService: DiscoverService, musicDetailsService: MusicDetailsService) {
         self.discoverService = discoverService
+        self.musicDetailsService = musicDetailsService
+        
         bindDiscoverViewModel()
     }
     

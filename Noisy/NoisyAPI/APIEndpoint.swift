@@ -49,7 +49,7 @@ extension APIEndpoint {
     }
     
     public var authToken: [String : Any]? {
-        if let token = UserDefaults.standard.string(forKey: .KeyChain.accessToken) {
+        if let token = UserDefaults.standard.string(forKey: .UserDefaults.accessToken) {
             return ["Authorization" : "Bearer \(token)"]
         } else {
             return nil

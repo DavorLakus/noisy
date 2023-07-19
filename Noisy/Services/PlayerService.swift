@@ -8,7 +8,6 @@
 import Foundation
 import Combine
 
-
 final class PlayerService {
     // MARK: - Private properties
     private var cancellables = Set<AnyCancellable>()
@@ -20,4 +19,3 @@ final class PlayerService {
         self.api = api
     }
 }
-

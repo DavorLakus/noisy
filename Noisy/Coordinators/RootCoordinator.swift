@@ -35,25 +35,29 @@ final class RootCoordinator: CoordinatorProtocol {
     private let searchService: SearchService
     private let discoverSerivce: DiscoverService
     private let playerService: PlayerService
+    private let musicDetailsService: MusicDetailsService
     
     // MARK: - Coordinators
-    private lazy var homeCoordinator = HomeCoordinator(homeService: homeService)
-    private lazy var searchCoordinator = SearchCoordinator(searchService: searchService)
-    private lazy var discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce)
-    private lazy var playerCoordinator = PlayerCoordinator(playerService: playerService)
+    private lazy var homeCoordinator = HomeCoordinator(homeService: homeService, musicDetailsService: musicDetailsService)
+    private lazy var searchCoordinator = SearchCoordinator(searchService: searchService,  musicDetailsService: musicDetailsService)
+    private lazy var discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce,  musicDetailsService: musicDetailsService)
+    private var playerCoordinator: PlayerCoordinator?
     
     // MARK: - Private properties
+    private var queueManager: QueueManager?
     private var profileViewModel: ProfileViewModel?
     private lazy var alertViewModel = AlertViewModel(isPresented: _isAlertPresented)
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Class lifecycle
-    init(homeService: HomeService, searchService: SearchService, discoverService: DiscoverService, playerService: PlayerService) {
+    init(homeService: HomeService, searchService: SearchService, discoverService: DiscoverService, playerService: PlayerService, musicDetailsService: MusicDetailsService) {
         self.homeService = homeService
         self.searchService = searchService
         self.discoverSerivce = discoverService
         self.playerService = playerService
+        self.musicDetailsService = musicDetailsService
         
+        getQueueManager()
         bindCoordinators()
     }
     
@@ -83,6 +87,13 @@ extension RootCoordinator {
 
 // MARK: - Private extension
 private extension RootCoordinator {
+    func getQueueManager() {
+        if let queueManagerData = UserDefaults.standard.object(forKey: .UserDefaults.queueManager) as? Data,
+           let queueManager = try? JSONDecoder().decode(QueueManager.self, from: queueManagerData) {
+            self.queueManager = queueManager
+        }
+    }
+    
     func bindCoordinators() {
         bindHomeCoordinator()
         bindSearchCoordinator()
@@ -97,8 +108,8 @@ private extension RootCoordinator {
             .store(in: &cancellables)
         
         homeCoordinator.onDidTapPlayerButton
-            .sink { [weak self] in
-                self?.bindPlayerCoordinator()
+            .sink { [weak self] track in
+                self?.bindPlayerCoordinator(with: track)
             }
             .store(in: &cancellables)
     }
@@ -124,13 +135,20 @@ private extension RootCoordinator {
 extension RootCoordinator {
     @ViewBuilder
     func presentPlayerCoordinatorView() -> some View {
-        playerCoordinator.start()
+        playerCoordinator?.start()
     }
     
-    func bindPlayerCoordinator() {
-        playerCoordinator = PlayerCoordinator(playerService: playerService)
+    func bindPlayerCoordinator(with track: Track) {
+        if let queueManager {
+            queueManager.tracks = [track]
+        } else {
+            queueManager = QueueManager(tracks: [track])
+        }
+        guard let queueManager else { return }
         
-        playerCoordinator.onShoudEnd
+        playerCoordinator = PlayerCoordinator(playerService: playerService, musicDetailsService: musicDetailsService, queueManager: queueManager)
+        
+        playerCoordinator?.onShoudEnd
             .sink { [weak self] in
                 withAnimation {
                     self?.isPlayerCoordinatorViewPresented = false

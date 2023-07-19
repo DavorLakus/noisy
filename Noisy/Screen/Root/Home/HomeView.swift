@@ -10,32 +10,15 @@ import WebKit
 
 struct HomeView: View {
     @ObservedObject var viewModel: HomeViewModel
-    @Environment(\.colorScheme) var appearance
     
     var body: some View {
         ZStack(alignment: .top) {
             Color.appBackground.ignoresSafeArea()
-            Color.appBackground
-            navigationBarBottomBorder()
             
-            ScrollView {
-                VStack(alignment: .leading, spacing: .zero) {
-                    if let name = viewModel.profile?.displayName {
-                        Text("Welcome \(name)")
-                            .foregroundColor(.gray900)
-                            .font(.nunitoBold(size: 24))
-                            .padding(Constants.margin)
-                    }
-                    
-                    topTracksAccordion()
-                    topArtistsAccordion()
-                }
-            }
-            .refreshable(action: viewModel.viewDidAppear)
+            bodyView()
         }
         .onAppear(perform: viewModel.viewDidAppear)
         .toolbar {
-            leadingLargeTitle(title: String.Tabs.home)
             trailingNavigationBarItem()
         }
     }
@@ -43,56 +26,29 @@ struct HomeView: View {
 
 // MARK: - Body components
 private extension HomeView {
-    func topTracksAccordion() -> some View {
-        LazyVStack(alignment: .leading, spacing: 10) {
-            Button {
-                viewModel.topTracksTapped()
-            } label: {
-                HStack {
-                    Text(String.Home.topTracks)
-                        .padding()
-                        .foregroundColor(.gray700)
-                        .font(.nunitoBold(size: 20))
-                    
-                    Spacer()
-                    
-                    if viewModel.isTopTracksExpanded {
-                        Image.Shared.chevronDown
-                    } else {
-                        Image.Shared.chevronRight
-                    }
+    func bodyView() -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: .zero) {
+                if let name = viewModel.profile?.displayName {
+                    Text("\(String.Home.welcome) \(name)")
+                        .foregroundColor(.gray600)
+                        .font(.nunitoBold(size: 24))
+                        .padding(Constants.margin)
                 }
-            }
-            .buttonStyle(.plain)
-            
-            if viewModel.isTopTracksExpanded {
-                HStack {
-                    Text(String.Home.pickerTitle)
-                        .font(.nunitoRegular(size: 14))
-                    Picker(String.Home.pickerTitle, selection: $viewModel.topTracksTimeRange) {
-                        ForEach(TimeRange.allCases, id: \.self) {
-                            Text($0.displayName)
-                                .font(.nunitoRegular(size: 14))
-                        }
-                    }
-                }
-                HStack(spacing: Constants.smallSpacing) {
-                    Text(String.Home.sliderCount)
-                        .font(.nunitoRegular(size: 14))
-                    Text("1")
-                        .font(.nunitoRegular(size: 12))
-                        .foregroundColor(.gray500)
-                    Slider(value: $viewModel.topTracksCount, in: 1...50)
-                    Text("50")
-                        .font(.nunitoRegular(size: 12))
-                        .foregroundColor(.gray500)
-                }
-                ForEach(Array(viewModel.topTracks.enumerated()), id: \.offset, content: trackRow)
+                
+                topTracksAccordion()
+                topArtistsAccordion()
+                playlistsAccordion()
             }
         }
-        .padding(Constants.margin)
-        .cardBackground()
-        .padding(Constants.margin)
+        .refreshable(action: viewModel.viewDidAppear)
+    }
+}
+
+// MARK: - Tracks accordion
+extension HomeView {
+    func topTracksAccordion() -> some View {
+        ParameterizedAccordionView(isExpanded: $viewModel.isTopTracksExpanded, count: $viewModel.topTracksCount, timeRange: $viewModel.topTracksTimeRange, title: .Home.topTracks, data: viewModel.topTracks.enumerated(), dataRowView: trackRow, action: viewModel.trackRowSelected)
     }
     
     func trackRow(for track: EnumeratedSequence<[Track]>.Iterator.Element) -> some View {
@@ -117,8 +73,8 @@ private extension HomeView {
                 
             }
             Spacer()
-            
         }
+        .onTapGesture { viewModel.trackRowSelected(for: track.element) }
         .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 }
@@ -126,74 +82,14 @@ private extension HomeView {
 // MARK: - Artists accordion
 extension HomeView {
     func topArtistsAccordion() -> some View {
-        LazyVStack(alignment: .leading, spacing: 10) {
-            Button {
-                viewModel.topArtistsTapped()
-            } label: {
-                HStack {
-                    Text(String.Home.topArtists)
-                        .padding()
-                        .foregroundColor(.gray700)
-                        .font(.nunitoBold(size: 20))
-                    
-                    Spacer()
-                    
-                    if viewModel.isTopArtistsExpanded {
-                        Image.Shared.chevronDown
-                    } else {
-                        Image.Shared.chevronRight
-                    }
-                }
-            }
-            .buttonStyle(.plain)
-            
-            if viewModel.isTopArtistsExpanded {
-                HStack {
-                    Text(String.Home.pickerTitle)
-                        .font(.nunitoRegular(size: 14))
-                    Picker(String.Home.pickerTitle, selection: $viewModel.topArtistsTimeRange) {
-                        ForEach(TimeRange.allCases, id: \.self) {
-                            Text($0.displayName)
-                                .font(.nunitoRegular(size: 14))
-                        }
-                    }
-                }
-                HStack(spacing: Constants.smallSpacing) {
-                    Text(String.Home.sliderCount)
-                        .font(.nunitoRegular(size: 14))
-                    Text("1")
-                        .font(.nunitoRegular(size: 12))
-                        .foregroundColor(.gray500)
-                    Slider(value: $viewModel.topArtistsCount, in: 1...50)
-                    Text("50")
-                        .font(.nunitoRegular(size: 12))
-                        .foregroundColor(.gray500)
-                }
-                
-                ForEach(Array(viewModel.topArtists.enumerated()), id: \.offset, content: artistRow)
-            }
-        }
-        .padding(Constants.margin)
-        .cardBackground()
-        .padding(Constants.margin)
+        ParameterizedAccordionView(isExpanded: $viewModel.isTopArtistsExpanded, count: $viewModel.topArtistsCount, timeRange: $viewModel.topArtistsTimeRange, title: .Home.topArtists, data: viewModel.topArtists.enumerated(), dataRowView: artistRow, action: viewModel.artistRowSelected)
     }
-    
-    func artistRow(for artist: EnumeratedSequence<[Artist]>.Iterator.Element) -> some View {
-        HStack(spacing: Constants.margin) {
-            Text("\(artist.offset + 1)")
-                .foregroundColor(.gray500)
-                .font(.nunitoRegular(size: 14))
-            LoadImage(url: URL(string: artist.element.images?.first?.url ?? .empty))
-                .scaledToFit()
-                .cornerRadius(18)
-                .frame(width: 36, height: 36)
-            Text(artist.element.name)
-                .foregroundColor(.gray700)
-                .font(.nunitoBold(size: 16))
-            Spacer()
-            
-        }
-        .frame(maxWidth: .infinity, alignment: .topLeading)
+}
+
+// MARK: - Playlists accordion
+extension HomeView {
+    func playlistsAccordion() -> some View {
+        ParameterizedAccordionView(isExpanded: $viewModel.isPlaylistsExpanded, count: $viewModel.playlistsCount, timeRange: nil, title: .Home.playlists, data: viewModel.playlists.enumerated(), dataRowView: playlistRow, action: viewModel.playlistRowSelected)
     }
 }
 
@@ -204,7 +100,7 @@ private extension HomeView {
         ToolbarItem(placement: .navigationBarTrailing) {
             HStack(spacing: 16) {
                 Button {
-                    viewModel.starstButtonTapped()
+                    
                 } label: {
                     Image.Home.sparkles
                         .foregroundColor(.gray700)

@@ -11,10 +11,12 @@ import Combine
 enum PlayerPath: Hashable {
     case options
     case queue
-    case playlists
+    case artist(Artist)
+    case playlist(Playlist)
+    case playlists([Album])
 }
 
-final class PlayerCoordinator: VerticalCoordinatorProtocol {
+final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
     // MARK: - Published properties
     @Published var navigationPath = NavigationPath()
     @Published var isShareViewPresented = false
@@ -22,17 +24,27 @@ final class PlayerCoordinator: VerticalCoordinatorProtocol {
     // MARK: - Public properties
     var onShoudEnd = PassthroughSubject<Void, Never>()
     
-    // MARK: - Private propeties
+    // MARK: - Internal properties
+    internal var artistViewModel: ArtistViewModel?
+    internal var albumViewModel: AlbumViewModel?
+    internal var playlistViewModel: PlaylistViewModel?
+    internal var playlistsViewModel: PlaylistsViewModel?
+    internal var musicDetailsService: MusicDetailsService
+    internal var cancellables = Set<AnyCancellable>()
+
+    // MARK: - Services
     private let playerService: PlayerService
-    private lazy var playerViewModel = PlayerViewModel(playerService: playerService)
+    
+    // MARK: - Private propeties
+    private lazy var playerViewModel = PlayerViewModel(playerService: playerService, queueManager: queueManager)
     private var optionsViewModel: OptionsViewModel?
     private var queueViewModel: QueueViewModel?
-    private var playlistsViewModel: PlaylistsViewModel?
+    private var queueManager: QueueManager
     
-    private var cancellables = Set<AnyCancellable>()
-    
-    init(playerService: PlayerService) {
+    init(playerService: PlayerService, musicDetailsService: MusicDetailsService, queueManager: QueueManager) {
         self.playerService = playerService
+        self.musicDetailsService = musicDetailsService
+        self.queueManager = queueManager
         
         bindPlayerView()
     }
@@ -55,8 +67,47 @@ final class PlayerCoordinator: VerticalCoordinatorProtocol {
             presentOptionsView()
         case .queue:
             presentQueueView()
+        case .artist:
+            presentArtistView()
+        case .playlist:
+            presentPlaylistView()
         case .playlists:
             presentPlaylistsView()
+        }
+    }
+    
+    func push(_ path: PlayerPath) {
+        switch path {
+        case .options:
+            bindOptionsViewModel()
+        case .queue:
+            bindQueueViewModel()
+        case .artist(let artist):
+            bindArtistViewModel(for: artist)
+        case .playlist(let playlist):
+            bindPlaylistViewModel(for: playlist)
+        case .playlists(let playlists):
+            bindPlaylistsViewModel(for: playlists)
+        }
+        
+        navigationPath.append(path)
+    }
+    
+    func pop() {
+        navigationPath.removeLast()
+    }
+    
+    @ViewBuilder
+    func presentOptionsView() -> some View {
+        if let optionsViewModel {
+            OptionsView(viewModel: optionsViewModel)
+        }
+    }
+    
+    @ViewBuilder
+    func presentQueueView() -> some View {
+        if let queueViewModel {
+            QueueView(viewModel: queueViewModel)
         }
     }
 }
@@ -85,30 +136,6 @@ extension PlayerCoordinator {
             .store(in: &cancellables)
     }
     
-    func push(_ path: PlayerPath) {
-        switch path {
-        case .options:
-            bindOptionsViewModel()
-        case .queue:
-            bindQueueViewModel()
-        case .playlists:
-            bindPlaylistsViewModel()
-        }
-        
-        navigationPath.append(path)
-    }
-    
-    func pop() {
-        navigationPath.removeLast()
-    }
-    
-    @ViewBuilder
-    func presentOptionsView() -> some View {
-        if let optionsViewModel {
-            OptionsView(viewModel: optionsViewModel)
-        }
-    }
-    
     func bindOptionsViewModel() {
         optionsViewModel = OptionsViewModel()
         
@@ -119,8 +146,8 @@ extension PlayerCoordinator {
             .store(in: &cancellables)
         
         optionsViewModel?.onDidTapPlaylistsButton
-            .sink { [weak self] in
-                self?.push(.playlists)
+            .sink { [weak self] playlists in
+                self?.push(.playlists(playlists))
             }
             .store(in: &cancellables)
     }
@@ -133,13 +160,6 @@ extension PlayerCoordinator {
         }
     }
     
-    @ViewBuilder
-    func presentQueueView() -> some View {
-        if let queueViewModel {
-            QueueView(viewModel: queueViewModel)
-        }
-    }
-    
     func bindQueueViewModel() {
         queueViewModel = QueueViewModel()
         
@@ -149,24 +169,6 @@ extension PlayerCoordinator {
             }
             .store(in: &cancellables)
     }
-    
-    @ViewBuilder
-    func presentPlaylistsView() -> some View {
-        if let playlistsViewModel {
-            PlaylistsView(viewModel: playlistsViewModel)
-        }
-    }
-    
-    func bindPlaylistsViewModel() {
-        playlistsViewModel = PlaylistsViewModel(playerService: playerService)
-        
-        playlistsViewModel?.onDidTapCancelButton
-            .sink { [weak self] in
-                withAnimation {
-                    self?.pop()
-                }
-            }
-    }
 }
 
 struct PlayerCoordinatorView<Coordinator: VerticalCoordinatorProtocol>: CoordinatorViewProtocol {
@@ -175,4 +177,35 @@ struct PlayerCoordinatorView<Coordinator: VerticalCoordinatorProtocol>: Coordina
     var body: some View {
         NavigationStack(path: $coordinator.navigationPath, root: coordinator.rootView)
     }
+}
+
+final class QueueManager: Codable {
+    var tracks: [Track]
+    var currentTrack: Track
+    var currentTrackIndex: Int
+    
+    init(tracks: [Track], currentTrackIndex: Int = 0) {
+        self.tracks = tracks
+        self.currentTrack = tracks[currentTrackIndex]
+        self.currentTrackIndex = currentTrackIndex
+    }
+    
+    func next() -> Track {
+        if currentTrackIndex < tracks.count - 1 {
+            currentTrackIndex += 1
+            return tracks[currentTrackIndex]
+        }
+        currentTrackIndex = 0
+        return tracks[currentTrackIndex]
+    }
+    
+    func previous() -> Track {
+        if currentTrackIndex > 0 {
+            currentTrackIndex -= 1
+            return tracks[currentTrackIndex]
+        }
+        currentTrackIndex -= 1
+        return tracks[currentTrackIndex]
+    }
+    
 }

@@ -29,7 +29,7 @@ extension LoginService {
     func postToken(code: String) -> PassthroughSubject<TokenResponse, Never> {
         let token = PassthroughSubject<TokenResponse, Never>()
         
-        if let codeVerifier = UserDefaults.standard.string(forKey: .KeyChain.codeVerifier) {
+        if let codeVerifier = UserDefaults.standard.string(forKey: .UserDefaults.codeVerifier) {
             
             api.postToken(verifier: codeVerifier, code: code)
                 .debugPrint()

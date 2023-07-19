@@ -13,11 +13,12 @@ extension String {
     static let close = "Close"
     static let noData = "N/A"
     
-    struct KeyChain {
+    struct UserDefaults {
         static let code = "code"
         static let codeVerifier = "code_verifier"
         static let refreshToken = "refresh_token"
         static let accessToken = "access_token"
+        static let queueManager = "queue_manager"
     }
     
     struct Track {
@@ -59,21 +60,22 @@ extension String {
     }
 
     struct Home {
+        static let welcome = "Welcome"
         static let pickerTitle = "In:"
         static let sliderCount = "Count:"
         static let topTracks = "Your top tracks"
         static let topArtists = "Your top artists"
+        static let playlists = "Your playlists"
+        static let total = "Total:"
+    }
+    
+    struct Search {
+        static let filters = "Filters"
+        static let sortBy = "Sort by"
     }
 
-    struct Employees {
-        static let emptyStateTitle = "Sorry, no results found"
-        static let emptyStateDescription = "Please check your spelling and try again. You can also try searching for a related name."
-        static let selectDepartment = "Select department"
-        static let sortBy = "Sort by"
-        static let name = "Name"
-        static let surname = "Surname"
-        static let department = "Department"
-        static let lead = "Lead"
+    struct Artist {
+        static let mostPlayed = "'s most played"
     }
 
     struct MyTeam {

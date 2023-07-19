@@ -24,7 +24,7 @@ final class PlayerViewModel: ObservableObject {
     private let playerService: PlayerService
     
     // MARK: - Class lifecycle
-    init(playerService: PlayerService) {
+    init(playerService: PlayerService, queueManager: QueueManager) {
         self.playerService = playerService
     }
     
@@ -51,7 +51,7 @@ extension PlayerViewModel {
     func previousButtonTapped() {
         
     }
-    
+
     func playPauseButtonTapped() {
         isPlaying.toggle()
     }

@@ -1,5 +1,5 @@
 //
-//  PlaylistsViewModel.swift
+//  PlaylistViewModel.swift
 //  Noisy
 //
 //  Created by Davor Lakus on 18.07.2023..
@@ -8,37 +8,42 @@
 import Combine
 import SwiftUI
 
-final class PlaylistsViewModel: ObservableObject {
+final class PlaylistViewModel: ObservableObject {
     // MARK: - Published properties
     
     // MARK: - Public properties
     let onDidTapBackButton = PassthroughSubject<Void, Never>()
-    let onDidTapPlaylistRow = PassthroughSubject<[Track], Never>()
+    let onDidTapTrackRow = PassthroughSubject<Track, Never>()
+    let onDidTapArtistButton = PassthroughSubject<Artist, Never>()
     
     // MARK: - Private properties
-    private let playlists: [Album]
+    private let playlist: Playlist
     private let musicDetailsService: MusicDetailsService
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Class lifecycle
-    init(playlists: [Album], musicDetailsService: MusicDetailsService) {
-        self.playlists = playlists
+    init(playlist: Playlist,  musicDetailsService: MusicDetailsService) {
+        self.playlist = playlist
         self.musicDetailsService = musicDetailsService
     }
 }
 
 // MARK: - Public extension
-extension PlaylistsViewModel {
+extension PlaylistViewModel {
     func backButtonTapped() {
         onDidTapBackButton.send()
     }
     
-    func playlistRowTapped() {
-        
+    func trackRowTapped(for track: Track) {
+        onDidTapTrackRow.send(track)
+    }
+    
+    func artistButtonTapped(for artist: Artist) {
+        onDidTapArtistButton.send(artist)
     }
 }
 
 // MARK: - Private extension
-private extension PlaylistsViewModel {
+private extension PlaylistViewModel {
     
 }
