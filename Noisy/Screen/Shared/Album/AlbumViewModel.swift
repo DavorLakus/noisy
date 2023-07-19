@@ -8,7 +8,11 @@
 import Combine
 import SwiftUI
 
-final class AlbumViewModel: ObservableObject {
+final class AlbumViewModel: ObservableObject, Equatable {
+    static func == (lhs: AlbumViewModel, rhs: AlbumViewModel) -> Bool {
+        lhs.album != rhs.album
+    }
+    
     // MARK: - Published properties
     
     // MARK: - Public properties

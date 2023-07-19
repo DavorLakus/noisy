@@ -13,7 +13,7 @@ final class OptionsViewModel: ObservableObject {
     
     // MARK: - Public properties
     let onDidTapBackButton = PassthroughSubject<Void, Never>()
-    let onDidTapPlaylistsButton = PassthroughSubject<[Album], Never>()
+    let onDidTapPlaylistsButton = PassthroughSubject<[Playlist], Never>()
     
     // MARK: - Private properties
     private var cancellables = Set<AnyCancellable>()

@@ -8,7 +8,11 @@
 import Combine
 import SwiftUI
 
-final class PlaylistViewModel: ObservableObject {
+final class PlaylistViewModel: ObservableObject, Equatable {
+    static func == (lhs: PlaylistViewModel, rhs: PlaylistViewModel) -> Bool {
+        lhs.playlist != rhs.playlist
+    }
+    
     // MARK: - Published properties
     
     // MARK: - Public properties

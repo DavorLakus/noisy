@@ -10,6 +10,9 @@ import Combine
 
 enum DiscoverPath: Hashable {
     case artist(Artist)
+    case album(Album)
+    case playlist(Playlist)
+    case playlists([Playlist])
 }
 
 final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
@@ -21,9 +24,10 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     
     // MARK: - Internal properties
     internal var artistViewModelStack = Stack<ArtistViewModel>()
-    internal var albumViewModel: AlbumViewModel?
-    internal var playlistViewModel: PlaylistViewModel?
-    internal var playlistsViewModel: PlaylistsViewModel?
+    internal var albumViewModelStack = Stack<AlbumViewModel>()
+    internal var playlistViewModelStack = Stack<PlaylistViewModel>()
+    internal var playlistsViewModelStack = Stack<PlaylistsViewModel>()
+    
     internal var musicDetailsService: MusicDetailsService
     internal var cancellables = Set<AnyCancellable>()
     
@@ -65,7 +69,13 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     func navigationDestination(_ path: DiscoverPath) -> some View {
         switch path {
         case .artist:
-            EmptyView()
+            presentArtistView()
+        case .album:
+            presentAlbumView()
+        case .playlist:
+            presentPlaylistView()
+        case .playlists:
+            presentPlaylistsView()
         }
     }
     
@@ -73,6 +83,12 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
         switch path {
         case .artist(let artist):
             bindArtistViewModel(for: artist)
+        case .album(let album):
+            bindAlbumViewModel(for: album)
+        case .playlist(let playlist):
+            bindPlaylistViewModel(for: playlist)
+        case .playlists(let playlists):
+            bindPlaylistsViewModel(for: playlists)
         }
         
         navigationPath.append(path)
@@ -87,6 +103,18 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
 extension DiscoverCoordinator {
     func pushArtistViewModel(for artist: Artist) {
         push(.artist(artist))
+    }
+    
+    func pushAlbumViewModel(for album: Album) {
+        push(.album(album))
+    }
+    
+    func pushPlaylistViewModel(for playlist: Playlist) {
+        push(.playlist(playlist))
+    }
+    
+    func pushPlaylistsViewModel(for playlists: [Playlist]) {
+        push(.playlists(playlists))
     }
 }
 

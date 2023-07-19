@@ -8,7 +8,11 @@
 import Combine
 import SwiftUI
 
-final class PlaylistsViewModel: ObservableObject {
+final class PlaylistsViewModel: ObservableObject, Equatable {
+    static func == (lhs: PlaylistsViewModel, rhs: PlaylistsViewModel) -> Bool {
+        lhs.playlists != rhs.playlists
+    }
+    
     // MARK: - Published properties
     
     // MARK: - Public properties
@@ -16,12 +20,12 @@ final class PlaylistsViewModel: ObservableObject {
     let onDidTapPlaylistRow = PassthroughSubject<[Track], Never>()
     
     // MARK: - Private properties
-    private let playlists: [Album]
+    private let playlists: [Playlist]
     private let musicDetailsService: MusicDetailsService
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Class lifecycle
-    init(playlists: [Album], musicDetailsService: MusicDetailsService) {
+    init(playlists: [Playlist], musicDetailsService: MusicDetailsService) {
         self.playlists = playlists
         self.musicDetailsService = musicDetailsService
     }
