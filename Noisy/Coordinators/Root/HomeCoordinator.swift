@@ -8,13 +8,9 @@
 import Combine
 import SwiftUI
 
-enum HomePath: Hashable, Identifiable {
+enum HomePath: Hashable {
     case artist(Artist)
     case playlist(Playlist)
-
-    var id: String {
-        String(describing: self)
-    }
 }
 
 final class HomeCoordinator: MusicDetailsCoordinatorProtocol {
@@ -26,16 +22,16 @@ final class HomeCoordinator: MusicDetailsCoordinatorProtocol {
     let onDidTapPlayerButton = PassthroughSubject<Track, Never>()
     
     // MARK: - Internal properties
-    internal var artistViewModel: ArtistViewModel?
+    internal var artistViewModelStack = Stack<ArtistViewModel>()
     internal var albumViewModel: AlbumViewModel?
     internal var playlistViewModel: PlaylistViewModel?
     internal var playlistsViewModel: PlaylistsViewModel?
     internal var musicDetailsService: MusicDetailsService
     internal var cancellables = Set<AnyCancellable>()
-
+    
     // MARK: - Private properties
     private var homeViewModel: HomeViewModel?
-
+    
     // MARK: - Services
     private let homeService: HomeService
     
@@ -50,7 +46,7 @@ final class HomeCoordinator: MusicDetailsCoordinatorProtocol {
     func start() -> some CoordinatorViewProtocol {
         HomeCoordinatorView(coordinator: self)
     }
-
+    
     @ViewBuilder
     func rootView() -> some View {
         if let homeViewModel {
@@ -85,6 +81,13 @@ final class HomeCoordinator: MusicDetailsCoordinatorProtocol {
     }
 }
 
+// MARK: - MusicDetailsCoordinatorProtocol
+extension HomeCoordinator {
+    func pushArtistViewModel(for artist: Artist) {
+        push(.artist(artist))
+    }
+}
+
 // MARK: - Binding
 extension HomeCoordinator {
     func bindHomeViewModel() {
@@ -109,17 +112,6 @@ extension HomeCoordinator {
             .store(in: &cancellables)
         
         homeViewModel?.onDidSelectTrackRow = onDidTapPlayerButton
-    }
-}
-
-// MARK: - CoordinatorView lifecycle
-extension HomeCoordinator {
-    func viewDidAppear() {
-//        bindErrorHandling()
-    }
-    
-    func viewDidDisappear() {
-//        errorAlertCancellable = nil
     }
 }
 

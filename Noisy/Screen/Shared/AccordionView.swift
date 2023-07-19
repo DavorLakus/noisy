@@ -53,7 +53,6 @@ struct SimpleAccordionView<AccordionData: Hashable, Content: View>: View {
     }
 }
 
-
 struct ParameterizedAccordionView<AccordionData: Hashable, Content: View>: View {
     @Binding var isExpanded: Bool
     @Binding var count: Double

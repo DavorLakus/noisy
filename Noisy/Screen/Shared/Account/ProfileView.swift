@@ -80,7 +80,7 @@ extension ProfileView {
                     Text(profile.displayName)
                         .font(.nunitoSemiBold(size: 14))
                         .foregroundColor(.gray900)
-                    Text(String.Account.viewProfile)
+                    Text(String.Profile.viewProfile)
                         .font(.nunitoSemiBold(size: 12))
                         .underline()
                         .foregroundColor(.gray600)
@@ -101,18 +101,14 @@ extension ProfileView {
     @ViewBuilder
     func generalView() -> some View {
         VStack(alignment: .leading, spacing: .zero) {
-            Text(String.Account.general)
+            Text(String.Profile.general)
                 .font(.nunitoSemiBold(size: 14))
                 .foregroundColor(.gray700)
             Group {
-                Text(String.Account.about)
-                    .font(.nunitoRegular(size: 16))
-                    .foregroundColor(.gray500)
-                
                 Button {
                     viewModel.signOutTapped()
                 } label: {
-                    Text(String.Profile.signOutTitle)
+                    Text(String.Profile.signoutTitle)
                         .font(.nunitoRegular(size: 16))
                         .foregroundColor(.gray600)
                         .frame(maxWidth: .infinity, alignment: .leading)

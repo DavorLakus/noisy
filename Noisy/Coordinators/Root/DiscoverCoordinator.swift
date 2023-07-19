@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 enum DiscoverPath: Hashable {
-    case detail
+    case artist(Artist)
 }
 
 final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
@@ -20,7 +20,7 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
     
     // MARK: - Internal properties
-    internal var artistViewModel: ArtistViewModel?
+    internal var artistViewModelStack = Stack<ArtistViewModel>()
     internal var albumViewModel: AlbumViewModel?
     internal var playlistViewModel: PlaylistViewModel?
     internal var playlistsViewModel: PlaylistsViewModel?
@@ -30,7 +30,6 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     // MARK: - Private properties
     private var discoverViewModel: DiscoverViewModel?
     private var discoverService: DiscoverService
-    
     
     // MARK: - Class lifecycle
     init(discoverService: DiscoverService, musicDetailsService: MusicDetailsService) {
@@ -65,17 +64,29 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     @ViewBuilder
     func navigationDestination(_ path: DiscoverPath) -> some View {
         switch path {
-        case .detail:
+        case .artist:
             EmptyView()
         }
     }
     
     func push(_ path: DiscoverPath) {
+        switch path {
+        case .artist(let artist):
+            bindArtistViewModel(for: artist)
+        }
+        
         navigationPath.append(path)
     }
     
     func pop() {
         navigationPath.removeLast()
+    }
+}
+
+// MARK: - MusicDetailsCoordinatorProtocol
+extension DiscoverCoordinator {
+    func pushArtistViewModel(for artist: Artist) {
+        push(.artist(artist))
     }
 }
 

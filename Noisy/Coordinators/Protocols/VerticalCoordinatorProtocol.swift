@@ -2,15 +2,10 @@
 //  VerticalCoordinatorProtocol.swift
 //  Noisy
 //
-//  Created by Davor Lakus on 16.07.2023..
+//  Created by Davor Lakus on 19.07.2023..
 //
 
 import SwiftUI
-
-protocol CoordinatorProtocol: ObservableObject {
-    associatedtype CoordinatorView: View
-    func start() -> CoordinatorView
-}
 
 protocol VerticalCoordinatorProtocol: CoordinatorProtocol where CoordinatorView: CoordinatorViewProtocol {
     var navigationPath: NavigationPath { get set }

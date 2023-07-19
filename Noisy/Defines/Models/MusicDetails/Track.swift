@@ -7,6 +7,10 @@
 
 import Foundation
 
+struct TracksResponse: Codable, Hashable {
+    let tracks: [Track]
+}
+
 struct Track: Codable, Hashable {
     let id: String
     let name: String
@@ -24,7 +28,7 @@ struct Track: Codable, Hashable {
     }
 }
 
-struct TracksResponse: Codable, Hashable {
+struct Tracks: Codable, Hashable {
     let href: String
     let limit: Int
     let next: String?

@@ -77,6 +77,10 @@
 		41E0FB742A67B3E300991D31 /* TrackRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB732A67B3E300991D31 /* TrackRow.swift */; };
 		41E0FB762A67B5EA00991D31 /* ArtistRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB752A67B5EA00991D31 /* ArtistRow.swift */; };
 		41E0FB782A67B76E00991D31 /* PlaylistRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB772A67B76E00991D31 /* PlaylistRow.swift */; };
+		41E0FB7C2A67D0A300991D31 /* AlbumRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB7B2A67D0A300991D31 /* AlbumRow.swift */; };
+		41E0FB7E2A67DD6000991D31 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB7D2A67DD6000991D31 /* Theme.swift */; };
+		41E0FB802A67E09E00991D31 /* Stack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB7F2A67E09E00991D31 /* Stack.swift */; };
+		41E0FB832A67ED2500991D31 /* VerticalCoordinatorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB822A67ED2500991D31 /* VerticalCoordinatorProtocol.swift */; };
 		41EA877F2A604353005DD0C2 /* Examples.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41EA877E2A604353005DD0C2 /* Examples.swift */; };
 		41EA87812A61CC61005DD0C2 /* Examples2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41EA87802A61CC60005DD0C2 /* Examples2.swift */; };
 		41F8F5272A26436300F7A2B8 /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5262A26436300F7A2B8 /* MainCoordinator.swift */; };
@@ -211,6 +215,10 @@
 		41E0FB732A67B3E300991D31 /* TrackRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRow.swift; sourceTree = "<group>"; };
 		41E0FB752A67B5EA00991D31 /* ArtistRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistRow.swift; sourceTree = "<group>"; };
 		41E0FB772A67B76E00991D31 /* PlaylistRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistRow.swift; sourceTree = "<group>"; };
+		41E0FB7B2A67D0A300991D31 /* AlbumRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumRow.swift; sourceTree = "<group>"; };
+		41E0FB7D2A67DD6000991D31 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		41E0FB7F2A67E09E00991D31 /* Stack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stack.swift; sourceTree = "<group>"; };
+		41E0FB822A67ED2500991D31 /* VerticalCoordinatorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalCoordinatorProtocol.swift; sourceTree = "<group>"; };
 		41EA877E2A604353005DD0C2 /* Examples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Examples.swift; sourceTree = "<group>"; };
 		41EA87802A61CC60005DD0C2 /* Examples2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Examples2.swift; sourceTree = "<group>"; };
 		41F8F5262A26436300F7A2B8 /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
@@ -456,7 +464,6 @@
 			isa = PBXGroup;
 			children = (
 				41E0FB2E2A65B35D00991D31 /* DiscoverCoordinator.swift */,
-				41E0FB492A66A39400991D31 /* MusicDetailsCoordinatorProtocol.swift */,
 				41E0FB382A6652C200991D31 /* PlayerCoordinator.swift */,
 				41E0FB2C2A65A1E800991D31 /* SearchCoordinator.swift */,
 				41F8F52C2A26438600F7A2B8 /* HomeCoordinator.swift */,
@@ -552,10 +559,21 @@
 			isa = PBXGroup;
 			children = (
 				41E0FB732A67B3E300991D31 /* TrackRow.swift */,
+				41E0FB7B2A67D0A300991D31 /* AlbumRow.swift */,
 				41E0FB752A67B5EA00991D31 /* ArtistRow.swift */,
 				41E0FB772A67B76E00991D31 /* PlaylistRow.swift */,
 			);
 			path = Elements;
+			sourceTree = "<group>";
+		};
+		41E0FB812A67ED1900991D31 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				41DE39CC2A63FCD50048CB51 /* CoordinatorProtocol.swift */,
+				41E0FB822A67ED2500991D31 /* VerticalCoordinatorProtocol.swift */,
+				41E0FB492A66A39400991D31 /* MusicDetailsCoordinatorProtocol.swift */,
+			);
+			path = Protocols;
 			sourceTree = "<group>";
 		};
 		41F8F5202A2642F800F7A2B8 /* Utilities */ = {
@@ -599,6 +617,7 @@
 				41F8F5932A2678F700F7A2B8 /* Fonts.swift */,
 				413EEAB82A2F29BB00DC9727 /* Icons.swift */,
 				41F8F5972A27434E00F7A2B8 /* Colors.swift */,
+				41E0FB7D2A67DD6000991D31 /* Theme.swift */,
 				41F8F5952A273E8800F7A2B8 /* Colors.xcassets */,
 			);
 			path = Theme;
@@ -624,7 +643,7 @@
 				41F8F52A2A26438000F7A2B8 /* LoginCoordinator.swift */,
 				41F8F5282A26437800F7A2B8 /* RootCoordinator.swift */,
 				41E0FB372A6652B100991D31 /* Root */,
-				41DE39CC2A63FCD50048CB51 /* CoordinatorProtocol.swift */,
+				41E0FB812A67ED1900991D31 /* Protocols */,
 			);
 			path = Coordinators;
 			sourceTree = "<group>";
@@ -632,6 +651,7 @@
 		41F8F5252A26432200F7A2B8 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				41E0FB7F2A67E09E00991D31 /* Stack.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -935,6 +955,7 @@
 				419DD1CC2A573862005A6708 /* State.swift in Sources */,
 				41E0FB512A66A6E200991D31 /* PlaylistViewModel.swift in Sources */,
 				41E0FB712A67AB4100991D31 /* AlbumViewModel.swift in Sources */,
+				41E0FB832A67ED2500991D31 /* VerticalCoordinatorProtocol.swift in Sources */,
 				413EEAC22A2F2DE200DC9727 /* DiscoverService.swift in Sources */,
 				41F8F5552A2649C000F7A2B8 /* AnyPublisher+Extension.swift in Sources */,
 				41E0FB312A66509700991D31 /* PlayerService.swift in Sources */,
@@ -956,6 +977,7 @@
 				41E0FB622A679A6D00991D31 /* Album.swift in Sources */,
 				41E0FB292A6583BC00991D31 /* MultipleSelectionRow.swift in Sources */,
 				41E0FB1E2A6452B800991D31 /* LoadingIndicator.swift in Sources */,
+				41E0FB7E2A67DD6000991D31 /* Theme.swift in Sources */,
 				41F8F5592A2649D600F7A2B8 /* String+Extension.swift in Sources */,
 				41F8F5512A2649B000F7A2B8 /* Constants.swift in Sources */,
 				41DE39CD2A63FCD50048CB51 /* CoordinatorProtocol.swift in Sources */,
@@ -968,6 +990,7 @@
 				41E0FB4A2A66A39400991D31 /* MusicDetailsCoordinatorProtocol.swift in Sources */,
 				41E0FB5E2A679A1500991D31 /* MusicDetailsService.swift in Sources */,
 				41F8F5272A26436300F7A2B8 /* MainCoordinator.swift in Sources */,
+				41E0FB802A67E09E00991D31 /* Stack.swift in Sources */,
 				41F8F5982A27434E00F7A2B8 /* Colors.swift in Sources */,
 				41D3A29B2A31E141000AC6FE /* DiscoverView.swift in Sources */,
 				41F8F55D2A2649E300F7A2B8 /* ViewModifiers.swift in Sources */,
@@ -979,6 +1002,7 @@
 				41E0FB592A66FB6000991D31 /* AccordionView.swift in Sources */,
 				419DD1C92A573862005A6708 /* NetworkError.swift in Sources */,
 				41B647832A389FC300C1485C /* Profile.swift in Sources */,
+				41E0FB7C2A67D0A300991D31 /* AlbumRow.swift in Sources */,
 				41DE39DA2A6438A90048CB51 /* AlertViewModel.swift in Sources */,
 				41F8F59A2A27534500F7A2B8 /* View+Extension.swift in Sources */,
 				41E0FB272A65834F00991D31 /* FilterSheetView.swift in Sources */,

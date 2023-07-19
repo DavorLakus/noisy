@@ -10,7 +10,7 @@ import Combine
 
 protocol MusicDetailsCoordinatorProtocol: VerticalCoordinatorProtocol {
     
-    var artistViewModel: ArtistViewModel? { get set }
+    var artistViewModelStack: Stack<ArtistViewModel> { get set }
     var albumViewModel: AlbumViewModel? { get set }
     var playlistViewModel: PlaylistViewModel? { get set }
     var playlistsViewModel: PlaylistsViewModel? { get set }
@@ -21,16 +21,27 @@ protocol MusicDetailsCoordinatorProtocol: VerticalCoordinatorProtocol {
     func bindAlbumViewModel(for album: Album)
     func bindPlaylistViewModel(for tracks: Playlist)
     func bindPlaylistsViewModel(for playlists: [Album])
+    
+    func pushArtistViewModel(for artist: Artist)
 }
 
 extension MusicDetailsCoordinatorProtocol {
     func bindArtistViewModel(for artist: Artist) {
-        artistViewModel = ArtistViewModel(artist: artist, musicDetailsService: musicDetailsService)
-        artistViewModel?.onDidTapBackButton
+        let viewModel = ArtistViewModel(artist: artist, musicDetailsService: musicDetailsService)
+        viewModel.onDidTapBackButton
             .sink { [weak self] in
                 self?.pop()
+                self?.artistViewModelStack.pop()
             }
             .store(in: &cancellables)
+        
+        viewModel.onDidTapSimilarArtistButton
+            .sink { [weak self] artist in
+                self?.pushArtistViewModel(for: artist)
+            }
+            .store(in: &cancellables)
+        
+        artistViewModelStack.push(viewModel)
     }
     
     func bindAlbumViewModel(for album: Album) {
@@ -68,7 +79,7 @@ extension MusicDetailsCoordinatorProtocol {
     
     @ViewBuilder
     func presentArtistView() -> some View {
-        if let artistViewModel {
+        if let artistViewModel = artistViewModelStack.peek() {
             ArtistView(viewModel: artistViewModel)
         }
     }

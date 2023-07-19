@@ -25,13 +25,13 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
     var onShoudEnd = PassthroughSubject<Void, Never>()
     
     // MARK: - Internal properties
-    internal var artistViewModel: ArtistViewModel?
+    internal var artistViewModelStack = Stack<ArtistViewModel>()
     internal var albumViewModel: AlbumViewModel?
     internal var playlistViewModel: PlaylistViewModel?
     internal var playlistsViewModel: PlaylistsViewModel?
     internal var musicDetailsService: MusicDetailsService
     internal var cancellables = Set<AnyCancellable>()
-
+    
     // MARK: - Services
     private let playerService: PlayerService
     
@@ -96,7 +96,17 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
     func pop() {
         navigationPath.removeLast()
     }
-    
+}
+
+// MARK: - MusicDetailsCoordinatorProtocol
+extension PlayerCoordinator {
+    func pushArtistViewModel(for artist: Artist) {
+        push(.artist(artist))
+    }
+}
+
+// MARK: ViewBuilder
+extension PlayerCoordinator {
     @ViewBuilder
     func presentOptionsView() -> some View {
         if let optionsViewModel {

@@ -40,12 +40,11 @@ extension MusicDetailsService {
         let topTracks = PassthroughSubject<[Track], Never>()
         
         api.getTopTracks(for: artistId)
-            .debugPrint()
-            .decode(type: [Track].self, decoder: JSONDecoder())
+            .decode(type: TracksResponse.self, decoder: JSONDecoder())
             .sink(
                 receiveCompletion: NetworkingManager.handleCompletion,
                 receiveValue: { result in
-                    topTracks.send(result)
+                    topTracks.send(result.tracks)
                 })
             .store(in: &cancellables)
         
@@ -56,11 +55,11 @@ extension MusicDetailsService {
         let albums = PassthroughSubject<[Album], Never>()
         
         api.getArtistsAlbums(for: artistId)
-            .decode(type: [Album].self, decoder: JSONDecoder())
+            .decode(type: AlbumResponse.self, decoder: JSONDecoder())
             .sink(
                 receiveCompletion: NetworkingManager.handleCompletion,
                 receiveValue: { result in
-                    albums.send(result)
+                    albums.send(result.items)
                 })
             .store(in: &cancellables)
         
@@ -71,11 +70,11 @@ extension MusicDetailsService {
         let relatedArtists = PassthroughSubject<[Artist], Never>()
         
         api.getArtistsRelatedArtists(for: artistId)
-            .decode(type: [Artist].self, decoder: JSONDecoder())
+            .decode(type: ArtistsResponse.self, decoder: JSONDecoder())
             .sink(
                 receiveCompletion: NetworkingManager.handleCompletion,
                 receiveValue: { result in
-                    relatedArtists.send(result)
+                    relatedArtists.send(result.artists)
                 })
             .store(in: &cancellables)
         

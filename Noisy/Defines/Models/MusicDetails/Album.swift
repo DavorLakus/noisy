@@ -7,6 +7,10 @@
 
 import Foundation
 
+struct AlbumResponse: Codable, Hashable {
+    let items: [Album]
+}
+
 struct Album: Codable, Hashable {
     let name: String
     let releaseDate: String
@@ -15,7 +19,7 @@ struct Album: Codable, Hashable {
     let popularity: Int?
     let images: [SpotifyImage]
     let href: String
-    let items: TracksResponse?
+    let items: Tracks?
     
     enum CodingKeys: String, CodingKey {
         case totalTracks = "total_tracks"

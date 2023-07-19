@@ -94,7 +94,7 @@ private extension AlertView {
                         viewModel.primaryActionTapped()
                     }
                 } label: {
-                    Text(viewModel.primaryActionText ?? String.Profile.signOutTitle)
+                    Text(viewModel.primaryActionText ?? String.Profile.signoutTitle)
                         .font(.nunitoSemiBold(size: 16))
                         .tint(.appBackground)
                 }

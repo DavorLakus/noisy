@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 enum SearchPath: Hashable {
-    case details
+    case artist(Artist)
 }
 
 final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
@@ -20,7 +20,7 @@ final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
     
     // MARK: - Internal properties
-    internal var artistViewModel: ArtistViewModel?
+    internal var artistViewModelStack = Stack<ArtistViewModel>()
     internal var albumViewModel: AlbumViewModel?
     internal var playlistViewModel: PlaylistViewModel?
     internal var playlistsViewModel: PlaylistsViewModel?
@@ -52,6 +52,11 @@ final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
     }
     
     func push(_ path: SearchPath) {
+        switch path {
+        case .artist(let artist):
+            bindArtistViewModel(for: artist)
+        }
+        
         navigationPath.append(path)
     }
     
@@ -62,9 +67,16 @@ final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
     @ViewBuilder
     func navigationDestination(_ path: SearchPath) -> some View {
         switch path {
-        case .details:
-            Color.red
+        case .artist:
+            presentArtistView()
         }
+    }
+}
+
+// MARK: - MusicDetailsCoordinatorProtocol
+extension SearchCoordinator {
+    func pushArtistViewModel(for artist: Artist) {
+        push(.artist(artist))
     }
 }
 

@@ -7,6 +7,10 @@
 
 import Foundation
 
+struct ArtistsResponse: Codable, Hashable {
+    let artists: [Artist]
+}
+
 struct Artist: Codable, Hashable {
     let id: String
     let name: String

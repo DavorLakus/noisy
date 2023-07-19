@@ -19,7 +19,6 @@ enum Alert {
 }
 
 final class RootCoordinator: CoordinatorProtocol {
-    
     // MARK: - Published properties
     @Published var tab = RootTab.home
     @Published var isAlertPresented = false
@@ -39,8 +38,8 @@ final class RootCoordinator: CoordinatorProtocol {
     
     // MARK: - Coordinators
     private lazy var homeCoordinator = HomeCoordinator(homeService: homeService, musicDetailsService: musicDetailsService)
-    private lazy var searchCoordinator = SearchCoordinator(searchService: searchService,  musicDetailsService: musicDetailsService)
-    private lazy var discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce,  musicDetailsService: musicDetailsService)
+    private lazy var searchCoordinator = SearchCoordinator(searchService: searchService, musicDetailsService: musicDetailsService)
+    private lazy var discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce, musicDetailsService: musicDetailsService)
     private var playerCoordinator: PlayerCoordinator?
     
     // MARK: - Private properties
@@ -210,9 +209,9 @@ extension RootCoordinator {
         
         switch self.alert {
         case .signout:
-            alertViewModel.title = .Profile.signOutTitle
-            alertViewModel.message = .Profile.signOutMessage
-            alertViewModel.primaryActionText = .Profile.signOutTitle
+            alertViewModel.title = .Profile.signoutTitle
+            alertViewModel.message = .Profile.signoutMessage
+            alertViewModel.primaryActionText = .Profile.signoutTitle
             alertViewModel.onDidTapPrimaryAction = onDidEnd
         }
         

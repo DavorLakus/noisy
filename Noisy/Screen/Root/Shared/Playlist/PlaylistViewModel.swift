@@ -22,7 +22,7 @@ final class PlaylistViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Class lifecycle
-    init(playlist: Playlist,  musicDetailsService: MusicDetailsService) {
+    init(playlist: Playlist, musicDetailsService: MusicDetailsService) {
         self.playlist = playlist
         self.musicDetailsService = musicDetailsService
     }

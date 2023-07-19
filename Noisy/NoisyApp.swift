@@ -11,9 +11,18 @@ import SwiftUI
 struct NoisyApp: App {
     @StateObject var coordinator = MainCoordinator()
     
+    init() {
+        setupTheme()
+    }
+    
     var body: some Scene {
         WindowGroup {
             coordinator.start()
         }
+    }
+    
+    func setupTheme() {
+        let theme = Theme()
+        theme.setupTheme()
     }
 }

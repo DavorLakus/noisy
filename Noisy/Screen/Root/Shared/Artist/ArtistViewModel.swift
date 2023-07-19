@@ -8,13 +8,18 @@
 import Combine
 import SwiftUI
 
-final class ArtistViewModel: ObservableObject {
+final class ArtistViewModel: ObservableObject, Equatable {
+    static func == (lhs: ArtistViewModel, rhs: ArtistViewModel) -> Bool {
+        lhs.artist != rhs.artist
+    }
+    
     // MARK: - Published properties
     @Published var topTracks: [Track] = []
     @Published var albums: [Album] = []
     @Published var relatedArtists: [Artist] = []
     @Published var isMostPlayedExpanded = false
-    
+    @Published var isAlbumsExpanded = false
+
     // MARK: - Coordinator actions
     let onDidTapBackButton = PassthroughSubject<Void, Never>()
     let onDidTapTrackRow = PassthroughSubject<Track, Never>()
@@ -34,6 +39,8 @@ final class ArtistViewModel: ObservableObject {
         self.musicDetailsService = musicDetailsService
         
         fetchTopTracks()
+        fetchAlbums()
+        fetchRelatedArtists()
     }
 }
 
@@ -67,10 +74,18 @@ private extension ArtistViewModel {
     }
     
     func fetchAlbums() {
-        
+        musicDetailsService.getArtistsAlbums(for: artist.id)
+            .sink { [weak self] albums in
+                self?.albums = albums
+            }
+            .store(in: &cancellables)
     }
     
     func fetchRelatedArtists() {
-        
+        musicDetailsService.getArtistsRelatedArtists(for: artist.id)
+            .sink { [weak self] artists in
+                self?.relatedArtists = artists
+            }
+            .store(in: &cancellables)
     }
 }

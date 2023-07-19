@@ -53,10 +53,12 @@ extension String {
         static let settings = "Settings"
     }
     
-    struct Account {
+    struct Profile {
         static let viewProfile = "View profile"
         static let general = "General"
         static let about = "About"
+        static let signoutTitle = "Sign out"
+        static let signoutMessage = "Are you sure you want to sign out?"
     }
 
     struct Home {
@@ -76,6 +78,8 @@ extension String {
 
     struct Artist {
         static let mostPlayed = "'s most played"
+        static let albums = "Albums"
+        static let related = "Related"
     }
 
     struct MyTeam {
@@ -96,28 +100,6 @@ extension String {
     struct ProfileTabs {
         static let main = "Main Info"
         static let competencies = "Competencies"
-    }
-    
-    struct Profile {
-        static let myProfile = "My Profile"
-        static let signOutTitle = "Sign out"
-        static let signOutMessage = "Are you sure you want to sign out?"
-        static let viewNotes = "Notes"
-        static let viewGrowthCheck = "Growth Check"
-        static let department = "DEPARTMENT"
-        static let lead = "LEAD"
-        static let role = "ROLE"
-        static let companyWorkTime = "COMPANY WORK TIME"
-        static let industryWorkTime = "INDUSTRY WORK TIME"
-        static let noData = "No data entered for this user"
-        static let technicalCompetencies = "Technical Competencies"
-        static let nonTechnicalCompetencies = "Non-Technical Competencies"
-        static let languages = "Languages"
-        static let experience = "Experience"
-        static let interest = "Interest"
-        static let demoExperience = "I know it so well that I could share my knowledge with others"
-        static let demoInterest = "I want to keep using it and learn new things"
-        static let profile = "Employee Profile"
     }
     
     struct Notes {
