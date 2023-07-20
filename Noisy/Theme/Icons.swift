@@ -8,6 +8,8 @@
 import SwiftUI
 
 extension Image {
+    static let albumPlaceholder: Image = Image("cover").renderingMode(.original)
+
     struct Tabs {
         static let home = Image(systemName: "house.fill")
         static let discover = Image(systemName: "lightbulb.circle.fill")
@@ -27,7 +29,6 @@ extension Image {
         static let checkboxFill = Image(systemName: "dot.square.fill")
         static let filter = Image(systemName: "slider.horizontal.3")
         static let sort = Image(systemName: "arrow.up.arrow.down")
-        static let albumPlaceholder: Image = Image("albumPlaceholder")
         static let plusCircle: Image = Image(systemName: "plus.circle")
     }
     

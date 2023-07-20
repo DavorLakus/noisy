@@ -21,10 +21,10 @@ struct PlayerView: View {
 extension PlayerView {
     func bodyView() -> some View {
         VStack(spacing: 28) {
-            Image.Shared.albumPlaceholder
-                .resizable()
+            LoadImage(url: URL(string: viewModel.queueManager.state.currentTrack.album.images.first?.url ?? .empty), placeholder: Image.albumPlaceholder)
                 .readSize { albumWidth = $0.width }
                 .frame(height: albumWidth)
+                .shadow(radius: 2)
             trackTitleView()
             controlsView()
             footerView()
@@ -48,6 +48,11 @@ extension PlayerView {
                 .resizable()
                 .frame(width: 28, height: 28)
                 .foregroundColor(.gray600)
+                .background {
+                    Color.appBackground
+                        .cornerRadius(Constants.cornerRadius)
+                        .shadow(radius: 2)
+                }
                 .padding(.trailing, 20)
         }
     }
@@ -68,9 +73,9 @@ extension PlayerView {
                 ZStack(alignment: .trailing) {
                     Slider(value: $viewModel.trackPosition, in: (0...viewModel.trackMaxPosition)) { isSliding in
                         if isSliding {
-                            self.viewModel.scrubState = .scrubStarted
+                            self.viewModel.sliderState = .slideStarted
                         } else {
-                            self.viewModel.scrubState = .scrubEnded(self.viewModel.trackPosition)
+                            self.viewModel.sliderState = .slideEnded(self.viewModel.trackPosition)
                         }
                     }
                     .tint(Color.green400)
@@ -85,7 +90,6 @@ extension PlayerView {
                 Text(viewModel.trackMaxPosition.positionalTime)
                     .font(.nunitoRegular(size: 12))
                     .foregroundColor(.gray500)
-
             }
         }
     }
@@ -93,16 +97,13 @@ extension PlayerView {
     func playbackControlsView() -> some View {
         HStack {
             Spacer()
-            
             Button(action: viewModel.previousButtonTapped) {
                 Image.Player.previous
                     .resizable()
                     .frame(width: 28, height: 28)
                     .foregroundColor(.gray600)
             }
-            
             Spacer()
-
             Button(action: viewModel.playPauseButtonTapped) {
                 (viewModel.isPlaying ? Image.Player.pauseCircle : Image.Player.playCircle)
                     .resizable()
@@ -110,9 +111,7 @@ extension PlayerView {
                     .animation(.none, value: viewModel.isPlaying)
                     .foregroundColor(.green900)
             }
-            
             Spacer()
-
             Button(action: viewModel.nextButtonTapped) {
                 Image.Player.next
                     .resizable()
@@ -120,7 +119,6 @@ extension PlayerView {
                     .foregroundColor(.gray600)
             }
             Spacer()
-
         }
     }
     func footerView() -> some View {
@@ -141,11 +139,15 @@ extension PlayerView {
         .padding(.vertical, Constants.margin)
         .padding(.horizontal, 32)
         .background {
-            RoundedRectangle(cornerRadius: 32)
-                .stroke(Color.orange100, lineWidth: 4)
+            RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                .stroke(Color.green500, lineWidth: 3)
         }
-        .background { Color.appBackground.cornerRadius(32) }
-        .shadow(radius: 1)
+        .background {
+            Color.appBackground
+                .cornerRadius(Constants.cornerRadius)
+                .shadow(radius: 2)
+        }
+        
     }
 }
 

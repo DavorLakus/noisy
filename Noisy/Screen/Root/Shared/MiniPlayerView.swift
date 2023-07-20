@@ -6,14 +6,41 @@
 //
 
 import SwiftUI
+import Combine
+import AVKit
 
 final class MiniPlayerViewModel: ObservableObject {
+    // MARK: - Published properties
+    @Published var isPlaying = false
+    @Published var timeControlStatus: AVPlayer.TimeControlStatus = .paused
     
+    // MARK: - Coordinator actions
+    let onDidTapMiniPlayer = PassthroughSubject<Void, Never>()
+    
+    // MARK: - Public properties
+    let queueManager: QueueManager
+    
+    init(queueManager: QueueManager) {
+        self.queueManager = queueManager
+        
+        bindQueueManager()
+    }
+    
+    func bindQueueManager() {
+        queueManager.isPlaying.assign(to: &_isPlaying.projectedValue)
+    }
+    
+    func playPauseButtonTapped() {
+        queueManager.onPlayPauseTapped()
+    }
+    
+    func miniPlayerTapped() {
+        onDidTapMiniPlayer.send()
+    }
 }
 
 struct MiniPlayerView: View {
-    @State var isPlaying = false
-    @State var queueState: QueueState
+    @ObservedObject var viewModel: MiniPlayerViewModel
     
     var body: some View {
         bodyView()
@@ -23,30 +50,35 @@ struct MiniPlayerView: View {
 // MARK: - Body view
 extension MiniPlayerView {
     func bodyView() -> some View {
-        HStack {
-            (isPlaying ? Image.Player.pause : Image.Player.play)
+        HStack(spacing: 24) {
+            (viewModel.isPlaying ? Image.Player.pause : Image.Player.play)
+                .resizable()
+                .scaledToFit()
+                .frame(height: 20)
                 .foregroundColor(.red600)
                 .highPriorityGesture(playPauseGesture())
             
             VStack(alignment: .leading, spacing: .zero) {
-                Text(queueState.currentTrack.name)
+                Text(viewModel.queueManager.state.currentTrack.name)
                     .foregroundColor(.gray700)
                     .font(.nunitoBold(size: 16))
-                Text(queueState.currentTrack.artists.first?.name ?? .empty)
+                Text(viewModel.queueManager.state.currentTrack.artists.first?.name ?? .empty)
                     .font(.nunitoSemiBold(size: 14))
                     .foregroundColor(.gray700)
                 
             }
             Spacer()
         }
-        .onTapGesture {
-        }
+        .padding(.vertical, 12)
+        .padding(.horizontal, 24)
+        .background { Color.appBackground.shadow(color: .gray100, radius: 5, y: -10) }
+        .onTapGesture(perform: viewModel.miniPlayerTapped)
     }
     
     func playPauseGesture() -> some Gesture {
         TapGesture()
             .onEnded {
-                isPlaying.toggle()
+                viewModel.playPauseButtonTapped()
             }
     }
 }

@@ -179,12 +179,22 @@ extension View {
 
 struct LoadImage: View {
     let url: URL?
+    let placeholder: Image?
+    
+    init(url: URL?, placeholder: Image? = nil) {
+        self.url = url
+        self.placeholder = placeholder
+    }
     
     var body: some View {
         AsyncImage(url: url) { image in
             image.resizable()
         } placeholder: {
-            Image.Home.profile.resizable()
+            if let placeholder {
+                placeholder.resizable()
+            } else {
+                Image.Home.profile.resizable()
+            }
         }
     }
 }

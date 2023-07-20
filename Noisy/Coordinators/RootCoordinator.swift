@@ -43,7 +43,8 @@ final class RootCoordinator: CoordinatorProtocol {
     private var playerCoordinator: PlayerCoordinator?
     
     // MARK: - Private properties
-    private var queueState: QueueState?
+    private var queueManager: QueueManager?
+    private var miniPlayerViewModel: MiniPlayerViewModel?
     private var profileViewModel: ProfileViewModel?
     private lazy var alertViewModel = AlertViewModel(isPresented: _isAlertPresented)
     private var cancellables = Set<AnyCancellable>()
@@ -89,7 +90,9 @@ private extension RootCoordinator {
     func getQueueManager() {
         if let queueStateData = UserDefaults.standard.object(forKey: .UserDefaults.queueState) as? Data,
            let queueState = try? JSONDecoder().decode(QueueState.self, from: queueStateData) {
-            self.queueState = queueState
+            let queueManager = QueueManager(state: queueState)
+            self.queueManager = queueManager
+            self.bindMiniPlayerViewModel(with: queueManager)
         }
     }
     
@@ -142,6 +145,26 @@ private extension RootCoordinator {
     }
 }
 
+// MARK: - MiniPlayer
+extension RootCoordinator {
+    @ViewBuilder
+    func presentMiniPlayer() -> some View {
+        if let miniPlayerViewModel {
+            MiniPlayerView(viewModel: miniPlayerViewModel)
+        }
+    }
+    
+    func bindMiniPlayerViewModel(with queueManager: QueueManager) {
+        miniPlayerViewModel = MiniPlayerViewModel(queueManager: queueManager)
+        
+        miniPlayerViewModel?.onDidTapMiniPlayer
+            .sink { [weak self] in
+                self?.bindPlayerCoordinator()
+            }
+            .store(in: &cancellables)
+    }
+}
+
 // MARK: - Player
 extension RootCoordinator {
     @ViewBuilder
@@ -150,21 +173,19 @@ extension RootCoordinator {
     }
     
     func bindPlayerCoordinator(with track: Track? = nil) {
-        if queueState == nil,
+        if queueManager == nil,
            let track {
-            queueState = QueueState(tracks: [track])
-            if let queueManagerData = try? JSONEncoder().encode(queueState) {
+            queueManager = QueueManager(state: QueueState(tracks: [track]))
+            if let queueManager,
+               let queueManagerData = try? JSONEncoder().encode(queueManager.state) {
                 UserDefaults.standard.set(queueManagerData, forKey: .UserDefaults.queueState)
             }
         }
-        guard let queueState else { return }
+        guard let queueManager else { return }
         
         if let track {
-            queueState.tracks = [track]
-            queueState.currentTrack = track
-            queueState.currentTime = .zero
+            queueManager.setState(with: track)
         }
-        let queueManager = QueueManager(state: queueState)
         
         playerCoordinator = PlayerCoordinator(playerService: playerService, musicDetailsService: musicDetailsService, queueManager: queueManager)
         
