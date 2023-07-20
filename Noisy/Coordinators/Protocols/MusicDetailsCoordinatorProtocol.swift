@@ -15,6 +15,7 @@ protocol MusicDetailsCoordinatorProtocol: VerticalCoordinatorProtocol {
     var playlistViewModelStack: Stack<PlaylistViewModel> { get set }
     var playlistsViewModelStack: Stack<PlaylistsViewModel> { get set }
     
+    var onDidTapPlayerButton: PassthroughSubject<Track, Never> { get set }
     var musicDetailsService: MusicDetailsService { get set }
     var cancellables: Set<AnyCancellable> { get set }
 
@@ -50,6 +51,8 @@ extension MusicDetailsCoordinatorProtocol {
                 self?.pushAlbumViewModel(for: album)
             }
             .store(in: &cancellables)
+        
+        viewModel.onDidTapTrackRow = onDidTapPlayerButton
         
         artistViewModelStack.push(viewModel)
     }

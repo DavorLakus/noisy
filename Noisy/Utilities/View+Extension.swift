@@ -105,12 +105,12 @@ extension View {
         .onPreferenceChange(SizePreferenceKey.self, perform: onChange)
     }
     
-    func cardBackground(borderColor: Color = .gray50) -> some View {
+    func cardBackground(backgroundColor: Color = .cardBackground, borderColor: Color = .gray50, cornerRadius: CGFloat = Constants.cornerRadius) -> some View {
         self
-            .background(Color.cardBackground)
-            .cornerRadius(Constants.cornerRadius)
+            .background(backgroundColor)
+            .cornerRadius(cornerRadius)
             .overlay(
-                RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                RoundedRectangle(cornerRadius: cornerRadius)
                     .stroke(borderColor, lineWidth: 1)
             )
             .shadow(color: Color.gray300,

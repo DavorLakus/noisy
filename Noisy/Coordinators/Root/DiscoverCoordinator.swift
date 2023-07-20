@@ -21,7 +21,6 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     
     // MARK: - Public properties
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
-    let onDidTapTrackRow = PassthroughSubject<Track, Never>()
     
     // MARK: - Internal properties
     internal var artistViewModelStack = Stack<ArtistViewModel>()
@@ -29,23 +28,26 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     internal var playlistViewModelStack = Stack<PlaylistViewModel>()
     internal var playlistsViewModelStack = Stack<PlaylistsViewModel>()
     
+    internal var onDidTapPlayerButton = PassthroughSubject<Track, Never>()
     internal var musicDetailsService: MusicDetailsService
     internal var cancellables = Set<AnyCancellable>()
     
     // MARK: - Private properties
     private var discoverViewModel: DiscoverViewModel?
     private var discoverService: DiscoverService
+    private var searchService: SearchService
     
     // MARK: - Class lifecycle
-    init(discoverService: DiscoverService, musicDetailsService: MusicDetailsService) {
+    init(discoverService: DiscoverService, searchService: SearchService, musicDetailsService: MusicDetailsService) {
         self.discoverService = discoverService
+        self.searchService = searchService
         self.musicDetailsService = musicDetailsService
         
         bindDiscoverViewModel()
     }
     
     func bindDiscoverViewModel() {
-        discoverViewModel = DiscoverViewModel(discoverService: discoverService)
+        discoverViewModel = DiscoverViewModel(discoverService: discoverService, searchService: searchService)
         
         discoverViewModel?.onDidTapProfileButton
             .sink { [weak self] in

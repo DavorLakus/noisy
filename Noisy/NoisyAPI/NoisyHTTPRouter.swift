@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum NoisyHTTPRouter {
+enum NoisyHTTPRouter {
     case authorize(codeChallenge: String)
     case token(verifier: String, code: String)
     case refreshToken(refreshToken: String)
@@ -21,6 +21,8 @@ public enum NoisyHTTPRouter {
     case artistsAlbums(artistId: String)
     case artistsRelatedArtists(artistId: String)
     case search(query: String, type: String, limit: Int, offset: Int)
+    case recommendation(request: DiscoverRequest)
+    case recommendationGenres
 }
 
 extension NoisyHTTPRouter: APIEndpoint {
@@ -28,7 +30,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize, .token, .refreshToken:
             return "accounts.spotify.com"
-        case .profile, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search:
+        case .profile, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
             return "api.spotify.com"
         }
     }
@@ -39,7 +41,7 @@ extension NoisyHTTPRouter: APIEndpoint {
             return .empty
         case .token, .refreshToken:
             return "/api"
-        case .profile, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search:
+        case .profile, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
             return "/v1"
         }
     }
@@ -52,6 +54,10 @@ extension NoisyHTTPRouter: APIEndpoint {
             return "/me"
         case .search:
             return "/search"
+        case .recommendation:
+            return "/recommendation"
+        case .recommendationGenres:
+            return "/recommendations/available-genre-seeds"
         case .token, .refreshToken:
             return "/token"
         case .myTop(let type, _, _):
@@ -75,7 +81,7 @@ extension NoisyHTTPRouter: APIEndpoint {
     
     public var method: HTTPMethod {
         switch self {
-        case .profile, .search, .authorize, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .search, .recommendation, .recommendationGenres, .authorize, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return .get
         case .token, .refreshToken:
             return .post
@@ -86,17 +92,10 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize:
             return nil
-        case .profile, .search, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .search, .recommendation, .recommendationGenres, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return authToken
         case .token, .refreshToken:
             return ["Content-Type" : "application/x-www-form-urlencoded"]
-        }
-    }
-    
-    public func body() throws -> Data? {
-        switch self {
-        case .authorize, .token, .refreshToken, .myTop, .profile, .search, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
-            return nil
         }
     }
     
@@ -142,8 +141,58 @@ extension NoisyHTTPRouter: APIEndpoint {
             return [URLQueryItem(name: "limit", value: "\(count)")]
         case .artistsTopTracks:
             return [URLQueryItem(name: "market", value: "HR")]
-        case .profile, .artist, .playlist, .album, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .artist, .playlist, .album, .artistsAlbums, .artistsRelatedArtists, .recommendationGenres:
             return nil
+        case .recommendation(let request):
+            return [
+                URLQueryItem(name: "market", value: "HR"),
+                URLQueryItem(name: "limit", value: String(request.limit)),
+                URLQueryItem(name: "seed_artists", value: request.seedArtists),
+                URLQueryItem(name: "seed_genres", value: request.seedGenres),
+                URLQueryItem(name: "seed_tracks", value: request.seedTracks),
+                URLQueryItem(name: "min_acousticness", value: String(request.minAcousticness)),
+                URLQueryItem(name: "max_acousticness", value: String(request.maxAcousticness)),
+                URLQueryItem(name: "target_acousticness", value: String(request.targetAcousticness)),
+                URLQueryItem(name: "min_danceability", value: String(request.minDanceability)),
+                URLQueryItem(name: "max_danceability", value: String(request.maxDanceability)),
+                URLQueryItem(name: "target_danceability", value: String(request.targetDanceability)),
+                URLQueryItem(name: "min_duration_ms", value: String(request.minDurationMs)),
+                URLQueryItem(name: "max_duration_ms", value: String(request.maxDurationMs)),
+                URLQueryItem(name: "target_duration_ms", value: String(request.targetDurationMs)),
+                URLQueryItem(name: "min_energy", value: String(request.minEnergy)),
+                URLQueryItem(name: "max_energy", value: String(request.maxEnergy)),
+                URLQueryItem(name: "target_energy", value: String(request.targetEnergy)),
+                URLQueryItem(name: "min_instrumentalness", value: String(request.minInstrumentalness)),
+                URLQueryItem(name: "max_instrumentalness", value: String(request.maxInstrumentalness)),
+                URLQueryItem(name: "target_instrumentalness", value: String(request.targetInstrumentalness)),
+                URLQueryItem(name: "min_key", value: String(request.minKey)),
+                URLQueryItem(name: "max_key", value: String(request.maxKey)),
+                URLQueryItem(name: "target_key", value: String(request.targetKey)),
+                URLQueryItem(name: "min_liveness", value: String(request.minLiveness)),
+                URLQueryItem(name: "max_liveness", value: String(request.maxLiveness)),
+                URLQueryItem(name: "target_liveness", value: String(request.targetLiveness)),
+                URLQueryItem(name: "min_loudness", value: String(request.minLoudness)),
+                URLQueryItem(name: "max_loudness", value: String(request.maxLoudness)),
+                URLQueryItem(name: "target_loudness", value: String(request.targetLoudness)),
+                URLQueryItem(name: "min_mode", value: String(request.minMode)),
+                URLQueryItem(name: "max_mode", value: String(request.maxMode)),
+                URLQueryItem(name: "target_mode", value: String(request.targetMode)),
+                URLQueryItem(name: "min_popularity", value: String(request.minPopularity)),
+                URLQueryItem(name: "max_popularity", value: String(request.maxPopularity)),
+                URLQueryItem(name: "target_popularity", value: String(request.targetPopularity)),
+                URLQueryItem(name: "min_speechiness", value: String(request.minSpeechiness)),
+                URLQueryItem(name: "max_speechiness", value: String(request.maxSpeechiness)),
+                URLQueryItem(name: "target_speechiness", value: String(request.targetSpeechiness)),
+                URLQueryItem(name: "min_tempo", value: String(request.minTempo)),
+                URLQueryItem(name: "max_tempo", value: String(request.maxTempo)),
+                URLQueryItem(name: "target_tempo", value: String(request.targetTempo)),
+                URLQueryItem(name: "min_time_signature", value: String(request.minTimeSignature)),
+                URLQueryItem(name: "max_time_signature", value: String(request.maxTimeSignature)),
+                URLQueryItem(name: "target_time_signature", value: String(request.targetTimeSignature)),
+                URLQueryItem(name: "min_valence", value: String(request.minValence)),
+                URLQueryItem(name: "max_valence", value: String(request.maxValence)),
+                URLQueryItem(name: "target_valence", value: String(request.targetValence))
+            ]
         }
     }
 }

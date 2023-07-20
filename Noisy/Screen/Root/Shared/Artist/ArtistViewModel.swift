@@ -21,8 +21,8 @@ final class ArtistViewModel: ObservableObject, Equatable {
     @Published var isAlbumsExpanded = false
 
     // MARK: - Coordinator actions
+    var onDidTapTrackRow: PassthroughSubject<Track, Never>?
     let onDidTapBackButton = PassthroughSubject<Void, Never>()
-    let onDidTapTrackRow = PassthroughSubject<Track, Never>()
     let onDidTapAlbumRow = PassthroughSubject<Album, Never>()
     let onDidTapSimilarArtistButton = PassthroughSubject<Artist, Never>()
     
@@ -51,7 +51,7 @@ extension ArtistViewModel {
     }
     
     func trackRowTapped(for track: Track) {
-        onDidTapTrackRow.send(track)
+        onDidTapTrackRow?.send(track)
     }
     
     func albumRowTapped(for album: Album) {

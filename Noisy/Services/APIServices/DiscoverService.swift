@@ -19,3 +19,33 @@ final class DiscoverService {
         self.api = api
     }
 }
+
+extension DiscoverService {
+    func discover(request: DiscoverRequest) -> PassthroughSubject<RecommendationResult, Never> {
+        let discoverResults = PassthroughSubject<RecommendationResult, Never>()
+        
+        api.discover(request: request)
+            .decode(type: RecommendationResult.self, decoder: JSONDecoder())
+            .sink(receiveCompletion: NetworkingManager.handleCompletion,
+                  receiveValue: { result in
+                discoverResults.send(result)
+            })
+            .store(in: &cancellables)
+        
+        return discoverResults
+    }
+    
+    func getRecommendationGenres() -> PassthroughSubject<[String], Never> {
+        let genres = PassthroughSubject<[String], Never>()
+        
+        api.getRecommendationGenres()
+            .decode(type: GenresResult.self, decoder: JSONDecoder())
+            .sink(receiveCompletion: NetworkingManager.handleCompletion,
+                  receiveValue: { result in
+                genres.send(result.genres)
+            })
+            .store(in: &cancellables)
+        
+        return genres
+    }
+}

@@ -28,6 +28,7 @@ struct ArtistRow: View {
                 .scaledToFit()
                 .cornerRadius(18)
                 .frame(width: 36, height: 36)
+                .shadow(radius: 2)
             Text(artist.element.name)
                 .foregroundColor(.gray700)
                 .font(.nunitoBold(size: 16))

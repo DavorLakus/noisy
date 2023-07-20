@@ -39,7 +39,7 @@ final class RootCoordinator: CoordinatorProtocol {
     // MARK: - Coordinators
     private lazy var homeCoordinator = HomeCoordinator(homeService: homeService, musicDetailsService: musicDetailsService)
     private lazy var searchCoordinator = SearchCoordinator(searchService: searchService, musicDetailsService: musicDetailsService)
-    private lazy var discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce, musicDetailsService: musicDetailsService)
+    private lazy var discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce, searchService: searchService, musicDetailsService: musicDetailsService)
     private var playerCoordinator: PlayerCoordinator?
     
     // MARK: - Private properties
@@ -123,7 +123,7 @@ private extension RootCoordinator {
             }
             .store(in: &cancellables)
         
-        searchCoordinator.onDidTapTrackRow
+        searchCoordinator.onDidTapPlayerButton
             .sink { [weak self] track in
                 self?.bindPlayerCoordinator(with: track)
             }
@@ -137,7 +137,7 @@ private extension RootCoordinator {
             }
             .store(in: &cancellables)
         
-        discoverCoordinator.onDidTapTrackRow
+        discoverCoordinator.onDidTapPlayerButton
             .sink { [weak self] track in
                 self?.bindPlayerCoordinator(with: track)
             }
@@ -176,16 +176,14 @@ extension RootCoordinator {
         if queueManager == nil,
            let track {
             queueManager = QueueManager(state: QueueState(tracks: [track]))
-            if let queueManager,
-               let queueManagerData = try? JSONEncoder().encode(queueManager.state) {
-                UserDefaults.standard.set(queueManagerData, forKey: .UserDefaults.queueState)
-            }
         }
         guard let queueManager else { return }
         
         if let track {
             queueManager.setState(with: track)
         }
+        
+        persistQueueManagerState()
         
         playerCoordinator = PlayerCoordinator(playerService: playerService, musicDetailsService: musicDetailsService, queueManager: queueManager)
         
@@ -194,11 +192,19 @@ extension RootCoordinator {
                 withAnimation {
                     self?.isPlayerCoordinatorViewPresented = false
                 }
+                self?.persistQueueManagerState()
             }
             .store(in: &cancellables)
         
         withAnimation {
             isPlayerCoordinatorViewPresented = true
+        }
+    }
+    
+    func persistQueueManagerState() {
+        if let queueManager,
+           let queueManagerData = try? JSONEncoder().encode(queueManager.state) {
+            UserDefaults.standard.set(queueManagerData, forKey: .UserDefaults.queueState)
         }
     }
 }

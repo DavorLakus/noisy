@@ -30,6 +30,7 @@ extension Image {
         static let filter = Image(systemName: "slider.horizontal.3")
         static let sort = Image(systemName: "arrow.up.arrow.down")
         static let plusCircle: Image = Image(systemName: "plus.circle")
+        static let info: Image = Image(systemName: "info.circle")
     }
     
     struct Search {

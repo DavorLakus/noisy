@@ -21,7 +21,6 @@ final class HomeCoordinator: MusicDetailsCoordinatorProtocol {
     
     // MARK: - Public properties
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
-    let onDidTapPlayerButton = PassthroughSubject<Track, Never>()
     
     // MARK: - Internal properties
     internal var artistViewModelStack = Stack<ArtistViewModel>()
@@ -29,6 +28,7 @@ final class HomeCoordinator: MusicDetailsCoordinatorProtocol {
     internal var playlistViewModelStack = Stack<PlaylistViewModel>()
     internal var playlistsViewModelStack = Stack<PlaylistsViewModel>()
     
+    internal var onDidTapPlayerButton = PassthroughSubject<Track, Never>()
     internal var musicDetailsService: MusicDetailsService
     internal var cancellables = Set<AnyCancellable>()
     

@@ -8,7 +8,7 @@
 import Combine
 import SwiftUI
 
-public class NetworkingManager {
+class NetworkingManager {
     public static let showError = PassthroughSubject<NoisyHTTPRouter, Never>()
     public static let unauthorizedAccess = PassthroughSubject<Void, Never>()
     public static let invalidToken = PassthroughSubject<Void, Never>()
@@ -92,7 +92,7 @@ public class NetworkingManager {
     
     static func handleBadURLResponse(for router: NoisyHTTPRouter, statusCode: Int) {
         switch router {
-        case .token, .refreshToken, .profile, .search, .authorize, .myTop, .playlists, .playlist, .artist, .album, .artistsAlbums, .artistsTopTracks, .artistsRelatedArtists:
+        case .token, .refreshToken, .profile, .search, .recommendation, .recommendationGenres, .authorize, .myTop, .playlists, .playlist, .artist, .album, .artistsAlbums, .artistsTopTracks, .artistsRelatedArtists:
             break
         }
     }

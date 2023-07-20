@@ -99,6 +99,17 @@ private extension SearchViewModel {
                 }
             }
             .store(in: &cancellables)
+        
+        $searchLimit
+            .dropFirst()
+            .debounce(for: .seconds(0.4), scheduler: RunLoop.main)
+            .sink { [weak self] _ in
+                withAnimation {
+                    self?.reloadResults()
+                }
+            }
+            .store(in: &cancellables)
+
     }
     
     func bindFiltering() {

@@ -25,6 +25,7 @@ extension SearchService {
         let searchResponse = PassthroughSubject<SearchResult, Never>()
         
         api.search(for: query, type: type, limit: limit, offset: offset)
+            .debugPrint()
             .decode(type: SearchResult.self, decoder: JSONDecoder())
             .sink(receiveCompletion: NetworkingManager.handleCompletion,
                   receiveValue: { result in

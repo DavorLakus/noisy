@@ -24,7 +24,12 @@ extension PlayerView {
             LoadImage(url: URL(string: viewModel.queueManager.state.currentTrack.album.images.first?.url ?? .empty), placeholder: Image.albumPlaceholder)
                 .readSize { albumWidth = $0.width }
                 .frame(height: albumWidth)
-                .shadow(radius: 2)
+                .cornerRadius(Constants.smallCornerRadius)
+                .background {
+                    Color.appBackground
+                        .cornerRadius(Constants.smallCornerRadius)
+                        .shadow(radius: 2)
+                }
             trackTitleView()
             controlsView()
             footerView()

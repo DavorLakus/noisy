@@ -71,6 +71,21 @@ extension String {
         static let total = "Total:"
     }
     
+    struct Discover {
+        static let manageSeeds = "Manage seeds"
+        static let seedsTitle = "Artist, Track, and Genre seeds"
+        static let seedsSubtitle = "Up to 5 items"
+        static let currentSelection = "Current selection:"
+        static let discover = "Discover"
+        static let done = "Done"
+        static let min = "min"
+        static let max = "max"
+        static let targetShort = "target"
+        static let lowerBound = "Min: "
+        static let target = "Target: "
+        static let upperBound = "Max: "
+    }
+    
     struct Search {
         static let tapToStart = "Tap the bar above to start"
         static let searchOptions = "Search options"

@@ -22,6 +22,7 @@
 		419DD1CD2A573862005A6708 /* NoisyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F53D2A26471D00F7A2B8 /* NoisyService.swift */; };
 		419DD1CE2A573862005A6708 /* APIEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5432A26473800F7A2B8 /* APIEndpoint.swift */; };
 		419DD1CF2A573862005A6708 /* NetworkingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5452A26473D00F7A2B8 /* NetworkingManager.swift */; };
+		41B145C12A72509800FAE0C0 /* Genre.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B145C02A72509800FAE0C0 /* Genre.swift */; };
 		41B647772A38419000C1485C /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B647762A38419000C1485C /* AuthView.swift */; };
 		41B647792A38419600C1485C /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B647782A38419600C1485C /* AuthViewModel.swift */; };
 		41B6477C2A384CB400C1485C /* LoginService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B6477B2A384CB400C1485C /* LoginService.swift */; };
@@ -86,6 +87,7 @@
 		41E0FB8B2A69684700991D31 /* QueueManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB8A2A69684700991D31 /* QueueManager.swift */; };
 		41E0FB8E2A69688C00991D31 /* QueueState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB8D2A69688C00991D31 /* QueueState.swift */; };
 		41E0FB902A69689B00991D31 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB8F2A69689B00991D31 /* Extensions.swift */; };
+		41E0FB932A69B40400991D31 /* Recommendation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB922A69B40400991D31 /* Recommendation.swift */; };
 		41EA877F2A604353005DD0C2 /* Examples.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41EA877E2A604353005DD0C2 /* Examples.swift */; };
 		41EA87812A61CC61005DD0C2 /* Examples2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41EA87802A61CC60005DD0C2 /* Examples2.swift */; };
 		41F8F5272A26436300F7A2B8 /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5262A26436300F7A2B8 /* MainCoordinator.swift */; };
@@ -164,6 +166,7 @@
 		413EEAC12A2F2DE200DC9727 /* DiscoverService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverService.swift; sourceTree = "<group>"; };
 		413EEAC32A2F2DE900DC9727 /* SearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchService.swift; sourceTree = "<group>"; };
 		419DD1B22A5736E6005A6708 /* NoisyAPI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NoisyAPI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		41B145C02A72509800FAE0C0 /* Genre.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Genre.swift; sourceTree = "<group>"; };
 		41B647762A38419000C1485C /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		41B647782A38419600C1485C /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		41B6477B2A384CB400C1485C /* LoginService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginService.swift; sourceTree = "<group>"; };
@@ -229,6 +232,7 @@
 		41E0FB8A2A69684700991D31 /* QueueManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueManager.swift; sourceTree = "<group>"; };
 		41E0FB8D2A69688C00991D31 /* QueueState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueState.swift; sourceTree = "<group>"; };
 		41E0FB8F2A69689B00991D31 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		41E0FB922A69B40400991D31 /* Recommendation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recommendation.swift; sourceTree = "<group>"; };
 		41EA877E2A604353005DD0C2 /* Examples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Examples.swift; sourceTree = "<group>"; };
 		41EA87802A61CC60005DD0C2 /* Examples2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Examples2.swift; sourceTree = "<group>"; };
 		41F8F5262A26436300F7A2B8 /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
@@ -347,6 +351,7 @@
 		41B6477D2A38910B00C1485C /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				41E0FB912A69B3F500991D31 /* Recommendation */,
 				41E0FB842A68159600991D31 /* Search */,
 				41E0FB5F2A679A4E00991D31 /* MusicDetails */,
 				41B647812A389FBF00C1485C /* Home */,
@@ -618,6 +623,15 @@
 				41E0FB8F2A69689B00991D31 /* Extensions.swift */,
 			);
 			path = PlayerService;
+			sourceTree = "<group>";
+		};
+		41E0FB912A69B3F500991D31 /* Recommendation */ = {
+			isa = PBXGroup;
+			children = (
+				41E0FB922A69B40400991D31 /* Recommendation.swift */,
+				41B145C02A72509800FAE0C0 /* Genre.swift */,
+			);
+			path = Recommendation;
 			sourceTree = "<group>";
 		};
 		41F8F5202A2642F800F7A2B8 /* Utilities */ = {
@@ -951,6 +965,7 @@
 				41E0FB762A67B5EA00991D31 /* ArtistRow.swift in Sources */,
 				41E0FB742A67B3E300991D31 /* TrackRow.swift in Sources */,
 				419DD1C82A573862005A6708 /* Encodable+Extension.swift in Sources */,
+				41B145C12A72509800FAE0C0 /* Genre.swift in Sources */,
 				41F8F5702A26508500F7A2B8 /* HomeViewModel.swift in Sources */,
 				41F8F5632A2649F400F7A2B8 /* Array+Extension.swift in Sources */,
 				41DE39D82A6438A50048CB51 /* AlertView.swift in Sources */,
@@ -972,6 +987,7 @@
 				41F8F55B2A2649DE00F7A2B8 /* Appearance.swift in Sources */,
 				41DE39CF2A6431CC0048CB51 /* Image.swift in Sources */,
 				41F8F5342A2643BB00F7A2B8 /* RootCoordinatorView.swift in Sources */,
+				41E0FB932A69B40400991D31 /* Recommendation.swift in Sources */,
 				41E0FB6C2A67A94700991D31 /* NoisyCrypto.swift in Sources */,
 				41F8F5572A2649CB00F7A2B8 /* NoisyDateFormatter.swift in Sources */,
 				41E0FB552A66A71600991D31 /* PlaylistView.swift in Sources */,

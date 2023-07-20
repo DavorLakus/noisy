@@ -21,7 +21,6 @@ final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
     
     // MARK: - Public properties
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
-    let onDidTapTrackRow = PassthroughSubject<Track, Never>()
     
     // MARK: - Internal properties
     internal var artistViewModelStack = Stack<ArtistViewModel>()
@@ -29,6 +28,7 @@ final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
     internal var playlistViewModelStack = Stack<PlaylistViewModel>()
     internal var playlistsViewModelStack = Stack<PlaylistsViewModel>()
     
+    internal var onDidTapPlayerButton = PassthroughSubject<Track, Never>()
     internal var musicDetailsService: MusicDetailsService
     internal var cancellables = Set<AnyCancellable>()
     
@@ -121,7 +121,7 @@ private extension SearchCoordinator {
             }
             .store(in: &cancellables)
         
-        searchViewModel?.onDidSelectTrackRow = onDidTapTrackRow
+        searchViewModel?.onDidSelectTrackRow = onDidTapPlayerButton
            
         searchViewModel?.onDidTapAlbumRow
             .sink { [weak self] album in

@@ -28,6 +28,7 @@ struct AlbumRow: View {
                 .scaledToFit()
                 .cornerRadius(18)
                 .frame(width: 36, height: 36)
+                .shadow(radius: 4)
             VStack(alignment: .leading, spacing: .zero) {
                 Text(album.element.name)
                     .foregroundColor(.gray700)

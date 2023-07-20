@@ -27,12 +27,13 @@ struct TrackRow: View {
                 .scaledToFit()
                 .cornerRadius(18)
                 .frame(width: 36, height: 36)
+                .shadow(radius: 2)
             
             VStack(alignment: .leading, spacing: .zero) {
-                Text(track.element.artists.first?.name ?? .empty)
+                Text(track.element.name)
                     .foregroundColor(.gray700)
                     .font(.nunitoBold(size: 16))
-                Text(track.element.name)
+                Text(track.element.artists.first?.name ?? .empty)
                     .foregroundColor(.gray700)
                     .font(.nunitoSemiBold(size: 14))
                 
