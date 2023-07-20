@@ -8,19 +8,19 @@
 import Foundation
 
 public enum NoisyHTTPRouter {
-    case authorize(String)
-    case token(String, String)
-    case refreshToken(String)
+    case authorize(codeChallenge: String)
+    case token(verifier: String, code: String)
+    case refreshToken(refreshToken: String)
     case profile
-    case myTop(String, Int, String)
-    case artist(String)
-    case album(String)
-    case playlist(String)
-    case playlists(String, Int)
-    case artistsTopTracks(String)
-    case artistsAlbums(String)
-    case artistsRelatedArtists(String)
-    case search(String, String, Int, Int)
+    case myTop(type: String, count: Int, timeRange: String)
+    case artist(artistId: String)
+    case album(albumId: String)
+    case playlist(playlistId: String)
+    case playlists(userId: String, count: Int)
+    case artistsTopTracks(artistId: String)
+    case artistsAlbums(artistId: String)
+    case artistsRelatedArtists(artistId: String)
+    case search(query: String, type: String, limit: Int, offset: Int)
 }
 
 extension NoisyHTTPRouter: APIEndpoint {

@@ -33,15 +33,15 @@ final class NoisyService: NoisyAPIProtocol {
 // MARK: - Auth
 extension NoisyService {
     func getAuthURL(verifier: String) -> URL {
-        NoisyHTTPRouter.authorize(NoisyCrypto.generateCodeChallenge(randomString: verifier)).url
+        NoisyHTTPRouter.authorize(codeChallenge: NoisyCrypto.generateCodeChallenge(randomString: verifier)).url
     }
     
     func postToken(verifier: String, code: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.token(verifier, code))
+        NetworkingManager.download(.token(verifier: verifier, code: code))
     }
     
     func postRefreshToken(with refreshToken: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.refreshToken(refreshToken))
+        NetworkingManager.download(.refreshToken(refreshToken: refreshToken))
     }
 }
 
@@ -52,38 +52,38 @@ extension NoisyService {
     }
 
     func search(for query: String, type: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.search(query, type, limit, offset))
+        NetworkingManager.download(.search(query: query, type: type, limit: limit, offset: offset))
     }
     
     func getMyTopTracks(count: Int, timeRange: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.myTop("tracks", count, timeRange))
+        NetworkingManager.download(.myTop(type: "tracks", count: count, timeRange: timeRange))
     }
     
     func getTopTracks(for artistId: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.artistsTopTracks(artistId))
+        NetworkingManager.download(.artistsTopTracks(artistId: artistId))
     }
     
     func getTopArtists(count: Int, timeRange: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.myTop("artists", count, timeRange))
+        NetworkingManager.download(.myTop(type: "artists", count: count, timeRange: timeRange))
     }
     
     func getPlaylists(for userId: String, count: Int) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.playlists(userId, count))
+        NetworkingManager.download(.playlists(userId: userId, count: count))
     }
     
     func getPlaylist(for playlistId: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.playlist(playlistId))
+        NetworkingManager.download(.playlist(playlistId: playlistId))
     }
     
     func getAlbum(with albumId: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.album(albumId))
+        NetworkingManager.download(.album(albumId: albumId))
     }
     
     func getArtistsAlbums(for artistId: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.artistsAlbums(artistId))
+        NetworkingManager.download(.artistsAlbums(artistId: artistId))
     }
     
     func getArtistsRelatedArtists(for artistId: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.artistsRelatedArtists(artistId))
+        NetworkingManager.download(.artistsRelatedArtists(artistId: artistId))
     }
 }
