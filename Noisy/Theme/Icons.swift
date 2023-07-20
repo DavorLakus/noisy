@@ -24,11 +24,15 @@ extension Image {
         static let chevronRight = Image(systemName: "chevron.right")
         static let magnifyingGlass = Image(systemName: "magnifyingglass")
         static let checkbox = Image(systemName: "square")
-        static let checkboxFill = Image(systemName: "x.square.fill")
+        static let checkboxFill = Image(systemName: "dot.square.fill")
         static let filter = Image(systemName: "slider.horizontal.3")
         static let sort = Image(systemName: "arrow.up.arrow.down")
         static let albumPlaceholder: Image = Image("albumPlaceholder")
         static let plusCircle: Image = Image(systemName: "plus.circle")
+    }
+    
+    struct Search {
+        static let arrowUp: Image = Image(systemName: "water.waves.and.arrow.up")
     }
     
     struct Home {
@@ -40,6 +44,7 @@ extension Image {
         static let threeDots = Image(systemName: "ellipsis")
         static let play = Image(systemName: "play")
         static let playCircle = Image(systemName: "play.circle")
+        static let pause = Image(systemName: "pause")
         static let pauseCircle = Image(systemName: "pause.circle")
         static let plus = Image(systemName: "plus.app")
         static let previous = Image(systemName: "arrowtriangle.left")

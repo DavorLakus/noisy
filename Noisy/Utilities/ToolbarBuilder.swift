@@ -13,7 +13,7 @@ extension View {
         ToolbarItem(placement: .navigationBarLeading) {
             Text(title)
                 .foregroundColor(.gray700)
-                .font(.nunitoSemiBold(size: 18))
+                .font(.nunitoBold(size: 24))
         }
     }
 

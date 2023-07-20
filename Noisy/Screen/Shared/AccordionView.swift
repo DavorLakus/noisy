@@ -49,7 +49,7 @@ struct SimpleAccordionView<AccordionData: Hashable, Content: View>: View {
         }
         .padding(Constants.margin)
         .cardBackground()
-        .padding(Constants.margin)
+        .padding(.horizontal, Constants.margin)
     }
 }
 
@@ -123,6 +123,6 @@ struct ParameterizedAccordionView<AccordionData: Hashable, Content: View>: View 
         }
         .padding(Constants.margin)
         .cardBackground()
-        .padding(Constants.margin)
+        .padding(.horizontal, Constants.margin)
     }
 }

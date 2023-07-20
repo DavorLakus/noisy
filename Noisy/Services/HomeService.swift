@@ -50,11 +50,11 @@ extension HomeService {
         return topTracks
     }
     
-    func getTopArtists(count: Int, timeRange: TimeRange) -> PassthroughSubject<MyTopArtistsResponse, Never> {
-        let topTracks = PassthroughSubject<MyTopArtistsResponse, Never>()
+    func getTopArtists(count: Int, timeRange: TimeRange) -> PassthroughSubject<ArtistsResponse, Never> {
+        let topTracks = PassthroughSubject<ArtistsResponse, Never>()
 
         api.getTopArtists(count: count, timeRange: timeRange.codingKey)
-            .decode(type: MyTopArtistsResponse.self, decoder: JSONDecoder())
+            .decode(type: ArtistsResponse.self, decoder: JSONDecoder())
             .sink(receiveCompletion: NetworkingManager.handleCompletion) { response in
                 topTracks.send(response)
             }

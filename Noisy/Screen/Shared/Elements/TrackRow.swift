@@ -8,12 +8,20 @@
 import SwiftUI
 struct TrackRow: View {
     let track: EnumeratedSequence<[Track]>.Iterator.Element
+    let isEnumerated: Bool
+    
+    init(track: EnumeratedSequence<[Track]>.Iterator.Element, isEnumerated: Bool = true) {
+        self.track = track
+        self.isEnumerated = isEnumerated
+    }
     
     var body: some View {
         HStack(spacing: Constants.margin) {
-            Text("\(track.offset + 1)")
-                .foregroundColor(.gray500)
-                .font(.nunitoRegular(size: 14))
+            if isEnumerated {
+                Text("\(track.offset + 1)")
+                    .foregroundColor(.gray500)
+                    .font(.nunitoRegular(size: 14))
+            }
             
             LoadImage(url: URL(string: track.element.album.images.first?.url ?? .empty))
                 .scaledToFit()
@@ -27,7 +35,6 @@ struct TrackRow: View {
                 Text(track.element.name)
                     .foregroundColor(.gray700)
                     .font(.nunitoSemiBold(size: 14))
-                    .frame(maxHeight: .infinity)
                 
             }
             Spacer()

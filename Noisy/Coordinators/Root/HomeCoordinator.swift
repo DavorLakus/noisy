@@ -144,6 +144,8 @@ struct HomeCoordinatorView<Coordinator: VerticalCoordinatorProtocol>: Coordinato
     
     var body: some View {
         NavigationStack(path: $coordinator.navigationPath, root: coordinator.rootView)
+            .navigationViewStyle(StackNavigationViewStyle())
+
 //        .alert(isPresented: $coordinator.alertIsPresented) {
 //            coordinator.presentAlert()
 //        }

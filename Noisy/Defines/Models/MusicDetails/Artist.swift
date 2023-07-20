@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ArtistsResponse: Codable, Hashable {
+struct RelatedArtistsResponse: Codable, Hashable {
     let artists: [Artist]
 }
 
@@ -18,7 +18,7 @@ struct Artist: Codable, Hashable {
     let images: [SpotifyImage]?
 }
 
-struct MyTopArtistsResponse: Codable {
+struct ArtistsResponse: Codable {
     let href: String
     let limit: Int
     let next: String?

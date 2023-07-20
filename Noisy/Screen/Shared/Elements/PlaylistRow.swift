@@ -9,12 +9,21 @@ import SwiftUI
 
 struct PlaylistRow: View {
     let playlist: EnumeratedSequence<[Playlist]>.Iterator.Element
+    let isEnumerated: Bool
+    
+    init(playlist: EnumeratedSequence<[Playlist]>.Iterator.Element, isEnumerated: Bool = true) {
+        self.playlist = playlist
+        self.isEnumerated = isEnumerated
+    }
     
     var body: some View {
         HStack(spacing: Constants.margin) {
-            Text("\(playlist.offset + 1)")
-                .foregroundColor(.gray500)
-                .font(.nunitoRegular(size: 14))
+            if isEnumerated {
+                Text("\(playlist.offset + 1)")
+                    .foregroundColor(.gray500)
+                    .font(.nunitoRegular(size: 14))
+            }
+            
             LoadImage(url: URL(string: playlist.element.images?.first?.url ?? .empty))
                 .scaledToFit()
                 .cornerRadius(18)
@@ -26,7 +35,6 @@ struct PlaylistRow: View {
                 Text("\(String.Home.total) \(playlist.element.tracks.total)")
                     .foregroundColor(.gray700)
                     .font(.nunitoSemiBold(size: 14))
-                    .frame(maxHeight: .infinity)
             }
             Spacer()
             

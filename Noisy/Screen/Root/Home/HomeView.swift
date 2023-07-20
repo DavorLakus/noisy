@@ -28,7 +28,7 @@ struct HomeView: View {
 private extension HomeView {
     func bodyView() -> some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: .zero) {
+            VStack(alignment: .leading, spacing: Constants.margin) {
                 if let name = viewModel.profile?.displayName {
                     Text("\(String.Home.welcome) \(name)")
                         .foregroundColor(.gray600)

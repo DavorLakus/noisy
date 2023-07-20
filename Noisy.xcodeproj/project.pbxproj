@@ -81,6 +81,8 @@
 		41E0FB7E2A67DD6000991D31 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB7D2A67DD6000991D31 /* Theme.swift */; };
 		41E0FB802A67E09E00991D31 /* Stack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB7F2A67E09E00991D31 /* Stack.swift */; };
 		41E0FB832A67ED2500991D31 /* VerticalCoordinatorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB822A67ED2500991D31 /* VerticalCoordinatorProtocol.swift */; };
+		41E0FB862A68159D00991D31 /* SearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB852A68159D00991D31 /* SearchResult.swift */; };
+		41E0FB882A6926C900991D31 /* MiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB872A6926C900991D31 /* MiniPlayerView.swift */; };
 		41EA877F2A604353005DD0C2 /* Examples.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41EA877E2A604353005DD0C2 /* Examples.swift */; };
 		41EA87812A61CC61005DD0C2 /* Examples2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41EA87802A61CC60005DD0C2 /* Examples2.swift */; };
 		41F8F5272A26436300F7A2B8 /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5262A26436300F7A2B8 /* MainCoordinator.swift */; };
@@ -219,6 +221,8 @@
 		41E0FB7D2A67DD6000991D31 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		41E0FB7F2A67E09E00991D31 /* Stack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stack.swift; sourceTree = "<group>"; };
 		41E0FB822A67ED2500991D31 /* VerticalCoordinatorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalCoordinatorProtocol.swift; sourceTree = "<group>"; };
+		41E0FB852A68159D00991D31 /* SearchResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResult.swift; sourceTree = "<group>"; };
+		41E0FB872A6926C900991D31 /* MiniPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayerView.swift; sourceTree = "<group>"; };
 		41EA877E2A604353005DD0C2 /* Examples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Examples.swift; sourceTree = "<group>"; };
 		41EA87802A61CC60005DD0C2 /* Examples2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Examples2.swift; sourceTree = "<group>"; };
 		41F8F5262A26436300F7A2B8 /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
@@ -337,6 +341,7 @@
 		41B6477D2A38910B00C1485C /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				41E0FB842A68159600991D31 /* Search */,
 				41E0FB5F2A679A4E00991D31 /* MusicDetails */,
 				41B647812A389FBF00C1485C /* Home */,
 				41B6477E2A38911200C1485C /* Login */,
@@ -512,6 +517,7 @@
 				41E0FB3C2A6654E300991D31 /* Playlists */,
 				41E0FB4E2A66A6C700991D31 /* Playlist */,
 				41E0FB4D2A66A6C100991D31 /* Artist */,
+				41E0FB872A6926C900991D31 /* MiniPlayerView.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -574,6 +580,14 @@
 				41E0FB492A66A39400991D31 /* MusicDetailsCoordinatorProtocol.swift */,
 			);
 			path = Protocols;
+			sourceTree = "<group>";
+		};
+		41E0FB842A68159600991D31 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				41E0FB852A68159D00991D31 /* SearchResult.swift */,
+			);
+			path = Search;
 			sourceTree = "<group>";
 		};
 		41F8F5202A2642F800F7A2B8 /* Utilities */ = {
@@ -919,6 +933,7 @@
 				41DE39D52A6436E70048CB51 /* ProfileViewModel.swift in Sources */,
 				41DE39D32A6436E20048CB51 /* ProfileView.swift in Sources */,
 				41EA87812A61CC61005DD0C2 /* Examples2.swift in Sources */,
+				41E0FB882A6926C900991D31 /* MiniPlayerView.swift in Sources */,
 				41E0FB422A6656D700991D31 /* PlaylistsViewModel.swift in Sources */,
 				41E0FB5B2A67229100991D31 /* UINavigationController+Extension.swift in Sources */,
 				41DFEBF72A26356000CC3420 /* NoisyApp.swift in Sources */,
@@ -937,6 +952,7 @@
 				41E0FB552A66A71600991D31 /* PlaylistView.swift in Sources */,
 				41D3A2A12A31E193000AC6FE /* SearchViewModel.swift in Sources */,
 				41E0FB232A656DCE00991D31 /* SearchBar.swift in Sources */,
+				41E0FB862A68159D00991D31 /* SearchResult.swift in Sources */,
 				41EA877F2A604353005DD0C2 /* Examples.swift in Sources */,
 				413EEAC02A2F2DDC00DC9727 /* HomeService.swift in Sources */,
 				41E0FB6A2A679C6500991D31 /* Playlist.swift in Sources */,

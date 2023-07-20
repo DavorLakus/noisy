@@ -21,6 +21,7 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     
     // MARK: - Public properties
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
+    let onDidTapTrackRow = PassthroughSubject<Track, Never>()
     
     // MARK: - Internal properties
     internal var artistViewModelStack = Stack<ArtistViewModel>()

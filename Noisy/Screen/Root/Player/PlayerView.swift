@@ -14,6 +14,8 @@ struct PlayerView: View {
     var body: some View {
         bodyView()
             .toolbar(content: toolbarContent)
+            .onAppear(perform: viewModel.viewDidAppear)
+            .onDisappear(perform: viewModel.viewWillDisappear)
     }
 }
 
@@ -36,10 +38,10 @@ extension PlayerView {
     func trackTitleView() -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 8) {
-                Text(String.Track.name)
+                Text("\(String.Track.name) \(viewModel.queueManager.currentTrack.name)")
                     .font(.nunitoBold(size: 18))
                     .foregroundColor(.gray600)
-                Text(String.Track.artist)
+                Text("\(String.Track.artist) \(viewModel.queueManager.currentTrack.artists.first?.name ?? .empty)")
                     .font(.nunitoRegular(size: 16))
                     .foregroundColor(.gray500)
             }
@@ -66,17 +68,23 @@ extension PlayerView {
                     .fill(Color.gray300)
                     .frame(height: 2)
                 ZStack(alignment: .trailing) {
-                    Slider(value: $viewModel.trackPosition, in: (0...viewModel.trackMaxPosition))
-                        .tint(Color.green400)
+                    Slider(value: $viewModel.trackPosition, in: (0...viewModel.trackMaxPosition)) { isSliding in
+                        if isSliding  {
+                            self.viewModel.scrubState = .scrubStarted
+                        } else {
+                            self.viewModel.scrubState = .scrubEnded(self.viewModel.trackPosition)
+                        }
+                    }
+                    .tint(Color.green400)
                 }
             }
             
             HStack {
-                Text("0:00")
+                Text(viewModel.observedPosition.positionalTime)
                     .font(.nunitoRegular(size: 12))
                     .foregroundColor(.gray500)
                 Spacer()
-                Text("4:00")
+                Text(viewModel.trackMaxPosition.positionalTime)
                     .font(.nunitoRegular(size: 12))
                     .foregroundColor(.gray500)
 

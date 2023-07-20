@@ -15,42 +15,112 @@ struct SearchView: View {
         ZStack {
             Color.appBackground.ignoresSafeArea()
             
-            VStack(spacing: .zero) {
+            VStack(spacing: 12) {
                 SearchBar(isActive: $viewModel.searchIsActive, query: $viewModel.query)
                     .frame(height: 40)
-                    .padding(.horizontal, Constants.margin)
-                    .padding(.vertical, 8)
                     .background { Color.appBackground }
                 
-                switch viewModel.state {
-                case .loading:
-                    Color.appBackground
-                case .loaded:
                     loadedStateView()
-                }
             }
+            .padding(.horizontal, Constants.margin)
         }
-        .toolbar {
-            leadingLargeTitle(title: String.Tabs.search)
-            accountButton(avatar: LoadImage(url: URL(string: viewModel.profile?.images.first?.url ?? .empty)), action: viewModel.accountButtonTapped)
-        }
+        .toolbar(content: toolbarContent)
         .onAppear(perform: viewModel.pullToRefresh)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
 
-// MARK: - Toolbar components
-private extension SearchView {
-    @ToolbarContentBuilder
-    func searchNavigationBarItem() -> some ToolbarContent {
-        ToolbarItem(placement: .principal) {
-            SearchBar(isActive: $viewModel.searchIsActive, query: $viewModel.query)
-        }
-    }
-}
-
 // MARK: - Body
 private extension SearchView {
+    @ViewBuilder
+    func loadedStateView() -> some View {
+        Group {
+            filteringButtons()
+            
+            if !viewModel.searchIsActive {
+                initialView()
+                    .zStackTransition(.move(edge: .trailing))
+            } else {
+                ScrollView(showsIndicators: false) {
+                    LazyVStack {
+                        if !viewModel.tracks.isEmpty {
+                            tracksSection()
+                        }
+                        if !viewModel.artists.isEmpty {
+                            artistsSection()
+                        }
+                        if !viewModel.albums.isEmpty {
+                            albumsSection()
+                        }
+                        if !viewModel.playlists.isEmpty {
+                            playlistsSection()
+                        }
+                    }
+                    .background(.white)
+                }
+                .scrollDismissesKeyboard(.immediately)
+                .refreshable(action: viewModel.pullToRefresh)
+                .zStackTransition(.move(edge: .leading))
+            }
+        }
+        .zStackTransition(.opacity)
+    }
+    
+    func initialView() -> some View {
+        VStack(spacing: 40) {
+            Image.Search.arrowUp
+                .resizable()
+                .frame(width: 132, height: 132)
+                .foregroundColor(.green400.opacity(0.75))
+                .scaledToFit()
+        
+            Text(String.Search.tapToStart)
+                .foregroundColor(.gray600)
+                .frame(maxWidth: 120)
+                .multilineTextAlignment(.center)
+                .padding(.bottom, 32)
+                .font(.nunitoBold(size: 18))
+        }
+        .ignoresSafeArea(edges: .top)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    @ViewBuilder
+    func filteringButtons() -> some View {
+        VStack(spacing: 0) {
+            HStack(spacing: Constants.margin) {
+                filteringButton(title: String.Search.filters, image: .Shared.filter, badgeToggled: viewModel.filteringOptions.count != 4) {
+                    viewModel.filterButtonTapped()
+                }
+                .sheet(isPresented: $viewModel.isFilterPresented) {
+                    FilterSheetView(viewModel: viewModel, isSheetPresented: $viewModel.isFilterPresented, isSort: false)
+                        .presentationDetents([.medium])
+                        .presentationDragIndicator(.hidden)
+                }
+                Spacer()
+            }
+            .padding(.horizontal, Constants.margin)
+        }
+    }
+    
+    @ViewBuilder
+    func filteringButton(title: String, image: Image, badgeToggled: Bool, action: @escaping () -> Void) -> some View {
+            HStack {
+                Text(title)
+                    .font(.nunitoBold(size: 18))
+                    .foregroundColor(.gray600)
+                image
+                    .foregroundColor(.gray400)
+            }
+            .background { Color.white }
+            .padding(.vertical, 10)
+            .padding(.horizontal, 20)
+            .background(RoundedRectangle(cornerRadius: Constants.cornerRadius).fill(.white))
+            .background(RoundedRectangle(cornerRadius: Constants.cornerRadius).stroke(Color.gray400, lineWidth: 2))
+            .mintBadge(isPresented: badgeToggled)
+            .onTapGesture(perform: action)
+    }
+    
     @ViewBuilder
     func emptyStateView() -> some View {
         VStack(spacing: 16) {
@@ -68,135 +138,82 @@ private extension SearchView {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .zStackTransition(.opacity)
     }
-    
-    @ViewBuilder
-    func loadedStateView() -> some View {
-        Group {
-            if !viewModel.searchIsActive {
-                filteringButtons()
-            }
-            
-            Spacer()
-//            List {
-//                ForEach(viewModel.presentedTracks, id: \.id) { track in
-//                    trackCard(for: track)
-//                }
-//                Spacer()
-//                    .frame(height: 120)
-//                    .listRowBackground(background)
-//                    .listRowSeparator(.hidden)
-//            }
-//            .padding(.top, 24)
-//            .listStyle(.plain)
-////            .refreshable(action: viewModel.pullToRefresh)
-        }
-        .zStackTransition(.opacity)
-    }
-    
-    @ViewBuilder
-    func filteringButtons() -> some View {
-        VStack(spacing: 0) {
-            navigationBarBottomBorder()
-            
-            HStack(spacing: Constants.margin) {
-                filteringButton(title: String.Search.filters, image: .Shared.filter, flexible: true, badgeToggled: !viewModel.filteringOptions.isEmpty) {
-                    viewModel.filterButtonTapped()
-                }
-                .sheet(isPresented: $viewModel.isFilterPresented) {
-                    FilterSheetView(viewModel: viewModel, isSheetPresented: $viewModel.isFilterPresented, isSort: false)
-                        .presentationDetents([.fraction(0.9), .fraction(0.9)])
-                        .presentationDragIndicator(.hidden)
-                }
+}
 
-                filteringButton(title: String.Search.sortBy, image: .Shared.sort, badgeToggled: viewModel.sortingOption != .name) {
-                    viewModel.sortingButtonTapped()
-                }
-                .sheet(isPresented: $viewModel.isSortPresented) {
-                    FilterSheetView(viewModel: viewModel, isSheetPresented: $viewModel.isSortPresented, isSort: true)
-                        .presentationDetents([.fraction(0.45), .fraction(0.45)])
-        //                .interactiveDismissDisabled(true)
-                        .presentationDragIndicator(.hidden)
-                }
-            }
-            .padding(.horizontal, Constants.margin)
-            .padding(.top, 24)
-        }
-    }
-    
+extension SearchView {
     @ViewBuilder
-    func filteringButton(title: String, image: Image, flexible: Bool = false, badgeToggled: Bool, action: @escaping () -> Void) -> some View {
-        Button {
-            action()
-        } label: {
-            Text(title)
-                .font(.nunitoSemiBold(size: 14))
+    func tracksSection() -> some View {
+        VStack(alignment: .leading) {
+            Text(String.Search.tracks)
+                .font(.nunitoBold(size: 14))
                 .foregroundColor(.gray600)
-            image
-                .foregroundColor(.gray400)
-        }
-        .frame(maxWidth: flexible ? .infinity : nil)
-        .background(Color.appBackground)
-        .padding(.vertical, 10)
-        .padding(.horizontal, 14)
-        .background(RoundedRectangle(cornerRadius: Constants.smallCornerRadius).stroke(Color.gray400))
-        .mintBadge(isPresented: badgeToggled)
-    }
-    
-    @ViewBuilder
-    func trackCard(for track: Track) -> some View {
-        VStack(spacing: 13.5) {
-            trackCardRow(label: String.Track.name, value: track.name, isHighlightable: true)
-            trackCardRow(label: String.Track.artist, value: track.artists.first?.name ?? .noData, isHighlightable: true)
-        }
-//        .cardBackground()
-//        .padding(16)
-//        .listRowBackground(background)
-//        .listRowSeparator(.hidden)
-//        .onTapGesture { viewModel.track(employee) }
-    }
-    
-    @ViewBuilder
-    func trackCardRow(label: String, value: String, isHighlightable: Bool = false) -> some View {
-        HStack {
-            Text(label)
-                .font(.nunitoSemiBold(size: 12))
-                .foregroundColor(.gray500)
-            Spacer()
-            
-            Group {
-                if isHighlightable {
-                    highlightedText(value, query: viewModel.query)
-                } else {
-                    Text(value)
-                }
+            ForEach(Array(viewModel.tracks.enumerated()), id: \.offset) { enumeratedTrack in
+                TrackRow(track: enumeratedTrack, isEnumerated: false)
+                    .background(.white)
+                    .onTapGesture { viewModel.trackRowSelected(enumeratedTrack.element) }
             }
-            .font(.nunitoRegular(size: 14))
-            .foregroundColor(.gray700)
+        }
+    }
+    
+    func artistsSection() -> some View {
+        VStack(alignment: .leading) {
+            Text(String.Search.artists)
+                .font(.nunitoBold(size: 14))
+                .foregroundColor(.gray600)
+            ForEach(Array(viewModel.artists.enumerated()), id: \.offset) { enumeratedArtist in
+                ArtistRow(artist: enumeratedArtist, isEnumerated: false)
+                    .background(.white)
+                    .onTapGesture { viewModel.artistRowSelected(enumeratedArtist.element) }
+            }
+        }
+    }
+    
+    func albumsSection() -> some View {
+        VStack(alignment: .leading) {
+            Text(String.Search.albums)
+                .font(.nunitoBold(size: 14))
+                .foregroundColor(.gray600)
+            
+            ForEach(Array(viewModel.albums.enumerated()), id: \.offset) { enumeratedAlbum in
+                AlbumRow(album: enumeratedAlbum, isEnumerated: false)
+                    .background(.white)
+                    .onTapGesture { viewModel.albumRowSelected(enumeratedAlbum.element) }
+            }
+        }
+    }
+    
+    func playlistsSection() -> some View {
+        VStack(alignment: .leading) {
+            Text(String.Search.playlists)
+                .font(.nunitoBold(size: 14))
+                .foregroundColor(.gray600)
+            ForEach(Array(viewModel.playlists.enumerated()), id: \.offset) { enumeratedPlaylist in
+                PlaylistRow(playlist: enumeratedPlaylist, isEnumerated: false)
+                    .background(.white)
+                    .onTapGesture { viewModel.playlistRowSelected(enumeratedPlaylist.element) }
+            }
         }
     }
 }
 
-extension View {
-    @ViewBuilder
-    func mintBadge(isPresented: Bool) -> some View {
-        ZStack {
-            if isPresented {
-                ZStack(alignment: .topTrailing) {
-                    self
-                    Group {
-                        Rectangle()
-                            .fill(Color.appBackground)
-                            .frame(width: 10, height: 10)
-                        Circle()
-                            .fill(Color.green200)
-                            .frame(width: 8, height: 8)
-                    }
-                    .offset(x: 1.5, y: -1.5)
+// MARK: - Toolbar Content
+extension SearchView {
+    @ToolbarContentBuilder
+    func toolbarContent() -> some ToolbarContent {
+        leadingLargeTitle(title: String.Tabs.search)
+        
+        ToolbarItem(placement: .navigationBarTrailing){
+            Button {
+                viewModel.profileButtonTapped()
+            } label: {
+                AsyncImage(url: URL(string: viewModel.profile?.images.first?.url ?? .empty)) { image in
+                    image.resizable()
+                } placeholder: {
+                    Image.Home.profile.resizable()
                 }
-                .transition(.opacity)
-            } else {
-                self
-                    .transition(.opacity)
+                .scaledToFit()
+                .cornerRadius(18)
+                .frame(width: 36, height: 36)
             }
         }
     }

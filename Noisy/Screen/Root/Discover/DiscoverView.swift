@@ -30,6 +30,19 @@ extension DiscoverView {
 extension DiscoverView {
     @ToolbarContentBuilder
     func toolbarContent() -> some ToolbarContent {
-        centeredTitle(.Tabs.discover)
+        ToolbarItem(placement: .navigationBarTrailing) {
+            Button {
+                viewModel.profileButtonTapped()
+            } label: {
+                AsyncImage(url: URL(string: viewModel.profile?.images.first?.url ?? .empty)) { image in
+                    image.resizable()
+                } placeholder: {
+                    Image.Home.profile.resizable()
+                }
+                .scaledToFit()
+                .cornerRadius(18)
+                .frame(width: 36, height: 36)
+            }
+        }
     }
 }

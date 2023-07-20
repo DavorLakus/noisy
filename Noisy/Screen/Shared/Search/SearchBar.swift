@@ -36,8 +36,8 @@ struct SearchBar: View {
                 }
             }
             .padding(8)
-            .background(Color.gray50)
-            .cornerRadius(Constants.cornerRadius)
+            .background(RoundedRectangle(cornerRadius: Constants.cornerRadius).fill(.white))
+            .background(RoundedRectangle(cornerRadius: Constants.cornerRadius).stroke(Color.gray600, lineWidth: 2))
             
             if isActive.wrappedValue {
                 Button {
@@ -46,8 +46,9 @@ struct SearchBar: View {
                     }
                 } label: {
                     Text(String.cancel)
+                        .font(.nunitoBold(size: 16))
                 }
-                .foregroundColor(Color.green300)
+                .foregroundColor(Color.green500)
             }
         }
     }

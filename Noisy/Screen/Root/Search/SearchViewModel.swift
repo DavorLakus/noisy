@@ -8,23 +8,14 @@
 import SwiftUI
 import Combine
 
-enum EmployeeSort: CaseIterable {
-    case name
-    case surname
-    case department
-    case lead
+enum SearchFilterOption: Identifiable, CaseIterable {
+    case artist
+    case track
+    case album
+    case playlist
     
-    var title: String {
-        switch self {
-        case .name:
-            return "Name"
-        case .surname:
-            return "Surname"
-        case .department:
-            return "Department"
-        case .lead:
-            return "Lead"
-        }
+    var id: String {
+        String(describing: self)
     }
 }
 
@@ -32,34 +23,41 @@ final class SearchViewModel: ObservableObject {
     
     // MARK: - Coordinator actions
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
+    var onDidSelectTrackRow: PassthroughSubject<Track, Never>?
+    let onDidTapArtistRow = PassthroughSubject<Artist, Never>()
+    let onDidTapAlbumRow = PassthroughSubject<Album, Never>()
+    let onDidTapPlaylistRow = PassthroughSubject<Playlist, Never>()
     
     // MARK: - Published properties
     @Published var searchIsActive = false
-    @Published var presentedTracks: [Track] = []
     @Published var query = String.empty
-    @Published var tabBarVisibility: Visibility = .visible
     @Published var isFilterPresented: Bool = false
     @Published var isSortPresented: Bool = false
+    @Published var searchLimit = 10.0
+    @Published var filteringOptions: [String] = SearchFilterOption.allCases.map(\.id)
+    @Published var tracks: [Track] = []
+    @Published var artists: [Artist] = []
+    @Published var albums: [Album] = []
+    @Published var playlists: [Playlist] = []
     @Published var state: AppState = .loaded
+    
+    // MARK: - Public properties
     var profile: Profile? {
         guard let profile  = UserDefaults.standard.object(forKey: .Login.profile) as? Data
         else { return nil }
         return try? JSONDecoder().decode(Profile.self, from: profile)
     }
-    
-    // MARK: - Public properties
-//    var departments: [Department] = []
-    var filteringOptions: [String] = []
-    var sortingOption: EmployeeSort = .name
-    var tracks: [Track] = []
     var noData: Bool {
-        searchIsActive && presentedTracks.isEmpty && !query.isEmpty
+        searchIsActive && !query.isEmpty
     }
 
     // MARK: - Private properties
+    private var tracksOffset = 0
+    private var albumsOffset = 0
+    private var artistsOffset = 0
+    private var playlistsOffset = 0
     private let searchService: SearchService
     private let filteringOptionsSelected = PassthroughSubject<Void, Never>()
-    private let sortingOptionSelected = PassthroughSubject<Void, Never>()
 
     private var cancellables = Set<AnyCancellable>()
     
@@ -67,47 +65,23 @@ final class SearchViewModel: ObservableObject {
     init(searchService: SearchService) {
         self.searchService = searchService
         
-        bindState()
         bindSearch()
         bindFiltering()
-        fetchEmployees()
-        getDepartments()
     }
 }
 
 // MARK: - Private extension
 private extension SearchViewModel {
-    func bindState() {
-        NetworkingManager.state
-            .assign(to: &_state.projectedValue)
-    }
-    
-    func fetchEmployees() {
-//        trac.getEmployees()
-//            .sink { [weak self] employees in
-//                self?.employees = employees
-//                self?.reloadEmployees()
-//            }
-//            .store(in: &cancellables)
-    }
-    
-    func getDepartments() {
-//        employeesService.getDepartments()
-//            .sink { [weak self] departments in
-//                self?.departments = departments
-//            }
-//            .store(in: &cancellables)
-    }
     
     func bindSearch() {
         $searchIsActive
             .dropFirst()
             .sink { [weak self] isActive in
                 if isActive {
-                    self?.reloadEmployees(searchActivated: true)
+                    self?.reloadResults(searchActivated: true)
                 } else {
-                    self?.state = .loaded
-                    self?.query = String.empty
+                    self?.query = .empty
+                    self?.resetResults()
                 }
             }
             .store(in: &cancellables)
@@ -121,7 +95,7 @@ private extension SearchViewModel {
             .debounce(for: .seconds(0.4), scheduler: RunLoop.main)
             .sink { [weak self] _ in
                 withAnimation {
-                    self?.reloadEmployees()
+                    self?.reloadResults()
                 }
             }
             .store(in: &cancellables)
@@ -131,43 +105,39 @@ private extension SearchViewModel {
         filteringOptionsSelected
             .sink { [weak self]  in
                 withAnimation {
-                    self?.reloadEmployees()
-                }
-            }
-            .store(in: &cancellables)
-        
-        sortingOptionSelected
-            .sink { [weak self] _ in
-                withAnimation {
-                    self?.reloadEmployees()
+                    self?.resetResults()
+                    self?.reloadResults()
                 }
             }
             .store(in: &cancellables)
     }
     
-    func reloadEmployees(searchActivated: Bool = false) {
-//        if searchIsActive || searchActivated || !query.isEmpty {
-//            presentedEmployees = employees
-//                .sorted(by: { $0.surname < $1.surname })
-//                .filter { employee in
-//                    employee.name.lowercased().contains(query.lowercased()) || employee.surname.lowercased().contains(query.lowercased())
-//                }
-//        } else {
-//            presentedEmployees = employees.sorted(by: sortEmployees).filter(filterEmployees)
-//        }
-//        withAnimation {
-//            state = noData ? .empty : .loaded
-//        }
+    func reloadResults(searchActivated: Bool = false) {
+        if !query.isEmpty {
+            searchService.search(for: query, type: filteringOptions.joined(separator: ","), limit: Int(searchLimit), offset: .zero)
+                .sink { [weak self] searchResult in
+                    if let tracksResponse = searchResult.tracks {
+                        self?.tracks = tracksResponse.items
+                    }
+                    if let albumsResponse = searchResult.albums {
+                        self?.albums = albumsResponse.items
+                    }
+                    if let artistsResponse = searchResult.artists {
+                        self?.artists = artistsResponse.items
+                    }
+                    if let playlistsResponse = searchResult.playlists {
+                        self?.playlists = playlistsResponse.items
+                    }
+                }
+                .store(in: &cancellables)
+        }
     }
     
-    func filterEmployees(_ track: Track) -> Bool {
-        true
-//        filteringOptions.isEmpty ? true : filteringOptions.contains(employee.departmentName)
-    }
-    
-    func sortEmployees(_ first: Track, _ second: Track) -> Bool {
-            first.name < second.name
-        
+    func resetResults() {
+        tracks = []
+        artists = []
+        albums = []
+        playlists = []
     }
 }
 
@@ -175,10 +145,10 @@ private extension SearchViewModel {
 extension SearchViewModel {
     @Sendable
     func pullToRefresh() {
-        fetchEmployees()
+        reloadResults()
     }
     
-    func accountButtonTapped() {
+    func profileButtonTapped() {
         onDidTapProfileButton.send()
     }
     
@@ -199,14 +169,19 @@ extension SearchViewModel {
         filteringOptionsSelected.send()
     }
     
-    func sortingOptionSelected(_ option: EmployeeSort) {
-        if sortingOption != option {
-            sortingOption = option
-        }
-        sortingOptionSelected.send()
+    func trackRowSelected(_ track: Track) {
+        onDidSelectTrackRow?.send(track)
     }
     
-    func trackRowSelected(_ employee: Track) {
-//        onDidTapEmployee.send(employee)
+    func albumRowSelected(_ album: Album) {
+        onDidTapAlbumRow.send(album)
+    }
+    
+    func artistRowSelected(_ artist: Artist) {
+        onDidTapArtistRow.send(artist)
+    }
+    
+    func playlistRowSelected(_ playlist: Playlist) {
+        onDidTapPlaylistRow.send(playlist)
     }
 }

@@ -21,6 +21,7 @@ final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
     
     // MARK: - Public properties
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
+    let onDidTapTrackRow = PassthroughSubject<Track, Never>()
     
     // MARK: - Internal properties
     internal var artistViewModelStack = Stack<ArtistViewModel>()
@@ -52,6 +53,7 @@ final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
     func rootView() -> some View {
         if let searchViewModel {
             SearchView(viewModel: searchViewModel)
+                .navigationDestination(for: SearchPath.self, destination: navigationDestination)
         }
     }
     
@@ -116,6 +118,26 @@ private extension SearchCoordinator {
         searchViewModel?.onDidTapProfileButton
             .sink { [weak self] in
                 self?.onDidTapProfileButton.send()
+            }
+            .store(in: &cancellables)
+        
+        searchViewModel?.onDidSelectTrackRow = onDidTapTrackRow
+           
+        searchViewModel?.onDidTapAlbumRow
+            .sink { [weak self] album in
+                self?.push(.album(album))
+            }
+            .store(in: &cancellables)
+        
+        searchViewModel?.onDidTapArtistRow
+            .sink { [weak self] artist in
+                self?.push(.artist(artist))
+            }
+            .store(in: &cancellables)
+        
+        searchViewModel?.onDidTapPlaylistRow
+            .sink { [weak self] playlist in
+                self?.push(.playlist(playlist))
             }
             .store(in: &cancellables)
     }

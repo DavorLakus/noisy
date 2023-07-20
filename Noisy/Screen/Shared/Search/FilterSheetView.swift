@@ -15,35 +15,50 @@ struct FilterSheetView: View {
     var isSort: Bool
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            Color.appBackground.ignoresSafeArea()
-
-            VStack(spacing: 0) {
-                sheetHeader(title: "Filter")
-
-                Rectangle()
-                    .fill(Color.gray200)
-                    .frame(height: 1)
-                    .padding(.bottom, 16)
-
-                if isSort {
-                    sortBody()
-                } else {
-                    filterBody(options: ["option one", "option due"])
-                }
-            }
-        }
+        bodyView()
     }
 }
 
 // MARK: - private extension
 private extension FilterSheetView {
+    func bodyView() -> some View {
+        ZStack(alignment: .topLeading) {
+            Color.green200.ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                sheetHeader(title: .Search.searchOptions)
+
+                Rectangle()
+                    .fill(Color.gray500)
+                    .frame(height: 1)
+                    .padding(.bottom, 16)
+                
+                VStack(alignment: .leading) {
+                    Text("\(String.Home.sliderCount) \(Int(viewModel.searchLimit))")
+                        .font(.nunitoBold(size: 14))
+                    HStack(spacing: Constants.smallSpacing) {
+                        Text("1")
+                            .font(.nunitoRegular(size: 12))
+                            .foregroundColor(.gray800)
+                        Slider(value: $viewModel.searchLimit, in: 1...30)
+                        Text("30")
+                            .font(.nunitoRegular(size: 12))
+                            .foregroundColor(.gray800)
+                    }
+                }
+                .padding(.horizontal, Constants.margin)
+
+                filterBody(options: SearchFilterOption.allCases.map(\.id))
+            }
+        }
+    }
+    
     @ViewBuilder
     func sheetHeader(title: String) -> some View {
         HStack {
             Text(title)
                 .foregroundColor(.gray800)
-                .font(.nunitoSemiBold(size: 16))
+                .font(.nunitoBold(size: 18))
                 .frame(maxWidth: .infinity)
 
             Button(action: {
@@ -65,12 +80,4 @@ private extension FilterSheetView {
         }
     }
 
-    @ViewBuilder
-    func sortBody() -> some View {
-        ForEach(EmployeeSort.allCases, id: \.self) { sortingOption in
-            SingleSelectionRow(isSelected: .constant(viewModel.sortingOption == sortingOption), title: sortingOption.title) {
-                viewModel.sortingOptionSelected(sortingOption)
-            }
-        }
-    }
 }

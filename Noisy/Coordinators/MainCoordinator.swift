@@ -23,7 +23,7 @@ final class MainCoordinator: CoordinatorProtocol {
     @Published var flow: Flow = .splash
     @Published var isLoading = false
     @Published var state: AppState = .loaded
-
+    
     // MARK: - Private properties
     private lazy var loginSerice = LoginService(api: api)
     private lazy var homeService = HomeService(api: api)
@@ -32,12 +32,16 @@ final class MainCoordinator: CoordinatorProtocol {
     private lazy var playerService = PlayerService(api: api)
     private lazy var musicDetailsService = MusicDetailsService(api: api)
     private lazy var api: NoisyAPIProtocol = NoisyService()
-
+    
+    private var loginCoordinator: LoginCoordinator?
+    private var rootCoordinator: RootCoordinator?
+    
     private var cancellables = Set<AnyCancellable>()
     private var badResponseCancellable: AnyCancellable?
-
+    
     // MARK: - Class lifecycle
     init() {
+        bindFlow()
         bindAppState()
     }
     
@@ -45,6 +49,23 @@ final class MainCoordinator: CoordinatorProtocol {
     func start() -> some View {
         MainCoordinatorView(coordinator: self)
     }
+    
+    func bindFlow() {
+        $flow.sink { [weak self] flow in
+            switch flow {
+            case .splash:
+                break
+            case .login:
+                self?.bindLoginCoordinator()
+            case .home:
+                self?.bindRootCoordinator()
+            }
+        }
+        .store(in: &cancellables)
+    }
+}
+
+extension MainCoordinator {
     
     func bindAppState() {
         NetworkingManager.state
@@ -80,6 +101,7 @@ final class MainCoordinator: CoordinatorProtocol {
             loginSerice.refreshToken(with: refreshToken)
                 .sink { [weak self] response in
                     UserDefaults.standard.set(response.accessToken, forKey: .UserDefaults.accessToken)
+                    UserDefaults.standard.set(response.refreshToken, forKey: .UserDefaults.refreshToken)
                     withAnimation {
                         self?.flow = .home()
                     }
@@ -91,6 +113,9 @@ final class MainCoordinator: CoordinatorProtocol {
             }
         }
     }
+}
+
+extension MainCoordinator {
 
     func showSplashView() -> some View {
         let viewModel = SplashViewModel()
@@ -105,29 +130,37 @@ final class MainCoordinator: CoordinatorProtocol {
         return view
     }
     
+    @ViewBuilder
+    func presentLoginFlow() -> some View {
+        loginCoordinator?.start()
+    }
+    
+    @ViewBuilder
     func presentRootFlow() -> some View {
-        let coordinator = RootCoordinator(homeService: homeService, searchService: searchService, discoverService: discoverSerivce, playerService: playerService, musicDetailsService: musicDetailsService)
+        rootCoordinator?.start()
+    }
+}
+
+extension MainCoordinator {
+    func bindLoginCoordinator() {
+        loginCoordinator = LoginCoordinator(loginService: loginSerice)
         
-        coordinator.onDidEnd
+        loginCoordinator?.onDidEnd
+            .sink { [weak self] in
+                self?.flow = .home()
+            }
+            .store(in: &cancellables)
+    }
+    
+    func bindRootCoordinator() {
+        rootCoordinator = RootCoordinator(homeService: homeService, searchService: searchService, discoverService: discoverSerivce, playerService: playerService, musicDetailsService: musicDetailsService)
+        
+        rootCoordinator?.onDidEnd
             .sink { [weak self] in
                 UserDefaults.standard.set(nil, forKey: .UserDefaults.accessToken)
                 UserDefaults.standard.set(nil, forKey: .UserDefaults.refreshToken)
                 self?.flow = .login()
             }
             .store(in: &cancellables)
-        
-        return coordinator.start()
-    }
-
-    func presentLoginFlow() -> some View {
-        let coordinator = LoginCoordinator(loginService: loginSerice)
-        
-        coordinator.onDidEnd
-            .sink { [weak self] in
-                self?.flow = .home()
-            }
-            .store(in: &cancellables)
-        
-        return coordinator.start()
     }
 }

@@ -72,8 +72,14 @@ extension String {
     }
     
     struct Search {
+        static let tapToStart = "Tap the bar above to start"
+        static let searchOptions = "Search options"
         static let filters = "Filters"
         static let sortBy = "Sort by"
+        static let tracks = "Tracks"
+        static let artists = "Artists"
+        static let albums = "Albums"
+        static let playlists = "Playlists"
     }
 
     struct Artist {

@@ -20,6 +20,7 @@ public enum NoisyHTTPRouter {
     case artistsTopTracks(String)
     case artistsAlbums(String)
     case artistsRelatedArtists(String)
+    case search(String, String, Int, Int)
 }
 
 extension NoisyHTTPRouter: APIEndpoint {
@@ -27,7 +28,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize, .token, .refreshToken:
             return "accounts.spotify.com"
-        case .profile, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search:
             return "api.spotify.com"
         }
     }
@@ -38,7 +39,7 @@ extension NoisyHTTPRouter: APIEndpoint {
             return .empty
         case .token, .refreshToken:
             return "/api"
-        case .profile, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search:
             return "/v1"
         }
     }
@@ -49,6 +50,8 @@ extension NoisyHTTPRouter: APIEndpoint {
             return "/authorize"
         case .profile:
             return "/me"
+        case .search:
+            return "/search"
         case .token, .refreshToken:
             return "/token"
         case .myTop(let type, _, _):
@@ -72,7 +75,7 @@ extension NoisyHTTPRouter: APIEndpoint {
     
     public var method: HTTPMethod {
         switch self {
-        case .profile, .authorize, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .search, .authorize, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return .get
         case .token, .refreshToken:
             return .post
@@ -83,7 +86,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize:
             return nil
-        case .profile, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .search, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return authToken
         case .token, .refreshToken:
             return ["Content-Type" : "application/x-www-form-urlencoded"]
@@ -92,7 +95,7 @@ extension NoisyHTTPRouter: APIEndpoint {
     
     public func body() throws -> Data? {
         switch self {
-        case .authorize, .token, .refreshToken, .myTop, .profile, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .authorize, .token, .refreshToken, .myTop, .profile, .search, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return nil
         }
     }
@@ -121,6 +124,14 @@ extension NoisyHTTPRouter: APIEndpoint {
                 URLQueryItem(name:"grant_type", value: "refresh_token"),
                 URLQueryItem(name:"refresh_token", value: refreshToken),
                 URLQueryItem(name:"client_id", value: APIConstants.clientID)
+            ]
+        case .search(let query, let type, let limit, let offset):
+            return [
+                URLQueryItem(name: "q", value: query),
+                URLQueryItem(name: "type", value: type),
+                URLQueryItem(name: "limit", value: "\(limit)"),
+                URLQueryItem(name: "offset", value: "\(offset)"),
+                URLQueryItem(name: "market", value: "HR")
             ]
         case .myTop(_, let count, let timeRange):
             return [

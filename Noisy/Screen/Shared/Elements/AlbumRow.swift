@@ -9,12 +9,21 @@ import SwiftUI
 
 struct AlbumRow: View {
     let album: EnumeratedSequence<[Album]>.Iterator.Element
+    let isEnumerated: Bool
+    
+    init(album: EnumeratedSequence<[Album]>.Iterator.Element, isEnumerated: Bool = true) {
+        self.album = album
+        self.isEnumerated = isEnumerated
+    }
     
     var body: some View {
         HStack(spacing: Constants.margin) {
-            Text("\(album.offset + 1)")
-                .foregroundColor(.gray500)
-                .font(.nunitoRegular(size: 14))
+            if isEnumerated {
+                Text("\(album.offset + 1)")
+                    .foregroundColor(.gray500)
+                    .font(.nunitoRegular(size: 14))
+            }
+            
             LoadImage(url: URL(string: album.element.images.first?.url ?? .empty))
                 .scaledToFit()
                 .cornerRadius(18)
@@ -23,10 +32,9 @@ struct AlbumRow: View {
                 Text(album.element.name)
                     .foregroundColor(.gray700)
                     .font(.nunitoBold(size: 16))
-                Text("\(String.Track.artist) \(album.element.items?.items.first?.artists.first?.name ?? .empty)")
+                Text(album.element.artists?.first?.name ?? .empty)
                     .foregroundColor(.gray700)
                     .font(.nunitoSemiBold(size: 14))
-                    .frame(maxHeight: .infinity)
             }
             Spacer()
             

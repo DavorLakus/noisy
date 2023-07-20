@@ -70,7 +70,7 @@ extension MusicDetailsService {
         let relatedArtists = PassthroughSubject<[Artist], Never>()
         
         api.getArtistsRelatedArtists(for: artistId)
-            .decode(type: ArtistsResponse.self, decoder: JSONDecoder())
+            .decode(type: RelatedArtistsResponse.self, decoder: JSONDecoder())
             .sink(
                 receiveCompletion: NetworkingManager.handleCompletion,
                 receiveValue: { result in

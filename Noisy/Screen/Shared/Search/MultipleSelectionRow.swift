@@ -16,32 +16,21 @@ struct MultipleSelectionRow: View {
     var body: some View {
         Button(action: action) {
             HStack {
-                Text(title)
+                Text(title.capitalized(with: .current))
                     .foregroundColor(.gray700)
-                    .font(.nunitoRegular(size: 16))
+                    .font(.nunitoRegular(size: 20))
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                Toggle(String.empty, isOn: $isSelected)
-                    .toggleStyle(.checkList)
-                    .disabled(true)
+                (isSelected ? Image.Shared.checkboxFill : Image.Shared.checkbox)
+                    .resizable()
+                    .foregroundColor(.green500)
+                    .frame(width: 16, height: 16)
+                    .animation(.none, value: isSelected)
             }
-            .padding(.horizontal, 32)
+            .padding(.horizontal, 48)
             .padding(.vertical, Constants.spacing)
+            .background(Color.green200)
         }
         .buttonStyle(.plain)
     }
-}
-
-struct CheckboxToggleStyle: ToggleStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        Button {
-            configuration.isOn.toggle()
-        } label: {
-            configuration.isOn ? Image.Shared.checkboxFill : Image.Shared.checkbox
-        }
-    }
-}
-
-extension ToggleStyle where Self == CheckboxToggleStyle {
-    static var checkList: CheckboxToggleStyle { .init() }
 }

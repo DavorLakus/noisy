@@ -19,3 +19,19 @@ final class SearchService {
         self.api = api
     }
 }
+
+extension SearchService {
+    func search(for query: String, type: String, limit: Int, offset: Int) -> PassthroughSubject<SearchResult, Never> {
+        let searchResponse = PassthroughSubject<SearchResult, Never>()
+        
+        api.search(for: query, type: type, limit: limit, offset: offset)
+            .decode(type: SearchResult.self, decoder: JSONDecoder())
+            .sink(receiveCompletion: NetworkingManager.handleCompletion,
+                  receiveValue: { result in
+                searchResponse.send(result)
+            })
+            .store(in: &cancellables)
+        
+        return searchResponse
+    }
+}

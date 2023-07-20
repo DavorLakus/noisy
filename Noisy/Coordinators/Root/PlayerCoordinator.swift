@@ -41,9 +41,9 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
     private lazy var playerViewModel = PlayerViewModel(playerService: playerService, queueManager: queueManager)
     private var optionsViewModel: OptionsViewModel?
     private var queueViewModel: QueueViewModel?
-    private var queueManager: QueueManager
+    private var queueManager: QueueState
     
-    init(playerService: PlayerService, musicDetailsService: MusicDetailsService, queueManager: QueueManager) {
+    init(playerService: PlayerService, musicDetailsService: MusicDetailsService, queueManager: QueueState) {
         self.playerService = playerService
         self.musicDetailsService = musicDetailsService
         self.queueManager = queueManager
@@ -205,35 +205,4 @@ struct PlayerCoordinatorView<Coordinator: VerticalCoordinatorProtocol>: Coordina
     var body: some View {
         NavigationStack(path: $coordinator.navigationPath, root: coordinator.rootView)
     }
-}
-
-final class QueueManager: Codable {
-    var tracks: [Track]
-    var currentTrack: Track
-    var currentTrackIndex: Int
-    
-    init(tracks: [Track], currentTrackIndex: Int = 0) {
-        self.tracks = tracks
-        self.currentTrack = tracks[currentTrackIndex]
-        self.currentTrackIndex = currentTrackIndex
-    }
-    
-    func next() -> Track {
-        if currentTrackIndex < tracks.count - 1 {
-            currentTrackIndex += 1
-            return tracks[currentTrackIndex]
-        }
-        currentTrackIndex = 0
-        return tracks[currentTrackIndex]
-    }
-    
-    func previous() -> Track {
-        if currentTrackIndex > 0 {
-            currentTrackIndex -= 1
-            return tracks[currentTrackIndex]
-        }
-        currentTrackIndex -= 1
-        return tracks[currentTrackIndex]
-    }
-    
 }

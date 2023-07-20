@@ -9,12 +9,21 @@ import SwiftUI
 
 struct ArtistRow: View {
     let artist: EnumeratedSequence<[Artist]>.Iterator.Element
+    let isEnumerated: Bool
+    
+    init(artist: EnumeratedSequence<[Artist]>.Iterator.Element, isEnumerated: Bool = true) {
+        self.artist = artist
+        self.isEnumerated = isEnumerated
+    }
     
     var body: some View {
         HStack(spacing: Constants.margin) {
-            Text("\(artist.offset + 1)")
-                .foregroundColor(.gray500)
-                .font(.nunitoRegular(size: 14))
+            if isEnumerated {
+                Text("\(artist.offset + 1)")
+                    .foregroundColor(.gray500)
+                    .font(.nunitoRegular(size: 14))
+            }
+            
             LoadImage(url: URL(string: artist.element.images?.first?.url ?? .empty))
                 .scaledToFit()
                 .cornerRadius(18)

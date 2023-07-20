@@ -25,12 +25,13 @@ extension ArtistView {
             Color.appBackground.ignoresSafeArea()
             
             ScrollView {
-                VStack {
+                VStack(spacing: Constants.margin) {
                     headerView()
                     mostPlayed()
                     albums()
                     relatedArtists()
                 }
+                .padding(.bottom, Constants.margin)
             }
             .ignoresSafeArea(edges: .top)
         }

@@ -64,7 +64,6 @@ final class HomeViewModel: ObservableObject {
 
     // MARK: - Private properties
     private let homeService: HomeService
-
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Class lifecycle
@@ -117,15 +116,15 @@ private extension HomeViewModel {
     func bind() {
         $topTracksTimeRange
             .dropFirst()
-            .sink { [weak self] _ in
-                self?.getTopTracks()
+            .sink { [weak self] timeRange in
+                self?.getTopTracks(for: timeRange)
             }
             .store(in: &cancellables)
         
         $topArtistsTimeRange
             .dropFirst()
-            .sink { [weak self] _ in
-                self?.getTopArtists()
+            .sink { [weak self] timeRange in
+                self?.getTopArtists(for: timeRange)
             }
             .store(in: &cancellables)
         
@@ -169,8 +168,8 @@ private extension HomeViewModel {
         
     }
     
-    func getTopTracks() {
-        homeService.getTopTracks(count: Int(topTracksCount), timeRange: topTracksTimeRange)
+    func getTopTracks(for timeRange: TimeRange = .shortTerm) {
+        homeService.getTopTracks(count: Int(topTracksCount), timeRange: timeRange != topTracksTimeRange ? timeRange : topTracksTimeRange)
             .sink { [weak self] tracksResponse in
                 withAnimation {
                     self?.topTracks = tracksResponse.items
@@ -179,8 +178,8 @@ private extension HomeViewModel {
             .store(in: &cancellables)
     }
     
-    func getTopArtists() {
-        homeService.getTopArtists(count: Int(topArtistsCount), timeRange: topTracksTimeRange)
+    func getTopArtists(for timeRange: TimeRange = .shortTerm) {
+        homeService.getTopArtists(count: Int(topArtistsCount), timeRange: timeRange != topArtistsTimeRange ? timeRange : topArtistsTimeRange)
             .sink { [weak self] artistsResponse in
                 withAnimation {
                     self?.topArtists = artistsResponse.items

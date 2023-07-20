@@ -25,7 +25,7 @@ struct RootCoordinatorView: View {
         }
         .modalSheet(isPresented: $coordinator.isProfileDrawerPresented, content: coordinator.presentProfileView)
         .alert(isPresented: $coordinator.isAlertPresented, alert: coordinator.presentAlertView)
-        .tint(.orange400)
+        .tint(.green500)
         .fullScreenCover(isPresented: $coordinator.isPlayerCoordinatorViewPresented, content: coordinator.presentPlayerCoordinatorView)
     }
 }

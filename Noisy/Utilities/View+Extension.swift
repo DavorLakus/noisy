@@ -71,6 +71,30 @@ extension View {
             .modifier(ZStackTransition(transition: transition))
     }
     
+    @ViewBuilder
+    func mintBadge(isPresented: Bool) -> some View {
+        ZStack {
+            if isPresented {
+                ZStack(alignment: .topTrailing) {
+                    self
+                    Group {
+                        Rectangle()
+                            .fill(Color.appBackground)
+                            .frame(width: 10, height: 10)
+                        Circle()
+                            .fill(Color.green200)
+                            .frame(width: 8, height: 8)
+                    }
+                    .offset(x: 1.5, y: -1.5)
+                }
+                .transition(.opacity)
+            } else {
+                self
+                    .transition(.opacity)
+            }
+        }
+    }
+    
     func readSize(onChange: @escaping (CGSize) -> Void) -> some View {
         background(
             GeometryReader { geometry in
