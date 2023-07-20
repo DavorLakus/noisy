@@ -38,12 +38,12 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
     private let playerService: PlayerService
     
     // MARK: - Private propeties
-    private lazy var playerViewModel = PlayerViewModel(playerService: playerService, queueManager: queueManager)
+    private lazy var playerViewModel = PlayerViewModel(queueManager: queueManager)
     private var optionsViewModel: OptionsViewModel?
     private var queueViewModel: QueueViewModel?
-    private var queueManager: QueueState
+    private var queueManager: QueueManager
     
-    init(playerService: PlayerService, musicDetailsService: MusicDetailsService, queueManager: QueueState) {
+    init(playerService: PlayerService, musicDetailsService: MusicDetailsService, queueManager: QueueManager) {
         self.playerService = playerService
         self.musicDetailsService = musicDetailsService
         self.queueManager = queueManager

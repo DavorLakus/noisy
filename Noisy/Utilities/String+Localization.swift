@@ -18,7 +18,7 @@ extension String {
         static let codeVerifier = "code_verifier"
         static let refreshToken = "refresh_token"
         static let accessToken = "access_token"
-        static let queueManager = "queue_manager"
+        static let queueState = "queue_state"
     }
     
     struct Track {

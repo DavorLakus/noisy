@@ -14,8 +14,6 @@ struct PlayerView: View {
     var body: some View {
         bodyView()
             .toolbar(content: toolbarContent)
-            .onAppear(perform: viewModel.viewDidAppear)
-            .onDisappear(perform: viewModel.viewWillDisappear)
     }
 }
 
@@ -38,10 +36,10 @@ extension PlayerView {
     func trackTitleView() -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 8) {
-                Text("\(String.Track.name) \(viewModel.queueManager.currentTrack.name)")
+                Text("\(String.Track.name) \(viewModel.queueManager.state.currentTrack.name)")
                     .font(.nunitoBold(size: 18))
                     .foregroundColor(.gray600)
-                Text("\(String.Track.artist) \(viewModel.queueManager.currentTrack.artists.first?.name ?? .empty)")
+                Text("\(String.Track.artist) \(viewModel.queueManager.state.currentTrack.artists.first?.name ?? .empty)")
                     .font(.nunitoRegular(size: 16))
                     .foregroundColor(.gray500)
             }
@@ -69,7 +67,7 @@ extension PlayerView {
                     .frame(height: 2)
                 ZStack(alignment: .trailing) {
                     Slider(value: $viewModel.trackPosition, in: (0...viewModel.trackMaxPosition)) { isSliding in
-                        if isSliding  {
+                        if isSliding {
                             self.viewModel.scrubState = .scrubStarted
                         } else {
                             self.viewModel.scrubState = .scrubEnded(self.viewModel.trackPosition)

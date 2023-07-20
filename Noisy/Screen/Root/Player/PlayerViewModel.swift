@@ -17,25 +17,13 @@ enum PlayerSliderState {
 
 final class PlayerViewModel: ObservableObject {
     // MARK: - Published properties
+    @Published var isPlaying = false
     @Published var trackPosition: TimeInterval = 0
     @Published var observedPosition: TimeInterval = .zero
     @Published var trackMaxPosition: TimeInterval = 30
-    @Published var isPlaying = false
     @Published var timeControlStatus: AVPlayer.TimeControlStatus = .paused
+    @Published var scrubState: PlayerSliderState = .reset
 
-    var player = AVPlayer()
-    var scrubState: PlayerSliderState = .reset {
-       didSet {
-          switch scrubState {
-          case .reset: break
-          case .scrubStarted: break
-          case .scrubEnded(let seekTime):
-              player.seek(to: CMTime(seconds: seekTime, preferredTimescale: 1000))
-          }
-       }
-    }
-    let time = CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(1000))
-    
     // MARK: - Coordinator actions
     var onDidTapDismissButton: PassthroughSubject<Void, Never>?
     let onDidTapOptionsButton = PassthroughSubject<Void, Never>()
@@ -43,33 +31,33 @@ final class PlayerViewModel: ObservableObject {
     let onDidTapShareButton = PassthroughSubject<Void, Never>()
     
     // MARK: - Public properties
-    let queueManager: QueueState
+    var queueManager: QueueManager
     
     // MARK: - Private properties
-    private let playerService: PlayerService
-    
-    private var itemDurationKVOPublisher: AnyCancellable?
-    private var timeControlStatusKVOPublisher: AnyCancellable?
-    var periodicTimeObserver: Any?
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Class lifecycle
-    init(playerService: PlayerService, queueManager: QueueState) {
-        self.playerService = playerService
+    init(queueManager: QueueManager) {
         self.queueManager = queueManager
-        bindPlayer()
+        bindQueueManager()
+    }
+    
+    func bindQueueManager() {
+        queueManager.isPlaying.assign(to: &_isPlaying.projectedValue)
+        queueManager.trackPosition.assign(to: &_trackPosition.projectedValue)
+        queueManager.observedPosition.assign(to: &_observedPosition.projectedValue)
+        queueManager.trackMaxPosition.assign(to: &_trackMaxPosition.projectedValue)
+        queueManager.timeControlStatus.assign(to: &_timeControlStatus.projectedValue)
+        $scrubState.sink { [weak self] state in
+            self?.queueManager.scrubState.send(state)
+        }
+        .store(in: &cancellables)
+        
     }
 }
 
 // MARK: - Public extension
 extension PlayerViewModel {
-    func viewDidAppear() {
-        trackPosition = queueManager.currentTime
-        play(track: queueManager.currentTrack)
-    }
-    
-    func viewWillDisappear() {
-        queueManager.currentTime = observedPosition
-    }
     
     func backButtonTapped() {
         onDidTapDismissButton?.send()
@@ -81,23 +69,6 @@ extension PlayerViewModel {
     
     func addToFavoritesButtonTapped() {
         
-    }
-    
-    func play(track: Track? = nil) {
-        if let track,
-           let urlString = track.previewUrl,
-           let url = URL(string: urlString) {
-            print(track.name)
-            player.replaceCurrentItem(with: AVPlayerItem(url: url))
-        }
-        player.seek(to: CMTime(seconds: queueManager.currentTime, preferredTimescale: 1000))
-        player.play()
-        isPlaying = true
-    }
-    
-    func pause() {
-        player.pause()
-        isPlaying = false
     }
     
     func previousButtonTapped() {
@@ -114,7 +85,7 @@ extension PlayerViewModel {
     }
 
     func playPauseButtonTapped() {
-        isPlaying ? pause() : play()
+        queueManager.onPlayPauseTapped()
     }
     
     func nextButtonTapped() {
@@ -130,42 +101,82 @@ extension PlayerViewModel {
     }
 }
 
-private extension PlayerViewModel {
+final class QueueManager: ObservableObject {
+    var state: QueueState
+    var player = AVPlayer()
+    let time = CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(1000))
+    
+    var scrubState = CurrentValueSubject<PlayerSliderState, Never>(.reset)
+    
+    let trackPosition = CurrentValueSubject<TimeInterval, Never>(0)
+    let observedPosition = CurrentValueSubject<TimeInterval, Never>(.zero)
+    let trackMaxPosition = CurrentValueSubject<TimeInterval, Never>(30)
+    let isPlaying = CurrentValueSubject<Bool, Never>(false)
+    let timeControlStatus = CurrentValueSubject<AVPlayer.TimeControlStatus, Never>(.paused)
+    
+    private var itemDurationKVOPublisher: AnyCancellable?
+    private var timeControlStatusKVOPublisher: AnyCancellable?
+    var periodicTimeObserver: Any?
+    private var cancellables = Set<AnyCancellable>()
+    
+    init(state: QueueState) {
+        self.state = state
+        
+        trackPosition.send(state.currentTime)
+        play(track: state.currentTrack)
+        bindPlayer()
+        bindScrubState()
+    }
+    
+    func bindScrubState() {
+        scrubState.sink { [weak self] state in
+            switch state {
+            case .reset: break
+            case .scrubStarted: break
+            case .scrubEnded(let seekTime):
+                self?.player.seek(to: CMTime(seconds: seekTime, preferredTimescale: 1000))
+            }
+        }
+        .store(in: &cancellables)
+    }
+    
+    func seek(to seekTime: CMTime) {
+        player.seek(to: seekTime)
+    }
+    
+    func onPlayPauseTapped() {
+        isPlaying.value ? pause() : play()
+    }
+    
+    func play(track: Track? = nil) {
+        if let track,
+           let urlString = track.previewUrl,
+           let url = URL(string: urlString) {
+            player.replaceCurrentItem(with: AVPlayerItem(url: url))
+        }
+        player.seek(to: CMTime(seconds: state.currentTime, preferredTimescale: 1000))
+        player.play()
+        isPlaying.send(true)
+    }
+    
+    func pause() {
+        player.pause()
+        isPlaying.send(false)
+    }
+    
     func bindPlayer() {
         bindPeriodicTimeObserver()
         bindTimeControlStatus()
         bindItemDuration()
     }
-    
-    func bindPeriodicTimeObserver() {
-        self.periodicTimeObserver = player.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] (time) in
-            guard let self = self else { return }
-            
-            // Always update observed time.
-            self.observedPosition = time.seconds
-            queueManager.currentTime = time.seconds
-            
-            switch self.scrubState {
-            case .reset:
-                self.trackPosition = time.seconds
-            case .scrubStarted:
-                // When scrubbing, the displayTime is bound to the Slider view, so
-                // do not update it here.
-                break
-            case .scrubEnded(let seekTime):
-                self.scrubState = .reset
-                self.trackPosition = seekTime
-            }
-        }
-    }
-    
+
     func bindTimeControlStatus() {
         timeControlStatusKVOPublisher = player
             .publisher(for: \.timeControlStatus)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] (newStatus) in
                 guard let self = self else { return }
-                self.timeControlStatus = newStatus
+                self.timeControlStatus.send(newStatus)
             }
     }
     
@@ -177,42 +188,32 @@ private extension PlayerViewModel {
                 guard let newStatus = newStatus,
                       let self = self else { return }
                 if newStatus.seconds > 0 {
-                    self.trackMaxPosition = newStatus.seconds
+                    self.trackMaxPosition.send(newStatus.seconds)
                 }
             }
     }
-}
-
-extension AVPlayer {
-    var isPlaying: Bool {
-        return rate != 0 && error == nil
-    }
-}
-
-extension Formatter {
-    static let positional: DateComponentsFormatter = {
-        let positional = DateComponentsFormatter()
-        positional.unitsStyle = .positional
-        positional.zeroFormattingBehavior = .pad
-        return positional
-    }()
-}
-
-extension TimeInterval {
-    var positionalTime: String {
-        Formatter.positional.allowedUnits = self >= 3600 ?
-                                            [.hour, .minute, .second] :
-                                            [.minute, .second]
-        let string = Formatter.positional.string(from: self)!
-        return string.hasPrefix("0") && string.count > 4 ?
-            .init(string.dropFirst()) : string
-    }
-}
-
-final class QueueManager {
-    var state: QueueState
     
-    
+    func bindPeriodicTimeObserver() {
+        self.periodicTimeObserver = player.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] (time) in
+            guard let self = self else { return }
+            
+            // Always update observed time.
+            self.observedPosition.send(time.seconds)
+            state.currentTime = time.seconds
+            
+            switch self.scrubState.value {
+            case .reset:
+                self.trackPosition.send(time.seconds)
+            case .scrubStarted:
+                // When scrubbing, the displayTime is bound to the Slider view, so
+                // do not update it here.
+                break
+            case .scrubEnded(let seekTime):
+                self.scrubState.send(.reset)
+                self.trackPosition.send(seekTime)
+            }
+        }
+    }
 }
 
 final class QueueState: Codable {
@@ -244,5 +245,31 @@ final class QueueState: Codable {
         }
         currentTrackIndex -= 1
         return tracks[currentTrackIndex]
+    }
+}
+
+extension AVPlayer {
+    var isPlaying: Bool {
+        return rate != 0 && error == nil
+    }
+}
+
+extension Formatter {
+    static let positional: DateComponentsFormatter = {
+        let positional = DateComponentsFormatter()
+        positional.unitsStyle = .positional
+        positional.zeroFormattingBehavior = .pad
+        return positional
+    }()
+}
+
+extension TimeInterval {
+    var positionalTime: String {
+        Formatter.positional.allowedUnits = self >= 3600 ?
+        [.hour, .minute, .second] :
+        [.minute, .second]
+        let string = Formatter.positional.string(from: self)!
+        return string.hasPrefix("0") && string.count > 4 ?
+            .init(string.dropFirst()) : string
     }
 }

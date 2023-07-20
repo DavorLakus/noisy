@@ -202,7 +202,7 @@ extension SearchView {
     func toolbarContent() -> some ToolbarContent {
         leadingLargeTitle(title: String.Tabs.search)
         
-        ToolbarItem(placement: .navigationBarTrailing){
+        ToolbarItem(placement: .navigationBarTrailing) {
             Button {
                 viewModel.profileButtonTapped()
             } label: {

@@ -43,7 +43,7 @@ final class RootCoordinator: CoordinatorProtocol {
     private var playerCoordinator: PlayerCoordinator?
     
     // MARK: - Private properties
-    private var queueManager: QueueState?
+    private var queueState: QueueState?
     private var profileViewModel: ProfileViewModel?
     private lazy var alertViewModel = AlertViewModel(isPresented: _isAlertPresented)
     private var cancellables = Set<AnyCancellable>()
@@ -87,9 +87,9 @@ extension RootCoordinator {
 // MARK: - Private extension
 private extension RootCoordinator {
     func getQueueManager() {
-        if let queueManagerData = UserDefaults.standard.object(forKey: .UserDefaults.queueManager) as? Data,
-           let queueManager = try? JSONDecoder().decode(QueueState.self, from: queueManagerData) {
-            self.queueManager = queueManager
+        if let queueStateData = UserDefaults.standard.object(forKey: .UserDefaults.queueState) as? Data,
+           let queueState = try? JSONDecoder().decode(QueueState.self, from: queueStateData) {
+            self.queueState = queueState
         }
     }
     
@@ -150,19 +150,21 @@ extension RootCoordinator {
     }
     
     func bindPlayerCoordinator(with track: Track? = nil) {
-        if queueManager == nil {
-            queueManager = QueueState(tracks: [])
-            if let queueManagerData = try? JSONEncoder().encode(queueManager) {
-                UserDefaults.standard.set(queueManagerData, forKey: .UserDefaults.queueManager)
+        if queueState == nil,
+           let track {
+            queueState = QueueState(tracks: [track])
+            if let queueManagerData = try? JSONEncoder().encode(queueState) {
+                UserDefaults.standard.set(queueManagerData, forKey: .UserDefaults.queueState)
             }
         }
-        guard let queueManager else { return }
+        guard let queueState else { return }
         
         if let track {
-            queueManager.tracks = [track]
-            queueManager.currentTrack = track
-            queueManager.currentTime = .zero
+            queueState.tracks = [track]
+            queueState.currentTrack = track
+            queueState.currentTime = .zero
         }
+        let queueManager = QueueManager(state: queueState)
         
         playerCoordinator = PlayerCoordinator(playerService: playerService, musicDetailsService: musicDetailsService, queueManager: queueManager)
         
