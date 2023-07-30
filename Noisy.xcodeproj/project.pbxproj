@@ -23,6 +23,13 @@
 		419DD1CE2A573862005A6708 /* APIEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5432A26473800F7A2B8 /* APIEndpoint.swift */; };
 		419DD1CF2A573862005A6708 /* NetworkingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F5452A26473D00F7A2B8 /* NetworkingManager.swift */; };
 		41B145C12A72509800FAE0C0 /* Genre.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B145C02A72509800FAE0C0 /* Genre.swift */; };
+		41B145C32A76E9F600FAE0C0 /* Seed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B145C22A76E9F600FAE0C0 /* Seed.swift */; };
+		41B145C62A76EDB000FAE0C0 /* SeedsSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B145C52A76EDB000FAE0C0 /* SeedsSheetView.swift */; };
+		41B145C82A76EDBF00FAE0C0 /* SeedParametersSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B145C72A76EDBF00FAE0C0 /* SeedParametersSheetView.swift */; };
+		41B145CA2A76EDF200FAE0C0 /* LargeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B145C92A76EDF200FAE0C0 /* LargeButton.swift */; };
+		41B145CC2A76EE2D00FAE0C0 /* ThreePointSliderRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B145CB2A76EE2D00FAE0C0 /* ThreePointSliderRow.swift */; };
+		41B145CE2A76EEA200FAE0C0 /* SeedCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B145CD2A76EEA200FAE0C0 /* SeedCard.swift */; };
+		41B145D02A76EFA000FAE0C0 /* CurrentSeedSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B145CF2A76EFA000FAE0C0 /* CurrentSeedSelectionView.swift */; };
 		41B647772A38419000C1485C /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B647762A38419000C1485C /* AuthView.swift */; };
 		41B647792A38419600C1485C /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B647782A38419600C1485C /* AuthViewModel.swift */; };
 		41B6477C2A384CB400C1485C /* LoginService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B6477B2A384CB400C1485C /* LoginService.swift */; };
@@ -167,6 +174,13 @@
 		413EEAC32A2F2DE900DC9727 /* SearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchService.swift; sourceTree = "<group>"; };
 		419DD1B22A5736E6005A6708 /* NoisyAPI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NoisyAPI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		41B145C02A72509800FAE0C0 /* Genre.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Genre.swift; sourceTree = "<group>"; };
+		41B145C22A76E9F600FAE0C0 /* Seed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Seed.swift; sourceTree = "<group>"; };
+		41B145C52A76EDB000FAE0C0 /* SeedsSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedsSheetView.swift; sourceTree = "<group>"; };
+		41B145C72A76EDBF00FAE0C0 /* SeedParametersSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedParametersSheetView.swift; sourceTree = "<group>"; };
+		41B145C92A76EDF200FAE0C0 /* LargeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeButton.swift; sourceTree = "<group>"; };
+		41B145CB2A76EE2D00FAE0C0 /* ThreePointSliderRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreePointSliderRow.swift; sourceTree = "<group>"; };
+		41B145CD2A76EEA200FAE0C0 /* SeedCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedCard.swift; sourceTree = "<group>"; };
+		41B145CF2A76EFA000FAE0C0 /* CurrentSeedSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentSeedSelectionView.swift; sourceTree = "<group>"; };
 		41B647762A38419000C1485C /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		41B647782A38419600C1485C /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		41B6477B2A384CB400C1485C /* LoginService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginService.swift; sourceTree = "<group>"; };
@@ -325,7 +339,9 @@
 			isa = PBXGroup;
 			children = (
 				41D3A29A2A31E141000AC6FE /* DiscoverView.swift */,
+				41B145CD2A76EEA200FAE0C0 /* SeedCard.swift */,
 				41D3A29C2A31E152000AC6FE /* DiscoverViewModel.swift */,
+				41B145C42A76EDA100FAE0C0 /* Views */,
 			);
 			path = Discover;
 			sourceTree = "<group>";
@@ -337,6 +353,17 @@
 				41D3A2A02A31E193000AC6FE /* SearchViewModel.swift */,
 			);
 			path = Search;
+			sourceTree = "<group>";
+		};
+		41B145C42A76EDA100FAE0C0 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				41B145C52A76EDB000FAE0C0 /* SeedsSheetView.swift */,
+				41B145C72A76EDBF00FAE0C0 /* SeedParametersSheetView.swift */,
+				41B145CB2A76EE2D00FAE0C0 /* ThreePointSliderRow.swift */,
+				41B145CF2A76EFA000FAE0C0 /* CurrentSeedSelectionView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		41B6477A2A38419B00C1485C /* Auth */ = {
@@ -397,6 +424,7 @@
 				41DE39D12A6436DA0048CB51 /* Account */,
 				41E0FB1D2A6452B800991D31 /* LoadingIndicator.swift */,
 				41E0FB582A66FB6000991D31 /* AccordionView.swift */,
+				41B145C92A76EDF200FAE0C0 /* LargeButton.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -630,6 +658,7 @@
 			children = (
 				41E0FB922A69B40400991D31 /* Recommendation.swift */,
 				41B145C02A72509800FAE0C0 /* Genre.swift */,
+				41B145C22A76E9F600FAE0C0 /* Seed.swift */,
 			);
 			path = Recommendation;
 			sourceTree = "<group>";
@@ -969,6 +998,7 @@
 				41F8F5702A26508500F7A2B8 /* HomeViewModel.swift in Sources */,
 				41F8F5632A2649F400F7A2B8 /* Array+Extension.swift in Sources */,
 				41DE39D82A6438A50048CB51 /* AlertView.swift in Sources */,
+				41B145CE2A76EEA200FAE0C0 /* SeedCard.swift in Sources */,
 				41F8F5612A2649EC00F7A2B8 /* ToolbarBuilder.swift in Sources */,
 				41DE39D52A6436E70048CB51 /* ProfileViewModel.swift in Sources */,
 				41DE39D32A6436E20048CB51 /* ProfileView.swift in Sources */,
@@ -991,6 +1021,7 @@
 				41E0FB6C2A67A94700991D31 /* NoisyCrypto.swift in Sources */,
 				41F8F5572A2649CB00F7A2B8 /* NoisyDateFormatter.swift in Sources */,
 				41E0FB552A66A71600991D31 /* PlaylistView.swift in Sources */,
+				41B145C82A76EDBF00FAE0C0 /* SeedParametersSheetView.swift in Sources */,
 				41D3A2A12A31E193000AC6FE /* SearchViewModel.swift in Sources */,
 				41E0FB232A656DCE00991D31 /* SearchBar.swift in Sources */,
 				41E0FB862A68159D00991D31 /* SearchResult.swift in Sources */,
@@ -1007,7 +1038,9 @@
 				41F8F5302A2643AE00F7A2B8 /* MainCoordinatorView.swift in Sources */,
 				41F8F52D2A26438600F7A2B8 /* HomeCoordinator.swift in Sources */,
 				41E0FB462A66577B00991D31 /* OptionsView.swift in Sources */,
+				41B145C62A76EDB000FAE0C0 /* SeedsSheetView.swift in Sources */,
 				41E0FB2D2A65A1E800991D31 /* SearchCoordinator.swift in Sources */,
+				41B145CA2A76EDF200FAE0C0 /* LargeButton.swift in Sources */,
 				41F8F5682A26501800F7A2B8 /* LoginViewModel.swift in Sources */,
 				41E0FB532A66A70600991D31 /* ArtistViewModel.swift in Sources */,
 				419DD1CC2A573862005A6708 /* State.swift in Sources */,
@@ -1026,6 +1059,7 @@
 				419DD1CE2A573862005A6708 /* APIEndpoint.swift in Sources */,
 				41E0FB342A6650BE00991D31 /* PlayerView.swift in Sources */,
 				419DD1CB2A573862005A6708 /* HTTPMethod.swift in Sources */,
+				41B145CC2A76EE2D00FAE0C0 /* ThreePointSliderRow.swift in Sources */,
 				41E0FB442A6656FD00991D31 /* PlaylistsView.swift in Sources */,
 				41B6477C2A384CB400C1485C /* LoginService.swift in Sources */,
 				413EEAB92A2F29BB00DC9727 /* Icons.swift in Sources */,
@@ -1043,9 +1077,11 @@
 				41E0FB252A656DF200991D31 /* FirstResponderTextView.swift in Sources */,
 				41E0FB6F2A67AB3D00991D31 /* AlbumView.swift in Sources */,
 				41E0FB662A679A7300991D31 /* Track.swift in Sources */,
+				41B145D02A76EFA000FAE0C0 /* CurrentSeedSelectionView.swift in Sources */,
 				419DD1CA2A573862005A6708 /* NoisyHTTPRouter.swift in Sources */,
 				41E0FB8E2A69688C00991D31 /* QueueState.swift in Sources */,
 				41F8F5322A2643B500F7A2B8 /* LoginCoordinatorView.swift in Sources */,
+				41B145C32A76E9F600FAE0C0 /* Seed.swift in Sources */,
 				41E0FB3E2A66560A00991D31 /* QueueView.swift in Sources */,
 				41E0FB4A2A66A39400991D31 /* MusicDetailsCoordinatorProtocol.swift in Sources */,
 				41E0FB5E2A679A1500991D31 /* MusicDetailsService.swift in Sources */,

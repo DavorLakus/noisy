@@ -39,10 +39,12 @@ enum SeedCategory: CaseIterable, Hashable {
 final class DiscoverViewModel: ObservableObject {
     // MARK: Published properties
     @Published var isSeedsSheetPresented = false
+    @Published var isSeedParametersSheetPresented = false
+    @Published var limit: Double = 10
     @Published var lowerBounds = [Double](repeating: 0.0, count: 14)
     @Published var targets = [Double](repeating: 0.5, count: 14)
     @Published var upperBounds = [Double](repeating: 1.0, count: 14)
-    @Published var seedToggles = [Bool](repeating: true, count: 14)
+    @Published var seedToggles = [Bool](repeating: false, count: 14)
     @Published var seedArtists: [Artist] = []
     @Published var seedTracks: [Track] = []
     @Published var seedGenres: [String] = []
@@ -50,11 +52,13 @@ final class DiscoverViewModel: ObservableObject {
     @Published var artists: [Artist] = []
     @Published var tracks: [Track] = []
     @Published var genres: [String] = []
+    @Published var recommendedTracks: [Track] = []
     
     @Published var seedCategory: SeedCategory = .artists
     @Published var isSearchActive = false
     @Published var query: String = .empty
-    var notAllSeedsSelected: Bool { seedToggles.contains(false) }
+    var hasAnySeeds: Bool { !seedArtists.isEmpty || !seedTracks.isEmpty || !seedGenres.isEmpty }
+    var notAllSeedParametersSelected: Bool { seedToggles.contains(false) }
     
     // MARK: - Coordinator actions
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
@@ -88,9 +92,27 @@ extension DiscoverViewModel {
         onDidTapProfileButton.send()
     }
     
-    func changeSeedsButtonTapped() {
+    func manageSeedsButtonTapped() {
         withAnimation {
             isSeedsSheetPresented.toggle()
+        }
+        if !isSeedsSheetPresented {
+            discover()
+        }
+    }
+    
+    func changeSeedParametersButtonTapped() {
+        withAnimation {
+            isSeedParametersSheetPresented.toggle()
+        }
+        if !isSeedParametersSheetPresented {
+            discover()
+        }
+    }
+    
+    func seedCategorySelected(_ category: SeedCategory) {
+        withAnimation {
+            seedCategory = category
         }
     }
     
@@ -144,21 +166,21 @@ extension DiscoverViewModel {
     
     func selectAllSeedsTapped() {
         withAnimation {
-            seedToggles = seedToggles.map { _ in notAllSeedsSelected ? true : false }
+            seedToggles = seedToggles.map { _ in notAllSeedParametersSelected ? true : false }
         }
     }
     
     func discoverButtonTapped() {
-        discoverService.discover(seedParameters: createDiscoverQueryParameters())
-            .sink { _ in
-//                print(result)
-            }
-            .store(in: &cancellables)
+        discover()
     }
-    
     
     func checkIfSeedToggled(seedIndex: Int, value: String) -> String? {
         seedToggles[seedIndex] ? value : nil
+    }
+    
+    @Sendable
+    func refreshToggled() {
+        discover()
     }
 }
 
@@ -194,6 +216,24 @@ private extension DiscoverViewModel {
                 }
             }
             .store(in: &cancellables)
+        
+        $limit
+            .dropFirst()
+            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.discover()
+            }
+            .store(in: &cancellables)
+    }
+    
+    func discover() {
+        discoverService.discover(seedParameters: createDiscoverQueryParameters())
+            .sink { [weak self] result in
+                withAnimation {
+                    self?.recommendedTracks = result.tracks
+                }
+            }
+            .store(in: &cancellables)
     }
     
     func resetSearchResults() {
@@ -201,7 +241,7 @@ private extension DiscoverViewModel {
             query = .empty
             artists = []
             tracks = []
-            genres = []
+//            genres = []
         }
     }
     
@@ -236,7 +276,7 @@ private extension DiscoverViewModel {
     func createDiscoverQueryParameters() -> [URLQueryItem] {
         var queryItems: [URLQueryItem] = [
             URLQueryItem(name: "market", value: "HR"),
-            URLQueryItem(name: "limit", value:  "10"),
+            URLQueryItem(name: "limit", value:  "\(Int(limit))"),
             URLQueryItem(name: "seed_artists", value: seedArtists.map(\.id).joined(separator: ",")),
             URLQueryItem(name: "seed_genres", value: seedGenres.joined(separator: ",")),
             URLQueryItem(name: "seed_tracks", value: seedTracks.map(\.id).joined(separator: ","))
@@ -250,7 +290,6 @@ private extension DiscoverViewModel {
             }
         }
         
-        queryItems.forEach { print($0) }
         return queryItems
     }
 }

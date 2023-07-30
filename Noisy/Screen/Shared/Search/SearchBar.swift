@@ -10,13 +10,20 @@ import SwiftUI
 struct SearchBar: View {
     var isActive: Binding<Bool>
     var query: Binding<String>
+    let placeholder: String
+    
+    init(isActive: Binding<Bool>, query: Binding<String>, placeholder: String = .Dictionary.searchBarPlaceholder) {
+        self.isActive = isActive
+        self.query = query
+        self.placeholder = placeholder
+    }
     
     var body: some View {
         HStack {
             HStack {
                 Image.Shared.magnifyingGlass
                 
-                FirstResponderTextView(text: query, isFirstResponder: isActive)
+                FirstResponderTextView(text: query, isFirstResponder: isActive, placeholder: placeholder)
                     .onTapGesture {
                         withAnimation {
                             isActive.wrappedValue = true

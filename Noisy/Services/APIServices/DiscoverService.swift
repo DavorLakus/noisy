@@ -25,7 +25,6 @@ extension DiscoverService {
         let discoverResults = PassthroughSubject<RecommendationResult, Never>()
         
         api.discover(parameters: seedParameters)
-            .debugPrint()
             .decode(type: RecommendationResult.self, decoder: JSONDecoder())
             .sink(receiveCompletion: NetworkingManager.handleCompletion,
                   receiveValue: { result in

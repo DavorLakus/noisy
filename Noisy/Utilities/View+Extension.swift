@@ -105,16 +105,21 @@ extension View {
         .onPreferenceChange(SizePreferenceKey.self, perform: onChange)
     }
     
-    func cardBackground(backgroundColor: Color = .cardBackground, borderColor: Color = .gray50, cornerRadius: CGFloat = Constants.cornerRadius) -> some View {
-        self
-            .background(backgroundColor)
-            .cornerRadius(cornerRadius)
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .stroke(borderColor, lineWidth: 1)
-            )
-            .shadow(color: Color.gray300,
-                    radius: 6, x: 1, y: 4)
+    @ViewBuilder
+    func cardBackground(backgroundColor: Color = .cardBackground, borderColor: Color = .gray50, cornerRadius: CGFloat = Constants.cornerRadius, isHidden: Bool = false) -> some View {
+        if isHidden {
+            self
+        } else {
+            self
+                .background(backgroundColor)
+                .cornerRadius(cornerRadius)
+                .overlay(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .stroke(borderColor, lineWidth: 1)
+                )
+                .shadow(color: Color.gray300,
+                        radius: 6, x: 1, y: 4)
+        }
     }
     
     func bottomBorder() -> some View {

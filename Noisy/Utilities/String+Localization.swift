@@ -53,6 +53,12 @@ extension String {
         static let settings = "Settings"
     }
     
+    struct Shared {
+        static let artists = "artists"
+        static let tracks = "tracks"
+        static let genres = "genres"
+    }
+    
     struct Profile {
         static let viewProfile = "View profile"
         static let general = "General"
@@ -72,10 +78,12 @@ extension String {
     }
     
     struct Discover {
-        static let manageSeeds = "Manage seeds"
+        static let manageSeeds = "Set Seeds"
+        static let changeSeedParameters = "Change Seed parameters"
         static let seedsTitle = "Artist, Track, and Genre seeds"
         static let seedsSubtitle = "Up to 5 items"
-        static let currentSelection = "Current selection:"
+        static let currentSeedSelection = "Current seed selection:"
+        static let pleaseSelectSomeDiscoverySeeds = "Select some discovery seeds to get started"
         static let discover = "Discover"
         static let done = "Done"
         static let includeAllSeeds = "Include all parameter seeds"

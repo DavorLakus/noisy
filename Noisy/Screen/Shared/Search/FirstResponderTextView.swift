@@ -44,17 +44,18 @@ struct FirstResponderTextView: UIViewRepresentable {
         return Coordinator(text: $text)
     }
 
-    func updateUIView(_ uiView: UITextField, context: UIViewRepresentableContext<FirstResponderTextView>) {
-        uiView.text = text
+    func updateUIView(_ textField: UITextField, context: UIViewRepresentableContext<FirstResponderTextView>) {
+        textField.text = text
+        textField.placeholder = placeholder
         
         if isFirstResponder.wrappedValue {
             DispatchQueue.main.async {
-                uiView.becomeFirstResponder()
+                textField.becomeFirstResponder()
             }
             context.coordinator.didBecomeFirstResponder = true
         } else {
             DispatchQueue.main.async {
-                uiView.resignFirstResponder()
+                textField.resignFirstResponder()
             }
         }
     }
