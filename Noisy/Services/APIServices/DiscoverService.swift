@@ -21,10 +21,11 @@ final class DiscoverService {
 }
 
 extension DiscoverService {
-    func discover(request: DiscoverRequest) -> PassthroughSubject<RecommendationResult, Never> {
+    func discover(seedParameters: [URLQueryItem]) -> PassthroughSubject<RecommendationResult, Never> {
         let discoverResults = PassthroughSubject<RecommendationResult, Never>()
         
-        api.discover(request: request)
+        api.discover(parameters: seedParameters)
+            .debugPrint()
             .decode(type: RecommendationResult.self, decoder: JSONDecoder())
             .sink(receiveCompletion: NetworkingManager.handleCompletion,
                   receiveValue: { result in

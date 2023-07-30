@@ -62,8 +62,10 @@ enum Seed: CaseIterable, Hashable, Identifiable {
     
     var multiplier: Double {
         switch self {
-        case .acousticness, .danceability, .energy, .instrumentalness, .liveness, .loudness, .mode, .speechiness, .valence:
+        case .acousticness, .danceability, .energy, .instrumentalness, .liveness, .mode, .speechiness, .valence:
             return  1.0
+        case .loudness:
+            return 60.0
         case .duration:
             return 1000.0
         case .key:
@@ -77,12 +79,70 @@ enum Seed: CaseIterable, Hashable, Identifiable {
         }
     }
     
+    func valueToString(value: Double) -> String {
+        switch self {
+        case .acousticness, .danceability, .energy, .instrumentalness, .liveness, .speechiness, .valence:
+            return String(value)
+        case .mode:
+            return String(Int(value.rounded()))
+        case .loudness:
+            return String(Int(value * -60.0))
+        case .duration:
+            return String(Int(value * 1000.0 * 1000.0))
+        case .key:
+            return String(Int(value * 11.0))
+        case .popularity:
+            return String(Int(value * 100.0))
+        case .tempo:
+            return  String(Int(value * 200.0))
+        case .timeSignature:
+            return  String(Int(value * 11.0))
+        }
+    }
+    
     var isInt: Bool {
         switch self {
         case .acousticness, .danceability, .energy, .instrumentalness, .liveness, .loudness, .mode, .speechiness, .valence:
             return  false
         case .duration, .key, .popularity, .tempo, .timeSignature:
             return  true
+        }
+    }
+    
+    var minCodingKey: String {
+        switch self {
+        case .duration:
+            return "min_duration_ms"
+        case .timeSignature:
+            return "min_time_signature"
+        case .loudness:
+            return "max_loudness"
+        default:
+            return "min_\(String(describing: self))"
+        }
+    }
+    
+    var maxCodingKey: String {
+        switch self {
+        case .duration:
+            return "max_duration_ms"
+        case .timeSignature:
+            return "max_time_signature"
+        case .loudness:
+            return "min_loudness"
+        default:
+            return "max_\(String(describing: self))"
+        }
+    }
+    
+    var targetCodingKey: String {
+        switch self {
+        case .duration:
+            return "target_duration_ms"
+        case .timeSignature:
+            return "target_time_signature"
+        default:
+            return "target_\(String(describing: self))"
         }
     }
 }
@@ -122,7 +182,7 @@ struct SeedsSheetView: View {
         VStack {
             HStack {
                 Spacer()
-                Button(action: viewModel.discoverButtonTapped) {
+                Button(action: viewModel.changeSeedsButtonTapped) {
                     Text(String.Discover.done)
                         .foregroundColor(.green500)
                         .font(.nunitoBold(size: 18))
@@ -159,6 +219,8 @@ struct SeedsSheetView: View {
                             }
                         }
                     }
+                    .padding(6)
+                    .cardBackground(backgroundColor: .yellow100)
                     Picker(String.Discover.seedsTitle, selection: $viewModel.seedCategory) {
                         ForEach(SeedCategory.allCases, id: \.self) {
                             Text($0.displayName)
@@ -183,10 +245,24 @@ struct SeedsSheetView: View {
                     }
                     .padding(.horizontal, Constants.margin)
                 } else {
-                    LazyVStack {
-                        ForEach(Seed.allCases, id: \.id) { seed in
-                            ThreePointSliderRow(seed: seed, infoAction: {}, minValue: 0, maxValue: 1, lowerBound: $viewModel.lowerBounds[seed.id], target: $viewModel.targets[seed.id], upperBound: $viewModel.upperBounds[seed.id])
-                                .padding(.horizontal, Constants.margin)
+                    VStack {
+                        Button(action: viewModel.selectAllSeedsTapped) {
+                            HStack {
+                                Text(viewModel.notAllSeedsSelected ? String.Discover.includeAllSeeds : String.Discover.removeAllSeeds)
+                                    .font(.nunitoSemiBold(size: 16))
+                                    
+                                (viewModel.notAllSeedsSelected ? Image.Shared.checkbox : Image.Shared.checkboxFill)
+                                
+                                Spacer()
+                            }
+                        }
+                        .padding(.horizontal, Constants.margin)
+                        .animation(nil, value: viewModel.notAllSeedsSelected)
+                        LazyVStack {
+                            ForEach(Seed.allCases, id: \.id) { seed in
+                                ThreePointSliderRow(seed: seed, infoAction: {}, minValue: 0, maxValue: 1, lowerBound: $viewModel.lowerBounds[seed.id], target: $viewModel.targets[seed.id], upperBound: $viewModel.upperBounds[seed.id], isToggled: $viewModel.seedToggles[seed.id])
+                                    .padding(.horizontal, Constants.margin)
+                            }
                         }
                     }
                     .padding(.vertical, Constants.margin)
@@ -204,13 +280,13 @@ extension SeedsSheetView {
                 .font(.nunitoBold(size: 14))
                 .foregroundColor(.gray700)
             Image.Shared.close
+                .onTapGesture {
+                    action(id)
+                }
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 8)
         .cardBackground(backgroundColor: background, borderColor: .gray700)
-        .onTapGesture {
-            action(id)
-        }
     }
     
     @ViewBuilder
@@ -246,14 +322,16 @@ extension SeedsSheetView {
                 .font(.nunitoBold(size: 14))
                 .foregroundColor(.gray600)
             
-            ForEach(Array(viewModel.genres), id: \.self) { genre in
-                Text(genre)
-                    .foregroundColor(.gray700)
-                    .font(.nunitoBold(size: 16))
-                    .padding(Constants.margin)
-                    .frame(maxWidth: .infinity)
-                    .background(.white)
-                    .onTapGesture { viewModel.genreRowSelected(genre) }
+            LazyVStack(alignment: .leading) {
+                ForEach(Array(viewModel.genres), id: \.self) { genre in
+                    Text(genre)
+                        .foregroundColor(.gray700)
+                        .font(.nunitoBold(size: 16))
+                        .padding(Constants.margin)
+                        .frame(maxWidth: .infinity)
+                        .background(.white)
+                        .onTapGesture { viewModel.genreRowSelected(genre) }
+                }
             }
         }
     }
@@ -296,6 +374,7 @@ struct ThreePointSliderRow: View {
     @Binding var lowerBound: Double
     @Binding var target: Double
     @Binding var upperBound: Double
+    @Binding var isToggled: Bool
     
     var lowerBoundString: String { valueToString(lowerBound) }
     var targetString: String { valueToString(target) }
@@ -318,13 +397,22 @@ struct ThreePointSliderRow: View {
                 Button(action: infoAction) {
                     Image.Shared.info.foregroundColor(.green500)
                 }
+                
+                (isToggled ? Image.Shared.checkboxFill : Image.Shared.checkbox)
+                    .onTapGesture {
+                        withAnimation {
+                            isToggled.toggle()
+                        }
+                    }
+                    .foregroundColor(.green500)
+                
                 Spacer()
                 
                 Image.Shared.chevronDown
                     .rotationEffect(Angle(degrees: isExpanded ? 0 : -90))
             }
             .padding(.bottom, isExpanded ? 12 : .zero)
-            .background(.white)
+            .background(isToggled ? Color.green200 : Color.white)
             .onTapGesture {
                 withAnimation {
                     isExpanded.toggle()
@@ -371,7 +459,7 @@ struct ThreePointSliderRow: View {
             }
         }
         .padding(Constants.margin)
-        .cardBackground()
+        .cardBackground(backgroundColor: isToggled ? Color.green200 : Color.white)
     }
     
     func valueToString(_ value: Double) -> String {
@@ -582,27 +670,6 @@ struct Dot: View {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // MARK: - Toolbar
 extension DiscoverView {
     @ToolbarContentBuilder
@@ -622,53 +689,4 @@ extension DiscoverView {
             }
         }
     }
-}
-
-struct DiscoverRequest {
-    let limit: Int
-    let seedArtists: String
-    let seedGenres: String
-    let seedTracks: String
-    let minAcousticness: Double
-    let maxAcousticness: Double
-    let targetAcousticness: Double
-    let minDanceability: Double
-    let maxDanceability: Double
-    let targetDanceability: Double
-    let minDurationMs: Int
-    let maxDurationMs: Int
-    let targetDurationMs: Int
-    let minEnergy: Double
-    let maxEnergy: Double
-    let targetEnergy: Double
-    let minInstrumentalness: Double
-    let maxInstrumentalness: Double
-    let targetInstrumentalness: Double
-    let minKey: Double
-    let maxKey: Double
-    let targetKey: Double
-    let minLiveness: Double
-    let maxLiveness: Double
-    let targetLiveness: Double
-    let minLoudness: Double
-    let maxLoudness: Double
-    let targetLoudness: Double
-    let minMode: Double
-    let maxMode: Double
-    let targetMode: Double
-    let minPopularity: Double
-    let maxPopularity: Double
-    let targetPopularity: Double
-    let minSpeechiness: Double
-    let maxSpeechiness: Double
-    let targetSpeechiness: Double
-    let minTempo: Double
-    let maxTempo: Double
-    let targetTempo: Double
-    let minTimeSignature: Double
-    let maxTimeSignature: Double
-    let targetTimeSignature: Double
-    let minValence: Double
-    let maxValence: Double
-    let targetValence: Double
 }

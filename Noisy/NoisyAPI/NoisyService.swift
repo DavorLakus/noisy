@@ -22,7 +22,7 @@ protocol NoisyAPIProtocol {
     func getArtistsAlbums(for artistId: String) -> AnyPublisher<Data, Error>
     func getArtistsRelatedArtists(for artistId: String) -> AnyPublisher<Data, Error>
     func search(for query: String, type: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error>
-    func discover(request: DiscoverRequest) -> AnyPublisher<Data, Error>
+    func discover(parameters: [URLQueryItem]) -> AnyPublisher<Data, Error>
     func getRecommendationGenres() -> AnyPublisher<Data, Error>
 }
 
@@ -89,8 +89,8 @@ extension NoisyService {
         NetworkingManager.download(.artistsRelatedArtists(artistId: artistId))
     }
     
-    func discover(request: DiscoverRequest) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.recommendation(request: request))
+    func discover(parameters: [URLQueryItem]) -> AnyPublisher<Data, Error> {
+        NetworkingManager.download(.recommendation(parameters: parameters))
     }
     
     func getRecommendationGenres() -> AnyPublisher<Data, Error> {

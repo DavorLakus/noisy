@@ -78,6 +78,8 @@ extension String {
         static let currentSelection = "Current selection:"
         static let discover = "Discover"
         static let done = "Done"
+        static let includeAllSeeds = "Include all parameter seeds"
+        static let removeAllSeeds = "Remove all parameter seeds"
         static let min = "min"
         static let max = "max"
         static let targetShort = "target"
