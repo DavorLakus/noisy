@@ -37,11 +37,13 @@ final class HomeCoordinator: MusicDetailsCoordinatorProtocol {
     
     // MARK: - Services
     private let homeService: HomeService
+    private let queueManager: QueueManager
     
     // MARK: - Class lifecycle
-    init(homeService: HomeService, musicDetailsService: MusicDetailsService) {
+    init(homeService: HomeService, musicDetailsService: MusicDetailsService, queueManager: QueueManager) {
         self.homeService = homeService
         self.musicDetailsService = musicDetailsService
+        self.queueManager = queueManager
         
         bindHomeViewModel()
     }
@@ -114,7 +116,7 @@ extension HomeCoordinator {
 // MARK: - Binding
 extension HomeCoordinator {
     func bindHomeViewModel() {
-        homeViewModel = HomeViewModel(homeService: homeService)
+        homeViewModel = HomeViewModel(homeService: homeService, queueManager: queueManager)
         
         homeViewModel?.onDidTapProfileButton
             .sink { [weak self] in

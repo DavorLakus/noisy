@@ -10,7 +10,7 @@ import Combine
 import SwiftUI
 
 final class QueueManager: ObservableObject {
-    var state: QueueState
+    var state = QueueState(tracks: [])
     var player = AVPlayer()
     let time = CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(1000))
     
@@ -27,9 +27,7 @@ final class QueueManager: ObservableObject {
     var periodicTimeObserver: Any?
     private var cancellables = Set<AnyCancellable>()
     
-    init(state: QueueState) {
-        self.state = state
-        
+    init() {
         trackPosition.send(state.currentTime)
         bindPlayer()
         bindSliderState()
@@ -58,9 +56,7 @@ final class QueueManager: ObservableObject {
     }
     
     func onPlayPauseTapped() {
-        withAnimation {
-            isPlaying.value ? pause() : play()
-        }
+        isPlaying.value ? pause() : play()
     }
     
     func play(track: Track? = nil) {
@@ -68,7 +64,7 @@ final class QueueManager: ObservableObject {
            let urlString = track.previewUrl,
            let url = URL(string: urlString) {
             player.replaceCurrentItem(with: AVPlayerItem(url: url))
-        } else if let urlString = state.currentTrack.previewUrl,
+        } else if let urlString = state.currentTrack?.previewUrl,
                   let url = URL(string: urlString) {
             player.replaceCurrentItem(with: AVPlayerItem(url: url))
         }
@@ -80,6 +76,31 @@ final class QueueManager: ObservableObject {
     func pause() {
         player.pause()
         isPlaying.send(false)
+    }
+    
+    func onDidTapNextButton() {
+        play(track: state.next())
+    }
+    
+    func onDidTapPreviousButton() {
+        if trackPosition.value < 1 {
+            play(track: state.previous())
+        } else {
+            state.currentTime = .zero
+            play(track: state.currentTrack)
+        }
+    }
+    
+    func remove(_ track: EnumeratedSequence<[Track]>.Element) {
+        if state.tracks.count > 1 {
+            state.tracks.remove(at: track.offset)
+            if track.offset == state.currentTrackIndex {
+                state.currentTrackIndex =  state.currentTrackIndex > 0 ? state.currentTrackIndex - 1 : 0
+                state.currentTrack = state.tracks[state.currentTrackIndex]
+                state.currentTime = .zero
+                play(track: state.currentTrack)
+            }
+        }
     }
     
     func bindPlayer() {
@@ -94,6 +115,11 @@ final class QueueManager: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] (newStatus) in
                 guard let self = self else { return }
+                if newStatus == .paused,
+                   trackPosition.value + 0.2 > trackMaxPosition.value {
+                    trackPosition.send(.zero)
+                    self.play(track: self.state.next())
+                }
                 self.timeControlStatus.send(newStatus)
             }
     }
@@ -102,7 +128,7 @@ final class QueueManager: ObservableObject {
         itemDurationKVOPublisher = player
             .publisher(for: \.currentItem?.duration)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] (newStatus) in
+            .sink { [weak self] newStatus in
                 guard let newStatus = newStatus,
                       let self = self else { return }
                 if newStatus.seconds > 0 {
@@ -121,7 +147,9 @@ final class QueueManager: ObservableObject {
             
             switch self.sliderState.value {
             case .reset:
-                self.trackPosition.send(time.seconds)
+                if time.seconds != 0 {
+                    self.trackPosition.send(time.seconds)
+                }
             case .slideStarted:
                 break
             case .slideEnded(let seekTime):

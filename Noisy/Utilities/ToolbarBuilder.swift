@@ -28,11 +28,11 @@ extension View {
     }
 
     @ToolbarContentBuilder
-    func centeredTitle(_ title: String) -> some ToolbarContent {
+    func centeredTitle(_ title: String, color: Color = .gray700) -> some ToolbarContent {
         ToolbarItem(placement: .principal) {
             Text(title)
                 .font(.nunitoBold(size: 14))
-                .foregroundColor(.gray700)
+                .foregroundColor(color)
         }
     }
     

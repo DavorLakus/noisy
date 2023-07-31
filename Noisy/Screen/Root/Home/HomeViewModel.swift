@@ -55,20 +55,28 @@ final class HomeViewModel: ObservableObject {
     @Published var topTracksCount: Double = 10
     @Published var topArtistsCount: Double = 10
     @Published var playlistsCount: Double = 10
-
+    @Published var isOptionsSheetPresented = false
+    @Published var isToastPresented = false
+    
     // MARK: - Coordinator actions
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
     var onDidSelectTrackRow: PassthroughSubject<Track, Never>?
     let onDidTapArtistRow = PassthroughSubject<Artist, Never>()
     let onDidTapPlaylistRow = PassthroughSubject<Playlist, Never>()
+    
+    // MARK: - Public properties
+    var options: [OptionRow] = []
+    var toastMessage: String = .empty
 
     // MARK: - Private properties
     private let homeService: HomeService
+    private let queueManager: QueueManager
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Class lifecycle
-    init(homeService: HomeService) {
+    init(homeService: HomeService, queueManager: QueueManager) {
         self.homeService = homeService
+        self.queueManager = queueManager
         bind()
     }
 }
@@ -116,7 +124,23 @@ extension HomeViewModel {
     }
     
     func trackOptionsTapped(for track: Track) {
+        let addToQueueSubject = PassthroughSubject<Void, Never>()
         
+        addToQueueSubject
+            .sink { [weak self] in
+                self?.queueManager.state.tracks.append(track)
+                self?.toastMessage = "\(track.name) \(String.Shared.addedToQueue)"
+                withAnimation {
+                    self?.isToastPresented = true
+                }
+            }
+            .store(in: &cancellables)
+        
+        let addToQueueOption = OptionRow.addToQueue(action: addToQueueSubject)
+        options = [addToQueueOption]
+        withAnimation {
+            isOptionsSheetPresented = true
+        }
     }
     
     func playlistOptionsTapped(for playlist: Playlist) {

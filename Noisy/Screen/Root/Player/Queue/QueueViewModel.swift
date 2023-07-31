@@ -10,7 +10,8 @@ import Combine
 
 final class QueueViewModel: ObservableObject {
     // MARK: - Published properties
-
+    @Published var currentTime: Double = 0
+    
     // MARK: - Coordinator actions
     let onDidTapBackButton = PassthroughSubject<Void, Never>()
     
@@ -23,6 +24,8 @@ final class QueueViewModel: ObservableObject {
     // MARK: - Class lifecycle
     init(queueManager: QueueManager) {
         self.queueManager = queueManager
+        
+       bindCurrentTime()
     }
 }
 
@@ -34,5 +37,26 @@ extension QueueViewModel {
     
     func moveTrack(from source: IndexSet, to destination: Int) {
         queueManager.state.tracks.move(fromOffsets: source, toOffset: destination)
+        if destination == 0 {
+            queueManager.state.currentTrack = queueManager.state.tracks.first
+            queueManager.play()
+        }
+    }
+    
+    func trackRowSwiped(_ track: EnumeratedSequence<[Track]>.Element) {
+        queueManager.remove(track)
+    }
+}
+
+// MARK: - Private extensions
+private extension QueueViewModel {
+    func bindCurrentTime() {
+        queueManager.observedPosition
+            .sink { [weak self] position in
+                withAnimation(.linear(duration: 0.5)) {
+                    self?.currentTime = position
+                }
+            }
+            .store(in: &cancellables)
     }
 }

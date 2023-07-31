@@ -37,13 +37,13 @@ final class RootCoordinator: CoordinatorProtocol {
     private let musicDetailsService: MusicDetailsService
     
     // MARK: - Coordinators
-    private lazy var homeCoordinator = HomeCoordinator(homeService: homeService, musicDetailsService: musicDetailsService)
+    private lazy var homeCoordinator = HomeCoordinator(homeService: homeService, musicDetailsService: musicDetailsService, queueManager: queueManager)
     private lazy var searchCoordinator = SearchCoordinator(searchService: searchService, musicDetailsService: musicDetailsService)
     private lazy var discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce, searchService: searchService, musicDetailsService: musicDetailsService)
     private var playerCoordinator: PlayerCoordinator?
     
     // MARK: - Private properties
-    private var queueManager: QueueManager?
+    private lazy var queueManager = QueueManager()
     private var miniPlayerViewModel: MiniPlayerViewModel?
     private var profileViewModel: ProfileViewModel?
     private lazy var alertViewModel = AlertViewModel(isPresented: _isAlertPresented)
@@ -90,8 +90,7 @@ private extension RootCoordinator {
     func getQueueManager() {
         if let queueStateData = UserDefaults.standard.object(forKey: .UserDefaults.queueState) as? Data,
            let queueState = try? JSONDecoder().decode(QueueState.self, from: queueStateData) {
-            let queueManager = QueueManager(state: queueState)
-            self.queueManager = queueManager
+            self.queueManager.state = queueState
             self.bindMiniPlayerViewModel(with: queueManager)
         }
     }
@@ -173,12 +172,11 @@ extension RootCoordinator {
     }
     
     func bindPlayerCoordinator(with track: Track? = nil) {
-        if queueManager == nil,
+        if queueManager.state.tracks.isEmpty,
            let track {
-            queueManager = QueueManager(state: QueueState(tracks: [track]))
+            queueManager.state = QueueState(tracks: [track])
         }
-        guard let queueManager else { return }
-        
+
         if let track {
             queueManager.setState(with: track)
         }
@@ -202,8 +200,7 @@ extension RootCoordinator {
     }
     
     func persistQueueManagerState() {
-        if let queueManager,
-           let queueManagerData = try? JSONEncoder().encode(queueManager.state) {
+        if let queueManagerData = try? JSONEncoder().encode(queueManager.state) {
             UserDefaults.standard.set(queueManagerData, forKey: .UserDefaults.queueState)
         }
     }

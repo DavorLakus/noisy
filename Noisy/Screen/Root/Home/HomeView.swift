@@ -10,6 +10,7 @@ import WebKit
 
 struct HomeView: View {
     @ObservedObject var viewModel: HomeViewModel
+    @State var detents = Set<PresentationDetent>() 
     
     var body: some View {
         ZStack(alignment: .top) {
@@ -18,8 +19,37 @@ struct HomeView: View {
             bodyView()
         }
         .onAppear(perform: viewModel.viewDidAppear)
+        .sheet(isPresented: $viewModel.isOptionsSheetPresented) {
+            OptionsView(isPresented: $viewModel.isOptionsSheetPresented, options: viewModel.options)
+                .readSize { detents = [.height($0.height)] }
+                .presentationDetents(detents)
+                .toast(isPresented: $viewModel.isToastPresented, message: viewModel.toastMessage)
+        }
         .toolbar {
             trailingNavigationBarItem()
+        }
+    }
+}
+
+extension View {
+    func toast(isPresented: Binding<Bool>, message: String, alignment: Alignment = .bottom, duration: TimeInterval = 2.5) -> some View {
+        ZStack(alignment: alignment) {
+            self
+            if isPresented.wrappedValue {
+                Text(message)
+                    .font(.nunitoBold(size: 18))
+                    .foregroundColor(.white)
+                    .padding(12)
+                    .cardBackground(backgroundColor: .green200)
+                    .zStackTransition(.slide)
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+                            withAnimation {
+                                isPresented.wrappedValue = false
+                            }
+                        }
+                    }
+            }
         }
     }
 }

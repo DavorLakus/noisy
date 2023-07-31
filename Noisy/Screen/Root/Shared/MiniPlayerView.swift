@@ -59,10 +59,10 @@ extension MiniPlayerView {
                 .highPriorityGesture(playPauseGesture())
             
             VStack(alignment: .leading, spacing: .zero) {
-                Text(viewModel.queueManager.state.currentTrack.name)
+                Text(viewModel.queueManager.state.currentTrack?.name ?? .empty)
                     .foregroundColor(.gray700)
                     .font(.nunitoBold(size: 16))
-                Text(viewModel.queueManager.state.currentTrack.artists.first?.name ?? .empty)
+                Text(viewModel.queueManager.state.currentTrack?.artists.first?.name ?? .empty)
                     .font(.nunitoSemiBold(size: 14))
                     .foregroundColor(.gray700)
                 

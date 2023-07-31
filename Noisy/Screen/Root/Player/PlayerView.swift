@@ -17,11 +17,54 @@ struct PlayerView: View {
     }
 }
 
+struct CustomSlider: View {
+    @Binding var value: Double
+    let range: ClosedRange<Double>
+    @State var width: CGFloat = .zero
+    let isSliding: (Bool) -> Void
+    
+    var body: some View {
+        ZStack(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 4)
+                .fill(Color.gray500)
+                .frame(height: 4)
+                .frame(maxWidth: .infinity)
+                .readSize { width = $0.width }
+            
+            RoundedRectangle(cornerRadius: 5)
+                .fill(Color.green400)
+                .frame(height: 5)
+                .frame(width: width * value / range.upperBound + 10, height: 5)
+            Circle()
+                .fill(Color.orange100)
+                .frame(width: 20, height: 20)
+                .padding(.trailing, 5)
+                .offset(x: width * value / range.upperBound)
+                .gesture(
+                    DragGesture()
+                        .onChanged { dragValue in
+                            isSliding(true)
+                            if (0...width).contains(dragValue.location.x) {
+                                withAnimation(.linear) {
+                                    value = dragValue.location.x / width * range.upperBound
+                                }
+                            }
+                        }
+                        .onEnded { dragValue in
+                            isSliding(false)
+                        }
+                )
+        }
+        .clipped()
+    }
+    
+}
+
 // MARK: - Body
 extension PlayerView {
     func bodyView() -> some View {
         VStack(spacing: 28) {
-            LoadImage(url: URL(string: viewModel.queueManager.state.currentTrack.album.images.first?.url ?? .empty), placeholder: Image.albumPlaceholder)
+            LoadImage(url: URL(string: viewModel.queueManager.state.currentTrack?.album.images.first?.url ?? .empty), placeholder: Image.albumPlaceholder)
                 .readSize { albumWidth = $0.width }
                 .frame(height: albumWidth)
                 .cornerRadius(Constants.smallCornerRadius)
@@ -41,10 +84,10 @@ extension PlayerView {
     func trackTitleView() -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 8) {
-                Text("\(String.Track.name) \(viewModel.queueManager.state.currentTrack.name)")
+                Text("\(String.Track.name) \(viewModel.queueManager.state.currentTrack?.name ?? .empty)")
                     .font(.nunitoBold(size: 18))
                     .foregroundColor(.gray600)
-                Text("\(String.Track.artist) \(viewModel.queueManager.state.currentTrack.artists.first?.name ?? .empty)")
+                Text("\(String.Track.artist) \(viewModel.queueManager.state.currentTrack?.artists.first?.name ?? .empty)")
                     .font(.nunitoRegular(size: 16))
                     .foregroundColor(.gray500)
             }
@@ -76,14 +119,14 @@ extension PlayerView {
                     .fill(Color.gray300)
                     .frame(height: 2)
                 ZStack(alignment: .trailing) {
-                    Slider(value: $viewModel.trackPosition, in: (0...viewModel.trackMaxPosition)) { isSliding in
+                    CustomSlider(value: $viewModel.trackPosition,
+                                 range: (0...viewModel.trackMaxPosition)) { isSliding in
                         if isSliding {
                             self.viewModel.sliderState = .slideStarted
                         } else {
                             self.viewModel.sliderState = .slideEnded(self.viewModel.trackPosition)
                         }
                     }
-                    .tint(Color.green400)
                 }
             }
             

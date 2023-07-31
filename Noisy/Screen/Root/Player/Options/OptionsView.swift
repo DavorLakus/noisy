@@ -6,9 +6,10 @@
 //
 
 import SwiftUI
+import Combine
 
 enum OptionRow: Identifiable {
-    case addToQueue(track: String, action: (String) -> Void)
+    case addToQueue(action: PassthroughSubject<Void, Never>)
     
     var icon: Image {
         switch self {
@@ -30,8 +31,8 @@ enum OptionRow: Identifiable {
 }
 
 struct OptionsView: View {
+    @Binding var isPresented: Bool
     let options: [OptionRow]
-    let dismiss: () -> Void
     
     var body: some View {
         bodyView()
@@ -42,19 +43,24 @@ struct OptionsView: View {
 extension OptionsView {
     func bodyView() -> some View {
         VStack(alignment: .trailing) {
-            Button(action: dismiss) {
+            Button {
+                withAnimation {
+                    isPresented = false
+                }
+            } label: {
                 Text(String.Shared.done)
                     .foregroundColor(.green500)
                     .font(.nunitoBold(size: 18))
             }
-            ScrollView {
-                LazyVStack {
-                    ForEach(options) { option in
-                        optionRow(for: option)
-                    }
+            .padding(Constants.margin)
+            
+            VStack {
+                ForEach(options) { option in
+                    optionRow(for: option)
                 }
-                .padding(Constants.margin)
             }
+            .padding(Constants.margin)
+            .padding(.bottom, 50)
         }
         
     }
@@ -62,8 +68,8 @@ extension OptionsView {
     func optionRow(for optionRow: OptionRow) -> some View {
         Button {
             switch optionRow {
-            case .addToQueue(let track, let action):
-                action(track)
+            case .addToQueue(let action):
+                action.send()
             }
         } label: {
             HStack(spacing: 24) {

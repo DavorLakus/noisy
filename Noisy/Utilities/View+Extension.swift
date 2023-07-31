@@ -106,7 +106,7 @@ extension View {
     }
     
     @ViewBuilder
-    func cardBackground(backgroundColor: Color = .cardBackground, borderColor: Color = .gray50, cornerRadius: CGFloat = Constants.cornerRadius, isHidden: Bool = false) -> some View {
+    func cardBackground(backgroundColor: Color = .cardBackground, borderColor: Color = .gray50, cornerRadius: CGFloat = Constants.cornerRadius, hasShadow: Bool = true, isHidden: Bool = false) -> some View {
         if isHidden {
             self
         } else {
@@ -117,7 +117,7 @@ extension View {
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .stroke(borderColor, lineWidth: 1)
                 )
-                .shadow(color: Color.gray300,
+                .shadow(color: hasShadow ? .gray300 : .clear,
                         radius: 6, x: 1, y: 4)
         }
     }

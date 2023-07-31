@@ -59,6 +59,8 @@ extension String {
         static let genres = "genres"
         static let done = "Done"
         static let addToQueue = "Add to queue"
+        static let addedToQueue = "added to queue."
+        static let remove = "Remove"
     }
     
     struct Profile {

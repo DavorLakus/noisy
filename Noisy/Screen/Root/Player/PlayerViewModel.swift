@@ -44,7 +44,13 @@ final class PlayerViewModel: ObservableObject {
     
     func bindQueueManager() {
         queueManager.isPlaying.assign(to: &_isPlaying.projectedValue)
-        queueManager.trackPosition.assign(to: &_trackPosition.projectedValue)
+        queueManager.trackPosition
+            .sink { [weak self] position in
+                withAnimation(.linear(duration: 0.5)) {
+                    self?.trackPosition = position
+                }
+            }
+            .store(in: &cancellables)
         queueManager.observedPosition.assign(to: &_observedPosition.projectedValue)
         queueManager.trackMaxPosition.assign(to: &_trackMaxPosition.projectedValue)
         queueManager.timeControlStatus.assign(to: &_timeControlStatus.projectedValue)
@@ -72,16 +78,7 @@ extension PlayerViewModel {
     }
     
     func previousButtonTapped() {
-//        switch player.timeControlStatus {
-//        case .paused:
-//            <#code#>
-//        case .waitingToPlayAtSpecifiedRate:
-//            <#code#>
-//        case .playing:
-//            <#code#>
-//        @unknown default:
-//            <#code#>
-//        }
+        queueManager.onDidTapPreviousButton()
     }
 
     func playPauseButtonTapped() {
@@ -89,7 +86,7 @@ extension PlayerViewModel {
     }
     
     func nextButtonTapped() {
-
+        queueManager.onDidTapNextButton()
     }
     
     func queueButtonTapped() {
