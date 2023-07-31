@@ -11,8 +11,9 @@ struct SimpleAccordionView<AccordionData: Hashable, Content: View>: View {
     @Binding var isExpanded: Bool
     let title: String
     var data: EnumeratedSequence<[AccordionData]>
-    var dataRowView: (EnumeratedSequence<[AccordionData]>.Iterator.Element) -> Content
-    var action: (AccordionData) -> Void
+    var dataRowView: (EnumeratedSequence<[AccordionData]>.Iterator.Element, ((AccordionData) -> Void)?) -> Content
+    let action: (AccordionData) -> Void
+    let optionsAction: ((AccordionData) -> Void)?
     
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 10) {
@@ -40,7 +41,7 @@ struct SimpleAccordionView<AccordionData: Hashable, Content: View>: View {
             
             if isExpanded {
                 ForEach(Array(data), id: \.offset) { dataElement in
-                    dataRowView(dataElement)
+                    dataRowView(dataElement, optionsAction)
                         .onTapGesture {
                             action(dataElement.element)
                         }
@@ -58,9 +59,10 @@ struct ParameterizedAccordionView<AccordionData: Hashable, Content: View>: View 
     @Binding var count: Double
     var timeRange: Binding<TimeRange>? 
     let title: String
-    var data: EnumeratedSequence<[AccordionData]>
-    var dataRowView: (EnumeratedSequence<[AccordionData]>.Iterator.Element) -> Content
-    var action: (AccordionData) -> Void
+    let data: EnumeratedSequence<[AccordionData]>
+    let dataRowView: (EnumeratedSequence<[AccordionData]>.Iterator.Element, ((AccordionData) -> Void)?) -> Content
+    let action: (AccordionData) -> Void
+    let optionsAction: ((AccordionData) -> Void)?
 
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 10) {
@@ -114,7 +116,7 @@ struct ParameterizedAccordionView<AccordionData: Hashable, Content: View>: View 
                 }
                 
                 ForEach(Array(data), id: \.offset) { dataElement in
-                    dataRowView(dataElement)
+                    dataRowView(dataElement, optionsAction)
                         .onTapGesture {
                             action(dataElement.element)
                         }

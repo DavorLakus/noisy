@@ -50,11 +50,11 @@ extension ArtistView {
     }
     
     func mostPlayed() -> some View {
-        SimpleAccordionView(isExpanded: $viewModel.isMostPlayedExpanded, title: "\(viewModel.artist.name) \(String.Artist.mostPlayed)", data: viewModel.topTracks.enumerated(), dataRowView: trackRow, action: viewModel.trackRowTapped)
+        SimpleAccordionView(isExpanded: $viewModel.isMostPlayedExpanded, title: "\(viewModel.artist.name) \(String.Artist.mostPlayed)", data: viewModel.topTracks.enumerated(), dataRowView: trackRow, action: viewModel.trackRowTapped, optionsAction: viewModel.trackOptionsTapped)
     }
     
     func albums() -> some View {
-        SimpleAccordionView(isExpanded: $viewModel.isAlbumsExpanded, title: .Artist.albums, data: viewModel.albums.enumerated(), dataRowView: albumRow, action: viewModel.albumRowTapped)
+        SimpleAccordionView(isExpanded: $viewModel.isAlbumsExpanded, title: .Artist.albums, data: viewModel.albums.enumerated(), dataRowView: albumRow, action: viewModel.albumRowTapped, optionsAction: viewModel.albumOptionsTapped)
     }
     
     @ViewBuilder

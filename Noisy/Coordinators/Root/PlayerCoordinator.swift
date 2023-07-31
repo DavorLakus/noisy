@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 enum PlayerPath: Hashable {
-    case options
+//    case options
     case queue
     case artist(Artist)
     case album(Album)
@@ -66,8 +66,6 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
     @ViewBuilder
     func navigationDestination(_ path: PlayerPath) -> some View {
         switch path {
-        case .options:
-            presentOptionsView()
         case .queue:
             presentQueueView()
         case .artist:
@@ -83,8 +81,6 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
     
     func push(_ path: PlayerPath) {
         switch path {
-        case .options:
-            bindOptionsViewModel()
         case .queue:
             bindQueueViewModel()
         case .artist(let artist):
@@ -127,13 +123,6 @@ extension PlayerCoordinator {
 // MARK: ViewBuilder
 extension PlayerCoordinator {
     @ViewBuilder
-    func presentOptionsView() -> some View {
-        if let optionsViewModel {
-            OptionsView(viewModel: optionsViewModel)
-        }
-    }
-    
-    @ViewBuilder
     func presentQueueView() -> some View {
         if let queueViewModel {
             QueueView(viewModel: queueViewModel)
@@ -145,12 +134,6 @@ extension PlayerCoordinator {
 extension PlayerCoordinator {
     func bindPlayerView() {
         playerViewModel.onDidTapDismissButton = onShoudEnd
-        
-        playerViewModel.onDidTapOptionsButton
-            .sink { [weak self] in
-                self?.push(.options)
-            }
-            .store(in: &cancellables)
         
         playerViewModel.onDidTapShareButton
             .sink { [weak self] in
@@ -165,22 +148,6 @@ extension PlayerCoordinator {
             .store(in: &cancellables)
     }
     
-    func bindOptionsViewModel() {
-        optionsViewModel = OptionsViewModel()
-        
-        optionsViewModel?.onDidTapBackButton
-            .sink { [weak self] in
-                self?.pop()
-            }
-            .store(in: &cancellables)
-        
-        optionsViewModel?.onDidTapPlaylistsButton
-            .sink { [weak self] playlists in
-                self?.push(.playlists(playlists))
-            }
-            .store(in: &cancellables)
-    }
-    
     func presentShareView() {
         print("sharing is caring")
         
@@ -190,7 +157,7 @@ extension PlayerCoordinator {
     }
     
     func bindQueueViewModel() {
-        queueViewModel = QueueViewModel()
+        queueViewModel = QueueViewModel(queueManager: queueManager)
         
         queueViewModel?.onDidTapBackButton
             .sink { [weak self] in

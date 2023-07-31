@@ -10,16 +10,19 @@ import Combine
 
 final class QueueViewModel: ObservableObject {
     // MARK: - Published properties
+
+    // MARK: - Coordinator actions
+    let onDidTapBackButton = PassthroughSubject<Void, Never>()
     
     // MARK: - Public properties
-    let onDidTapBackButton = PassthroughSubject<Void, Never>()
+    let queueManager: QueueManager
     
     // MARK: - Private properties
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Class lifecycle
-    init() {
-        
+    init(queueManager: QueueManager) {
+        self.queueManager = queueManager
     }
 }
 
@@ -27,5 +30,9 @@ final class QueueViewModel: ObservableObject {
 extension QueueViewModel {
     func backButtonTapped() {
         onDidTapBackButton.send()
+    }
+    
+    func moveTrack(from source: IndexSet, to destination: Int) {
+        queueManager.state.tracks.move(fromOffsets: source, toOffset: destination)
     }
 }

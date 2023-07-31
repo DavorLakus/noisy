@@ -7,55 +7,71 @@
 
 import SwiftUI
 
+enum OptionRow: Identifiable {
+    case addToQueue(track: String, action: (String) -> Void)
+    
+    var icon: Image {
+        switch self {
+        case .addToQueue:
+            return Image.Shared.addToQueue
+        }
+    }
+    
+    var title: String {
+        switch self {
+        case .addToQueue:
+            return .Shared.addToQueue
+        }
+    }
+    
+    var id: String {
+        String(describing: self)
+    }
+}
+
 struct OptionsView: View {
-    @ObservedObject var viewModel: OptionsViewModel
+    let options: [OptionRow]
+    let dismiss: () -> Void
     
     var body: some View {
         bodyView()
-            .navigationBarBackButtonHidden()
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar(content: toolbarContent)
     }
 }
 
 // MARK: - Body view
 extension OptionsView {
     func bodyView() -> some View {
-        VStack {
-            optionRow(icon: .Shared.plusCircle, title: "Add to playlist", action: viewModel.addToPlaylistButtonTapped)
-            
-            Spacer()
+        VStack(alignment: .trailing) {
+            Button(action: dismiss) {
+                Text(String.Shared.done)
+                    .foregroundColor(.green500)
+                    .font(.nunitoBold(size: 18))
+            }
+            ScrollView {
+                LazyVStack {
+                    ForEach(options) { option in
+                        optionRow(for: option)
+                    }
+                }
+                .padding(Constants.margin)
+            }
         }
-        .padding(Constants.margin)
         
     }
     
-    func optionRow(icon: Image, title: String, action: @escaping () -> Void) -> some View {
-        HStack(spacing: 24) {
-            icon
-            Text(title)
-                .font(.nunitoSemiBold(size: 18))
-                .foregroundColor(.gray600)
-            Spacer()
-        }
-        .onTapGesture(perform: action)
-    }
-}
-
-// MARK: - Toolbar
-extension OptionsView {
-    @ToolbarContentBuilder
-    func toolbarContent() -> some ToolbarContent {
-        leadingToolbarButton()
-        centeredTitle("Track name")
-    }
-    
-    @ToolbarContentBuilder
-    func leadingToolbarButton() -> some ToolbarContent {
-        ToolbarItem(placement: .navigationBarLeading) {
-            Button(action: viewModel.backButtonTapped) {
-                Image.Shared.chevronLeft
+    func optionRow(for optionRow: OptionRow) -> some View {
+        Button {
+            switch optionRow {
+            case .addToQueue(let track, let action):
+                action(track)
+            }
+        } label: {
+            HStack(spacing: 24) {
+                optionRow.icon
+                Text(optionRow.title)
+                    .font(.nunitoSemiBold(size: 18))
                     .foregroundColor(.gray600)
+                Spacer()
             }
         }
     }

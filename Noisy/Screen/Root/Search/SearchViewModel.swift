@@ -195,4 +195,20 @@ extension SearchViewModel {
     func playlistRowSelected(_ playlist: Playlist) {
         onDidTapPlaylistRow.send(playlist)
     }
+    
+    func artistOptionsTapped(for artist: Artist) {
+        
+    }
+    
+    func trackOptionsTapped(for track: Track) {
+        
+    }
+    
+    func albumOptionsTapped(for album: Album) {
+        
+    }
+    
+    func playlistOptionsTapped(for playlist: Playlist) {
+        
+    }
 }

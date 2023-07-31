@@ -110,6 +110,18 @@ extension HomeViewModel {
     func playlistRowSelected(for playlist: Playlist) {
         onDidTapPlaylistRow.send(playlist)
     }
+    
+    func artistOptionsTapped(for artist: Artist) {
+        
+    }
+    
+    func trackOptionsTapped(for track: Track) {
+        
+    }
+    
+    func playlistOptionsTapped(for playlist: Playlist) {
+        
+    }
 }
 
 private extension HomeViewModel {

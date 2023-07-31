@@ -19,7 +19,7 @@ struct SeedsSheetView: View {
             HStack {
                 Spacer()
                 Button(action: viewModel.manageSeedsButtonTapped) {
-                    Text(String.Discover.done)
+                    Text(String.Shared.done)
                         .foregroundColor(.green500)
                         .font(.nunitoBold(size: 18))
                 }
@@ -45,7 +45,7 @@ struct SeedsSheetView: View {
                         ForEach(SeedCategory.allCases, id: \.self) { seedCategory in
                             Text(seedCategory.displayName)
                                 .padding(12)
-                                .font(viewModel.seedCategory == seedCategory ? .nunitoBold(size: 16) : .nunitoRegular(size: 16))
+                                .font(viewModel.seedCategory == seedCategory ? .nunitoBold(size: 16) : .nunitoSemiBold(size: 16))
                                 .foregroundColor(viewModel.seedCategory == seedCategory ? .appBackground : .green500)
                                 .background {
                                     if viewModel.seedCategory == seedCategory {

@@ -179,7 +179,7 @@ extension PlayerView {
     func trailingToolbarButton() -> some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
             Button(action: viewModel.optionsButtonTapped) {
-                Image.Player.threeDots
+                Image.Shared.threeDots
                     .foregroundColor(.gray600)
             }
         }

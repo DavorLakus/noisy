@@ -57,6 +57,8 @@ extension String {
         static let artists = "artists"
         static let tracks = "tracks"
         static let genres = "genres"
+        static let done = "Done"
+        static let addToQueue = "Add to queue"
     }
     
     struct Profile {
@@ -85,7 +87,6 @@ extension String {
         static let currentSeedSelection = "Current seed selection:"
         static let pleaseSelectSomeDiscoverySeeds = "Select some discovery seeds to get started"
         static let discover = "Discover"
-        static let done = "Done"
         static let includeAllSeeds = "Include all parameter seeds"
         static let removeAllSeeds = "Remove all parameter seeds"
         static let min = "min"

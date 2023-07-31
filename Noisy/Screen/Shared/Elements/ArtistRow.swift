@@ -10,10 +10,12 @@ import SwiftUI
 struct ArtistRow: View {
     let artist: EnumeratedSequence<[Artist]>.Iterator.Element
     let isEnumerated: Bool
+    let action: ((Artist) -> Void)?
     
-    init(artist: EnumeratedSequence<[Artist]>.Iterator.Element, isEnumerated: Bool = true) {
+    init(artist: EnumeratedSequence<[Artist]>.Iterator.Element, isEnumerated: Bool = true, action: ((Artist) -> Void)? = nil) {
         self.artist = artist
         self.isEnumerated = isEnumerated
+        self.action = action
     }
     
     var body: some View {
@@ -33,14 +35,21 @@ struct ArtistRow: View {
                 .foregroundColor(.gray700)
                 .font(.nunitoBold(size: 16))
             Spacer()
-            
+         
+            if let action {
+                Button {
+                    action(artist.element)
+                } label: {
+                    Image.Shared.threeDots
+                }
+            }
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 }
 
 extension View {
-    func artistRow(for artist: EnumeratedSequence<[Artist]>.Iterator.Element) -> some View {
-        ArtistRow(artist: artist)
+    func artistRow(for artist: EnumeratedSequence<[Artist]>.Iterator.Element, optionsAction: ((Artist) -> Void)? = nil) -> some View {
+        ArtistRow(artist: artist, action: optionsAction)
     }
 }

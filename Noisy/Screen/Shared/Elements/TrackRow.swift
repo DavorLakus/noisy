@@ -9,10 +9,12 @@ import SwiftUI
 struct TrackRow: View {
     let track: EnumeratedSequence<[Track]>.Iterator.Element
     let isEnumerated: Bool
+    let action: ((Track) -> Void)?
     
-    init(track: EnumeratedSequence<[Track]>.Iterator.Element, isEnumerated: Bool = true) {
+    init(track: EnumeratedSequence<[Track]>.Iterator.Element, isEnumerated: Bool = true, action: ((Track) -> Void)? = nil) {
         self.track = track
         self.isEnumerated = isEnumerated
+        self.action = action
     }
     
     var body: some View {
@@ -39,13 +41,21 @@ struct TrackRow: View {
                 
             }
             Spacer()
+            
+            if let action {
+                Button {
+                    action(track.element)
+                } label: {
+                    Image.Shared.threeDots
+                }
+            }
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 }
 
 extension View {
-    func trackRow(for track: EnumeratedSequence<[Track]>.Iterator.Element) -> some View {
-        TrackRow(track: track)
+    func trackRow(for track: EnumeratedSequence<[Track]>.Iterator.Element, optionsAction: ((Track) -> Void)? = nil) -> some View {
+        TrackRow(track: track, action: optionsAction)
     }
 }

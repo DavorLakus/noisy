@@ -10,10 +10,12 @@ import SwiftUI
 struct PlaylistRow: View {
     let playlist: EnumeratedSequence<[Playlist]>.Iterator.Element
     let isEnumerated: Bool
+    let action: ((Playlist) -> Void)?
     
-    init(playlist: EnumeratedSequence<[Playlist]>.Iterator.Element, isEnumerated: Bool = true) {
+    init(playlist: EnumeratedSequence<[Playlist]>.Iterator.Element, isEnumerated: Bool = true, action: ((Playlist) -> Void)? = nil) {
         self.playlist = playlist
         self.isEnumerated = isEnumerated
+        self.action = action
     }
     
     var body: some View {
@@ -38,13 +40,20 @@ struct PlaylistRow: View {
             }
             Spacer()
             
+            if let action {
+                Button {
+                    action(playlist.element)
+                } label: {
+                    Image.Shared.threeDots
+                }
+            }
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 }
 
 extension View {
-    func playlistRow(for playlist: EnumeratedSequence<[Playlist]>.Iterator.Element) -> some View {
-        PlaylistRow(playlist: playlist)
+    func playlistRow(for playlist: EnumeratedSequence<[Playlist]>.Iterator.Element, optionsAction: ((Playlist) -> Void)? = nil) -> some View {
+        PlaylistRow(playlist: playlist, action: optionsAction)
     }
 }

@@ -181,11 +181,16 @@ extension DiscoverViewModel {
     
     @Sendable
     func refreshToggled() {
+        getGenres()
         discover()
     }
     
     func recommendedTrackRowSelected(_ track: Track) {
         onDidTapRecommendedTrackRow?.send(track)
+    }
+    
+    func recommendedTrackOptionsSelected(_ track: Track) {
+        
     }
 }
 

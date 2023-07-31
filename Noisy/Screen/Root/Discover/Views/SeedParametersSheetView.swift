@@ -15,7 +15,7 @@ struct SeedParametersSheetView: View {
             HStack {
                 Spacer()
                 Button(action: viewModel.changeSeedParametersButtonTapped) {
-                    Text(String.Discover.done)
+                    Text(String.Shared.done)
                         .foregroundColor(.green500)
                         .font(.nunitoBold(size: 18))
                 }

@@ -31,6 +31,8 @@ extension Image {
         static let sort = Image(systemName: "arrow.up.arrow.down")
         static let plusCircle: Image = Image(systemName: "plus.circle")
         static let info: Image = Image(systemName: "info.circle")
+        static let threeDots = Image(systemName: "ellipsis")
+        static let addToQueue = Image(systemName: "text.badge.plus")
     }
     
     struct Search {
@@ -43,7 +45,6 @@ extension Image {
     }
     
     struct Player {
-        static let threeDots = Image(systemName: "ellipsis")
         static let play = Image(systemName: "play")
         static let playCircle = Image(systemName: "play.circle")
         static let pause = Image(systemName: "pause")

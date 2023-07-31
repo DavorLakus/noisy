@@ -9,6 +9,7 @@ import SwiftUI
 
 struct QueueView: View {
     @ObservedObject var viewModel: QueueViewModel
+    @State var trackRowHeight: CGFloat = .zero
     
     var body: some View {
         bodyView()
@@ -24,7 +25,24 @@ extension QueueView {
         ZStack {
             Color.green400
                 .ignoresSafeArea()
+            
+            queueList()
         }
+    }
+    
+    func queueList() -> some View {
+        List {
+            ForEach(Array(viewModel.queueManager.state.tracks.enumerated()), id: \.offset) { enumeratedTrack in
+                TrackRow(track: enumeratedTrack)
+                    .listRowBackground(Color.green400)
+                    .listRowSeparator(.hidden)
+                    .padding(Constants.spacing)
+                    .cardBackground(backgroundColor: .appBackground)
+            }
+            .onMove(perform: viewModel.moveTrack)
+        }
+        .background { Color.green400 }
+        .listStyle(.plain)
     }
 }
 

@@ -56,7 +56,7 @@ extension DiscoverView {
                 .foregroundColor(.gray600)
             LazyVStack(spacing: 4) {
                 ForEach(Array(viewModel.recommendedTracks.enumerated()), id: \.offset) { enumeratedTrack in
-                    TrackRow(track: enumeratedTrack, isEnumerated: false)
+                    TrackRow(track: enumeratedTrack, isEnumerated: false, action: viewModel.recommendedTrackOptionsSelected)
                         .background(.white)
                         .onTapGesture { viewModel.recommendedTrackRowSelected(enumeratedTrack.element) }
                 }

@@ -61,6 +61,18 @@ extension ArtistViewModel {
     func artistButtonTapped(for artist: Artist) {
         onDidTapSimilarArtistButton.send(artist)
     }
+    
+    func artistOptionsTapped(for artist: Artist) {
+        
+    }
+    
+    func trackOptionsTapped(for track: Track) {
+        
+    }
+    
+    func albumOptionsTapped(for album: Album) {
+        
+    }
 }
 
 // MARK: - Private extension

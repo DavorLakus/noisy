@@ -141,7 +141,7 @@ extension SearchView {
                 .font(.nunitoBold(size: 14))
                 .foregroundColor(.gray600)
             ForEach(Array(viewModel.tracks.enumerated()), id: \.offset) { enumeratedTrack in
-                TrackRow(track: enumeratedTrack, isEnumerated: false)
+                TrackRow(track: enumeratedTrack, isEnumerated: false, action: viewModel.trackOptionsTapped)
                     .background(.white)
                     .onTapGesture { viewModel.trackRowSelected(enumeratedTrack.element) }
             }
@@ -154,7 +154,7 @@ extension SearchView {
                 .font(.nunitoBold(size: 14))
                 .foregroundColor(.gray600)
             ForEach(Array(viewModel.artists.enumerated()), id: \.offset) { enumeratedArtist in
-                ArtistRow(artist: enumeratedArtist, isEnumerated: false)
+                ArtistRow(artist: enumeratedArtist, isEnumerated: false, action: viewModel.artistOptionsTapped)
                     .background(.white)
                     .onTapGesture { viewModel.artistRowSelected(enumeratedArtist.element) }
             }
@@ -168,7 +168,7 @@ extension SearchView {
                 .foregroundColor(.gray600)
             
             ForEach(Array(viewModel.albums.enumerated()), id: \.offset) { enumeratedAlbum in
-                AlbumRow(album: enumeratedAlbum, isEnumerated: false)
+                AlbumRow(album: enumeratedAlbum, isEnumerated: false, action: viewModel.albumOptionsTapped)
                     .background(.white)
                     .onTapGesture { viewModel.albumRowSelected(enumeratedAlbum.element) }
             }
@@ -181,7 +181,7 @@ extension SearchView {
                 .font(.nunitoBold(size: 14))
                 .foregroundColor(.gray600)
             ForEach(Array(viewModel.playlists.enumerated()), id: \.offset) { enumeratedPlaylist in
-                PlaylistRow(playlist: enumeratedPlaylist, isEnumerated: false)
+                PlaylistRow(playlist: enumeratedPlaylist, isEnumerated: false, action: viewModel.playlistOptionsTapped)
                     .background(.white)
                     .onTapGesture { viewModel.playlistRowSelected(enumeratedPlaylist.element) }
             }
