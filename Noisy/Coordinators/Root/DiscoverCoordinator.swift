@@ -54,6 +54,8 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
                 self?.onDidTapProfileButton.send()
             }
             .store(in: &cancellables)
+        
+        discoverViewModel?.onDidTapRecommendedTrackRow = onDidTapPlayerButton
     }
     
     func start() -> some CoordinatorViewProtocol {

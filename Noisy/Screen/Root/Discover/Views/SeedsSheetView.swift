@@ -9,6 +9,10 @@ import SwiftUI
 
 struct SeedsSheetView: View {
     @ObservedObject var viewModel: DiscoverViewModel
+    let columns: [GridItem] = [
+        GridItem(.flexible(), spacing: Constants.margin, alignment: nil),
+        GridItem(.flexible(), spacing: Constants.margin, alignment: nil)
+    ]
     
     var body: some View {
         VStack {
@@ -58,22 +62,20 @@ struct SeedsSheetView: View {
 
                     SearchBar(isActive: $viewModel.isSearchActive, query: $viewModel.query, placeholder: "\(String.Tabs.search) \(String(describing: viewModel.seedCategory))...")
                     
-                    if viewModel.isSearchActive {
-                        LazyVStack {
-                            if !viewModel.tracks.isEmpty {
-                                tracksSection()
-                            }
-                            if !viewModel.artists.isEmpty {
-                                artistsSection()
-                            }
-                            if !viewModel.genres.isEmpty {
-                                genresSection()
-                            }
+                    VStack {
+                        switch viewModel.seedCategory {
+                        case .artists:
+                            artistsSection()
+                        case .tracks:
+                            tracksSection()
+                        case .genres:
+                            genresSection()
                         }
                     }
                 }
                 .padding(.horizontal, Constants.margin)
             }
+            .scrollDismissesKeyboard(.immediately)
         }
     }
 }
@@ -81,51 +83,86 @@ struct SeedsSheetView: View {
 extension SeedsSheetView {
     @ViewBuilder
     func tracksSection() -> some View {
-        VStack(alignment: .leading) {
-            Text(String.Search.tracks)
-                .font(.nunitoBold(size: 14))
-                .foregroundColor(.gray600)
-            ForEach(Array(viewModel.tracks.enumerated()), id: \.offset) { enumeratedTrack in
-                TrackRow(track: enumeratedTrack, isEnumerated: false)
-                    .background(.white)
-                    .onTapGesture { viewModel.trackRowSelected(enumeratedTrack.element) }
-            }
-        }
-    }
-    
-    func artistsSection() -> some View {
-        VStack(alignment: .leading) {
-            Text(String.Search.artists)
-                .font(.nunitoBold(size: 14))
-                .foregroundColor(.gray600)
-            ForEach(Array(viewModel.artists.enumerated()), id: \.offset) { enumeratedArtist in
-                ArtistRow(artist: enumeratedArtist, isEnumerated: false)
-                    .background(.white)
-                    .onTapGesture { viewModel.artistRowSelected(enumeratedArtist.element) }
-            }
-        }
-    }
-    
-    func genresSection() -> some View {
-        VStack(alignment: .leading) {
-            Text(String.Search.albums)
-                .font(.nunitoBold(size: 14))
-                .foregroundColor(.gray600)
-            
-            LazyVStack(alignment: .leading) {
-                ForEach(Array(viewModel.genres), id: \.self) { genre in
-                    HStack {
-                        Text(genre)
-                            .foregroundColor(.gray700)
-                            .font(.nunitoBold(size: 16))
-                            .padding(12)
-                        Spacer()
-                    }
-                        .frame(maxWidth: .infinity)
+        if !viewModel.tracks.isEmpty {
+            VStack(alignment: .leading) {
+                Text(String.Search.tracks)
+                    .font(.nunitoBold(size: 14))
+                    .foregroundColor(.gray600)
+                ForEach(Array(viewModel.tracks.enumerated()), id: \.offset) { enumeratedTrack in
+                    TrackRow(track: enumeratedTrack, isEnumerated: false)
                         .background(.white)
-                        .onTapGesture { viewModel.genreRowSelected(genre) }
+                        .onTapGesture { viewModel.trackRowSelected(enumeratedTrack.element) }
                 }
             }
+        } else {
+            initialView()
         }
+    }
+    
+    @ViewBuilder
+    func artistsSection() -> some View {
+        if !viewModel.artists.isEmpty {
+            VStack(alignment: .leading) {
+                Text(String.Search.artists)
+                    .font(.nunitoBold(size: 14))
+                    .foregroundColor(.gray600)
+                ForEach(Array(viewModel.artists.enumerated()), id: \.offset) { enumeratedArtist in
+                    ArtistRow(artist: enumeratedArtist, isEnumerated: false)
+                        .background(.white)
+                        .onTapGesture { viewModel.artistRowSelected(enumeratedArtist.element) }
+                }
+            }
+        } else {
+            initialView()
+        }
+    }
+    
+    @ViewBuilder
+    func genresSection() -> some View {
+        if !viewModel.genres.isEmpty {
+            VStack(alignment: .leading) {
+                Text(viewModel.isSearchActive ? String.Search.genres : String.Search.allGenres)
+                    .font(.nunitoBold(size: 14))
+                    .foregroundColor(.gray600)
+                
+                LazyVGrid(columns: columns, spacing: Constants.margin) {
+                    ForEach(viewModel.genres, id: \.self) { genre in
+                        HStack {
+                            Text(genre)
+                                .foregroundColor(.gray700)
+                                .font(.nunitoBold(size: 16))
+                                .padding(12)
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .background(.white)
+                        .cardBackground()
+                        .onTapGesture { viewModel.genreRowSelected(genre) }
+                    }
+                }
+            }
+            .padding(Constants.margin)
+        }
+    }
+    
+    @ViewBuilder
+    func initialView() -> some View {
+        VStack(spacing: 40) {
+            Spacer(minLength: 80)
+            Image.Search.arrowUp
+                .resizable()
+                .frame(width: 60, height: 60)
+                .foregroundColor(.green400.opacity(0.75))
+                .scaledToFit()
+        
+            Text(String.Search.tapToStart)
+                .foregroundColor(.gray600)
+                .frame(maxWidth: 120)
+                .multilineTextAlignment(.center)
+                .padding(.bottom, 32)
+                .font(.nunitoBold(size: 18))
+        }
+        .ignoresSafeArea(edges: .top)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

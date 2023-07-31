@@ -30,6 +30,7 @@
 		41B145CC2A76EE2D00FAE0C0 /* ThreePointSliderRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B145CB2A76EE2D00FAE0C0 /* ThreePointSliderRow.swift */; };
 		41B145CE2A76EEA200FAE0C0 /* SeedCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B145CD2A76EEA200FAE0C0 /* SeedCard.swift */; };
 		41B145D02A76EFA000FAE0C0 /* CurrentSeedSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B145CF2A76EFA000FAE0C0 /* CurrentSeedSelectionView.swift */; };
+		41B145D22A77A67F00FAE0C0 /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B145D12A77A67F00FAE0C0 /* SliderView.swift */; };
 		41B647772A38419000C1485C /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B647762A38419000C1485C /* AuthView.swift */; };
 		41B647792A38419600C1485C /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B647782A38419600C1485C /* AuthViewModel.swift */; };
 		41B6477C2A384CB400C1485C /* LoginService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B6477B2A384CB400C1485C /* LoginService.swift */; };
@@ -181,6 +182,7 @@
 		41B145CB2A76EE2D00FAE0C0 /* ThreePointSliderRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreePointSliderRow.swift; sourceTree = "<group>"; };
 		41B145CD2A76EEA200FAE0C0 /* SeedCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedCard.swift; sourceTree = "<group>"; };
 		41B145CF2A76EFA000FAE0C0 /* CurrentSeedSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentSeedSelectionView.swift; sourceTree = "<group>"; };
+		41B145D12A77A67F00FAE0C0 /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
 		41B647762A38419000C1485C /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		41B647782A38419600C1485C /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		41B6477B2A384CB400C1485C /* LoginService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginService.swift; sourceTree = "<group>"; };
@@ -423,6 +425,7 @@
 				41DE39D62A64389F0048CB51 /* Alert */,
 				41DE39D12A6436DA0048CB51 /* Account */,
 				41E0FB1D2A6452B800991D31 /* LoadingIndicator.swift */,
+				41B145D12A77A67F00FAE0C0 /* SliderView.swift */,
 				41E0FB582A66FB6000991D31 /* AccordionView.swift */,
 				41B145C92A76EDF200FAE0C0 /* LargeButton.swift */,
 			);
@@ -1043,6 +1046,7 @@
 				41B145CA2A76EDF200FAE0C0 /* LargeButton.swift in Sources */,
 				41F8F5682A26501800F7A2B8 /* LoginViewModel.swift in Sources */,
 				41E0FB532A66A70600991D31 /* ArtistViewModel.swift in Sources */,
+				41B145D22A77A67F00FAE0C0 /* SliderView.swift in Sources */,
 				419DD1CC2A573862005A6708 /* State.swift in Sources */,
 				41E0FB512A66A6E200991D31 /* PlaylistViewModel.swift in Sources */,
 				41E0FB712A67AB4100991D31 /* AlbumViewModel.swift in Sources */,

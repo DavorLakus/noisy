@@ -124,14 +124,7 @@ private extension SearchView {
     @ViewBuilder
     func emptyStateView() -> some View {
         VStack(spacing: 16) {
-//            Group {
-//                Text(String.Employees.emptyStateTitle)
-//                    .font(.nunitoSemiBold(size: 16))
-//                Text(String.Employees.emptyStateDescription)
-//                    .font(.nunitoRegular(size: 14))
-//            }
-//            .multilineTextAlignment(.center)
-//            .foregroundColor(.gray700)
+
         }
         .refreshGesture(offset: $gestureOffset, action: viewModel.pullToRefresh)
         .padding(Constants.margin)

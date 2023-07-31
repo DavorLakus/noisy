@@ -105,6 +105,8 @@ extension String {
         static let artists = "Artists"
         static let albums = "Albums"
         static let playlists = "Playlists"
+        static let genres = "Genres"
+        static let allGenres = "All genres"
     }
 
     struct Artist {

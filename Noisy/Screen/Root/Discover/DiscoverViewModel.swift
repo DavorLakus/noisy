@@ -62,6 +62,7 @@ final class DiscoverViewModel: ObservableObject {
     
     // MARK: - Coordinator actions
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
+    var onDidTapRecommendedTrackRow: PassthroughSubject<Track, Never>?
     
     // MARK: - Private properties
     private let discoverService: DiscoverService
@@ -182,6 +183,10 @@ extension DiscoverViewModel {
     func refreshToggled() {
         discover()
     }
+    
+    func recommendedTrackRowSelected(_ track: Track) {
+        onDidTapRecommendedTrackRow?.send(track)
+    }
 }
 
 // MARK: - Private extension
@@ -241,7 +246,7 @@ private extension DiscoverViewModel {
             query = .empty
             artists = []
             tracks = []
-//            genres = []
+            genres = isSearchActive ? [] : availableGenres
         }
     }
     
@@ -249,6 +254,7 @@ private extension DiscoverViewModel {
         let limit = 10
         if !query.isEmpty {
             if seedCategory != .genres {
+                print("searching for \(seedCategory.displayName)")
                 searchService.search(for: query, type: seedCategory.type, limit: limit, offset: .zero)
                     .sink { [weak self] searchResult in
                         if let tracksResponse = searchResult.tracks {
@@ -262,6 +268,8 @@ private extension DiscoverViewModel {
             } else {
                 genres = availableGenres.filter { $0.contains(query) }
             }
+        } else {
+            resetSearchResults()
         }
     }
     
