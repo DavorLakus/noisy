@@ -64,7 +64,7 @@ struct CustomSlider: View {
 extension PlayerView {
     func bodyView() -> some View {
         VStack(spacing: 28) {
-            LoadImage(url: URL(string: viewModel.queueManager.state.currentTrack?.album.images.first?.url ?? .empty), placeholder: Image.albumPlaceholder)
+            LoadImage(url: URL(string: viewModel.currentTrack?.album.images.first?.url ?? .empty), placeholder: Image.albumPlaceholder)
                 .readSize { albumWidth = $0.width }
                 .frame(height: albumWidth)
                 .cornerRadius(Constants.smallCornerRadius)
@@ -84,10 +84,10 @@ extension PlayerView {
     func trackTitleView() -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 8) {
-                Text("\(String.Track.name) \(viewModel.queueManager.state.currentTrack?.name ?? .empty)")
+                Text("\(String.Track.name) \(viewModel.currentTrack?.name ?? .empty)")
                     .font(.nunitoBold(size: 18))
                     .foregroundColor(.gray600)
-                Text("\(String.Track.artist) \(viewModel.queueManager.state.currentTrack?.artists.first?.name ?? .empty)")
+                Text("\(String.Track.artist) \(viewModel.currentTrack?.artists.first?.name ?? .empty)")
                     .font(.nunitoRegular(size: 16))
                     .foregroundColor(.gray500)
             }
@@ -131,7 +131,7 @@ extension PlayerView {
             }
             
             HStack {
-                Text(viewModel.observedPosition.positionalTime)
+                Text(viewModel.trackPosition.positionalTime)
                     .font(.nunitoRegular(size: 12))
                     .foregroundColor(.gray500)
                 Spacer()

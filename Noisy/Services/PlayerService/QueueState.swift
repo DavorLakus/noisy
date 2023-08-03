@@ -32,6 +32,7 @@ final class QueueState: Codable {
         }
         currentTrackIndex = 0
         currentTrack = tracks[currentTrackIndex]
+        persist()
         return currentTrack
     }
     
@@ -45,6 +46,37 @@ final class QueueState: Codable {
         }
         currentTrackIndex = tracks.count - 1
         currentTrack = tracks[currentTrackIndex]
+        persist()
         return currentTrack
+    }
+    
+    func append(_ track: Track, playNext: Bool) {
+        if playNext {
+            tracks.insert(track, at: currentTrackIndex + 1)
+        } else {
+            tracks.append(track)
+        }
+        persist()
+    }
+    
+    func remove(_ track: EnumeratedSequence<[Track]>.Element) -> Bool {
+        if tracks.count > 1 {
+            tracks.remove(at: track.offset)
+            if track.offset == currentTrackIndex {
+                currentTrackIndex =  currentTrackIndex > 0 ? currentTrackIndex - 1 : 0
+                currentTrack = tracks[currentTrackIndex]
+                currentTime = .zero
+                persist()
+                return true
+            }
+        }
+        persist()
+        return false
+    }
+    
+    func persist() {
+        if let stateData = try? JSONEncoder().encode(self) {
+            UserDefaults.standard.set(stateData, forKey: .UserDefaults.queueState)
+        }
     }
 }

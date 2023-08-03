@@ -23,6 +23,7 @@ final class PlayerViewModel: ObservableObject {
     @Published var observedPosition: TimeInterval = .zero
     @Published var trackMaxPosition: TimeInterval = 29
     @Published var sliderState: PlayerSliderState = .reset
+    @Published var currentTrack: Track?
 
     // MARK: - Coordinator actions
     var onDidTapDismissButton: PassthroughSubject<Void, Never>?
@@ -40,6 +41,7 @@ final class PlayerViewModel: ObservableObject {
     init(queueManager: QueueManager) {
         self.queueManager = queueManager
         bindQueueManager()
+        currentTrack = queueManager.currentTrack.value
     }
     
     func bindQueueManager() {
@@ -58,7 +60,13 @@ final class PlayerViewModel: ObservableObject {
             self?.queueManager.sliderState.send(state)
         }
         .store(in: &cancellables)
-        
+        trackPosition = queueManager.state.currentTime
+        queueManager.currentTrack
+            .sink { [weak self] track in
+                guard let track else { return }
+                self?.currentTrack = track
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -79,6 +87,7 @@ extension PlayerViewModel {
     
     func previousButtonTapped() {
         queueManager.onDidTapPreviousButton()
+        trackPosition = .zero
     }
 
     func playPauseButtonTapped() {
@@ -87,6 +96,7 @@ extension PlayerViewModel {
     
     func nextButtonTapped() {
         queueManager.onDidTapNextButton()
+        trackPosition = .zero
     }
     
     func queueButtonTapped() {

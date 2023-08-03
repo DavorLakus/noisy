@@ -128,7 +128,7 @@ extension HomeViewModel {
         
         addToQueueSubject
             .sink { [weak self] in
-                self?.queueManager.state.tracks.append(track)
+                self?.queueManager.append(track)
                 self?.toastMessage = "\(track.name) \(String.Shared.addedToQueue)"
                 withAnimation {
                     self?.isToastPresented = true

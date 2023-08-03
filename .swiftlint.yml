@@ -22,3 +22,4 @@ disabled_rules:
   - void_function_in_ternary
   - identifier_name
   - large_tuple
+  - function_parameter_count

@@ -90,7 +90,7 @@ private extension RootCoordinator {
     func getQueueManager() {
         if let queueStateData = UserDefaults.standard.object(forKey: .UserDefaults.queueState) as? Data,
            let queueState = try? JSONDecoder().decode(QueueState.self, from: queueStateData) {
-            self.queueManager.state = queueState
+            self.queueManager.setState(with: queueState)
             self.bindMiniPlayerViewModel(with: queueManager)
         }
     }
@@ -174,7 +174,7 @@ extension RootCoordinator {
     func bindPlayerCoordinator(with track: Track? = nil) {
         if queueManager.state.tracks.isEmpty,
            let track {
-            queueManager.state = QueueState(tracks: [track])
+            queueManager.setState(with: QueueState(tracks: [track]))
         }
 
         if let track {

@@ -9,7 +9,14 @@ import SwiftUI
 
 struct QueueView: View {
     @ObservedObject var viewModel: QueueViewModel
-    @State var trackRowWidth: CGFloat = .zero
+    @State var trackRowSize: CGSize
+    @State var trackRowOffsets: [CGFloat]
+    
+    init(viewModel: QueueViewModel) {
+        self.viewModel = viewModel
+        trackRowSize = .zero
+        trackRowOffsets = [CGFloat](repeating: .zero, count: viewModel.queueManager.state.tracks.count)
+    }
     
     var body: some View {
         bodyView()
@@ -34,25 +41,24 @@ extension QueueView {
         List {
             ForEach(Array(viewModel.queueManager.state.tracks.enumerated()), id: \.offset) { enumeratedTrack in
                 TrackRow(track: enumeratedTrack, isEnumerated: false)
-                    .listRowBackground(Color.green400)
-                    .listRowSeparator(.hidden)
                     .padding(Constants.spacing)
-                    .readSize { trackRowWidth = $0.width }
+                    .readSize { trackRowSize = $0 }
                     .background {
                         if enumeratedTrack.element == viewModel.queueManager.state.currentTrack {
                             Color.green200
-                                .offset(x: -trackRowWidth + viewModel.currentTime / 29 * trackRowWidth )
+                                .offset(x: -trackRowSize.width + viewModel.currentTime / 29 * trackRowSize.width )
                         }
                     }
-                    .cardBackground(backgroundColor: .appBackground, hasShadow: false)
-                    .swipeActions(allowsFullSwipe: true) {
-                        Button {
+                    .cardBackground(backgroundColor: .appBackground, borderColor: .gray300, hasShadow: false)
+                    .offset(x: trackRowOffsets[enumeratedTrack.offset])
+                    .swipeAction(title: String.Shared.remove, gradient: [.red400, .red300], height: trackRowSize.height, offset: $trackRowOffsets[enumeratedTrack.offset]) {
+                        withAnimation(.linear(duration: 1)) {
                             viewModel.trackRowSwiped(enumeratedTrack)
-                        } label: {
-                            Text(String.Shared.remove)
                         }
-                        .tint(.red300)
+                        trackRowOffsets = [CGFloat](repeating: .zero, count: viewModel.queueManager.state.tracks.count)
                     }
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.green400)
             }
             .onMove(perform: viewModel.moveTrack)
         }

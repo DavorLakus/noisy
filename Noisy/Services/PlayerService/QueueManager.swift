@@ -21,6 +21,7 @@ final class QueueManager: ObservableObject {
     let trackMaxPosition = CurrentValueSubject<TimeInterval, Never>(30)
     let isPlaying = CurrentValueSubject<Bool, Never>(false)
     let timeControlStatus = CurrentValueSubject<AVPlayer.TimeControlStatus, Never>(.paused)
+    let currentTrack = CurrentValueSubject<Track?, Never>(nil)
     
     private var itemDurationKVOPublisher: AnyCancellable?
     private var timeControlStatusKVOPublisher: AnyCancellable?
@@ -39,6 +40,11 @@ final class QueueManager: ObservableObject {
         state.currentTime = .zero
     }
     
+    func setState(with state: QueueState) {
+        self.state = state
+        currentTrack.send(state.currentTrack)
+    }
+    
     func bindSliderState() {
         sliderState.sink { [weak self] state in
             switch state {
@@ -53,10 +59,12 @@ final class QueueManager: ObservableObject {
     
     func seek(to seekTime: CMTime) {
         player.seek(to: seekTime)
+        state.persist()
     }
     
     func onPlayPauseTapped() {
         isPlaying.value ? pause() : play()
+        state.persist()
     }
     
     func play(track: Track? = nil) {
@@ -70,6 +78,7 @@ final class QueueManager: ObservableObject {
         }
         player.seek(to: CMTime(seconds: state.currentTime, preferredTimescale: 1000))
         player.play()
+        currentTrack.send(state.currentTrack)
         isPlaying.send(true)
     }
     
@@ -91,15 +100,16 @@ final class QueueManager: ObservableObject {
         }
     }
     
+    func append(_ track: Track, playNext: Bool = false) {
+        state.append(track, playNext: playNext)
+    }
+    
     func remove(_ track: EnumeratedSequence<[Track]>.Element) {
+        if state.remove(track) {
+            play(track: state.currentTrack)
+        }
         if state.tracks.count > 1 {
-            state.tracks.remove(at: track.offset)
-            if track.offset == state.currentTrackIndex {
-                state.currentTrackIndex =  state.currentTrackIndex > 0 ? state.currentTrackIndex - 1 : 0
-                state.currentTrack = state.tracks[state.currentTrackIndex]
-                state.currentTime = .zero
-                play(track: state.currentTrack)
-            }
+            currentTrack.send(state.currentTrack)
         }
     }
     
@@ -144,6 +154,10 @@ final class QueueManager: ObservableObject {
             // Always update observed time.
             self.observedPosition.send(time.seconds)
             state.currentTime = time.seconds
+            
+            if Int(time.seconds) % 5 == 1 {
+                state.persist()
+            }
             
             switch self.sliderState.value {
             case .reset:

@@ -122,6 +122,25 @@ extension View {
         }
     }
     
+    @ViewBuilder
+    func cardBackground(gradient: LinearGradient, borderColor: Color = .gray50, cornerRadius: CGFloat = Constants.cornerRadius, hasBorder: Bool = false, hasShadow: Bool = true, isHidden: Bool = false) -> some View {
+        if isHidden {
+            self
+        } else {
+            self
+                .background(gradient)
+                .cornerRadius(cornerRadius)
+                .overlay {
+                    if hasBorder {
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .stroke(borderColor, lineWidth: 1)
+                    }
+                }
+                .shadow(color: hasShadow ? .gray300 : .clear,
+                        radius: 6, x: 1, y: 4)
+        }
+    }
+    
     func bottomBorder() -> some View {
         overlay {
             VStack(spacing: .zero) {
@@ -207,4 +226,48 @@ struct LoadImage: View {
 private struct SizePreferenceKey: PreferenceKey {
     static var defaultValue: CGSize = .zero
     static func reduce(value: inout CGSize, nextValue: () -> CGSize) {}
+}
+
+extension View {
+    func swipeAction(title: String, gradient: [Color], height: CGFloat, offset: Binding<CGFloat>, action: @escaping () -> Void) -> some View {
+        ZStack {
+            HStack {
+                Spacer()
+                
+                Text(title)
+                    .font(.nunitoBold(size: 14))
+                    .foregroundColor(.appBackground)
+                    .padding(10)
+                    .frame(height: height)
+            }
+            .cardBackground(gradient: LinearGradient(colors: gradient, startPoint: .leading, endPoint: .trailing), hasShadow: false)
+            
+            self
+                .offset(x: offset.wrappedValue)
+                .gesture(dragGesture(offset: offset, action: action))
+        }
+    }
+    
+    func dragGesture(offset: Binding<CGFloat>, action: @escaping () -> Void) -> some Gesture {
+        DragGesture()
+            .onChanged { dragValue in
+                if dragValue.translation.width < 0 {
+                    withAnimation {
+                        offset.wrappedValue = dragValue.translation.width
+                    }
+                }
+            }
+            .onEnded { dragValue in
+                if dragValue.translation.width < -100 {
+                    withAnimation {
+                        offset.wrappedValue = -300
+                    }
+                    action()
+                } else {
+                    withAnimation {
+                        offset.wrappedValue = .zero
+                    }
+                }
+            }
+    }
 }

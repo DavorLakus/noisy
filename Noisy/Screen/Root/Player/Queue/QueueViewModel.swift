@@ -44,7 +44,9 @@ extension QueueViewModel {
     }
     
     func trackRowSwiped(_ track: EnumeratedSequence<[Track]>.Element) {
-        queueManager.remove(track)
+        withAnimation {
+            queueManager.remove(track)
+        }
     }
 }
 
@@ -58,5 +60,6 @@ private extension QueueViewModel {
                 }
             }
             .store(in: &cancellables)
+        currentTime = queueManager.state.currentTime
     }
 }
