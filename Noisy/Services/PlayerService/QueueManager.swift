@@ -34,10 +34,15 @@ final class QueueManager: ObservableObject {
         bindSliderState()
     }
     
-    func setState(with track: Track) {
-        state.tracks = [track]
-        state.currentTrack = track
+    func setState(with tracks: [Track], currentTrack: Track? = nil) {
+        state.tracks = tracks
+        if let currentTrack {
+            state.currentTrack = currentTrack
+        } else {
+            state.currentTrack = tracks[.zero]
+        }
         state.currentTime = .zero
+        self.currentTrack.send(state.currentTrack)
     }
     
     func setState(with state: QueueState) {
@@ -104,6 +109,10 @@ final class QueueManager: ObservableObject {
         state.append(track, playNext: playNext)
     }
     
+    func append(_ tracks: [Track], playNext: Bool = false) {
+        state.append(tracks, playNext: playNext)
+    }
+    
     func remove(_ track: EnumeratedSequence<[Track]>.Element) {
         if state.remove(track) {
             play(track: state.currentTrack)
@@ -111,6 +120,10 @@ final class QueueManager: ObservableObject {
         if state.tracks.count > 1 {
             currentTrack.send(state.currentTrack)
         }
+    }
+    
+    func clearAll() {
+        state.clearAll()
     }
     
     func bindPlayer() {

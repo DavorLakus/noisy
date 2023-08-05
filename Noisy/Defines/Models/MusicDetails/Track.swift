@@ -7,17 +7,17 @@
 
 import Foundation
 
-struct TracksResponse: Codable, Hashable {
+struct TracksR: Codable, Hashable {
     let tracks: [Track]
 }
 
 struct Track: Codable, Hashable {
     let id: String
     let name: String
-    let album: Album
+    let album: Album?
     let artists: [Artist]
-    let durationMs: Int
-    let popularity: Int
+    let durationMs: Int?
+    let popularity: Int?
     let previewUrl: String?
     let href: String
     
@@ -28,7 +28,7 @@ struct Track: Codable, Hashable {
     }
 }
 
-struct Tracks: Codable, Hashable {
+struct TracksResponse: Codable, Hashable {
     let href: String
     let limit: Int
     let next: String?
@@ -37,3 +37,19 @@ struct Tracks: Codable, Hashable {
     let total: Int
     let items: [Track]
 }
+
+struct TrackObjectsResponse: Codable, Hashable {
+    let href: String
+    let limit: Int
+    let next: String?
+    let offset: Int
+    let previous: String?
+    let total: Int
+    let items: [TrackObject]
+}
+
+struct TrackObject: Codable, Hashable {
+    let track: Track
+}
+
+

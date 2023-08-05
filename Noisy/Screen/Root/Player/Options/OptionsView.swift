@@ -10,11 +10,17 @@ import Combine
 
 enum OptionRow: Identifiable {
     case addToQueue(action: PassthroughSubject<Void, Never>)
+    case viewArtist(action: PassthroughSubject<Void, Never>)
+    case viewAlbum(action: PassthroughSubject<Void, Never>)
     
     var icon: Image {
         switch self {
         case .addToQueue:
             return Image.Shared.addToQueue
+        case .viewArtist:
+            return Image.Shared.artist
+        case .viewAlbum:
+            return Image.Shared.album
         }
     }
     
@@ -22,6 +28,10 @@ enum OptionRow: Identifiable {
         switch self {
         case .addToQueue:
             return .Shared.addToQueue
+        case .viewArtist:
+            return .Shared.viewArtist
+        case .viewAlbum:
+            return .Shared.viewAlbum
         }
     }
     
@@ -42,7 +52,7 @@ struct OptionsView: View {
 // MARK: - Body view
 extension OptionsView {
     func bodyView() -> some View {
-        VStack(alignment: .trailing) {
+        VStack(alignment: .trailing, spacing: .zero) {
             Button {
                 withAnimation {
                     isPresented = false
@@ -52,15 +62,15 @@ extension OptionsView {
                     .foregroundColor(.green500)
                     .font(.nunitoBold(size: 18))
             }
-            .padding(Constants.margin)
+            .padding([.top, .trailing], Constants.margin)
             
-            VStack {
+            LazyVStack(spacing: Constants.margin) {
                 ForEach(options) { option in
                     optionRow(for: option)
                 }
             }
             .padding(Constants.margin)
-            .padding(.bottom, 50)
+            .padding(.bottom, 30)
         }
         
     }
@@ -68,17 +78,19 @@ extension OptionsView {
     func optionRow(for optionRow: OptionRow) -> some View {
         Button {
             switch optionRow {
-            case .addToQueue(let action):
+            case .addToQueue(let action), .viewAlbum(let action), .viewArtist(let action):
                 action.send()
             }
         } label: {
             HStack(spacing: 24) {
                 optionRow.icon
                 Text(optionRow.title)
-                    .font(.nunitoSemiBold(size: 18))
+                    .font(.nunitoSemiBold(size: 20))
                     .foregroundColor(.gray600)
                 Spacer()
             }
         }
+        .padding(.horizontal, Constants.margin)
+        .background(.white)
     }
 }

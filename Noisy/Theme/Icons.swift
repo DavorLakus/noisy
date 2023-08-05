@@ -33,6 +33,8 @@ extension Image {
         static let info: Image = Image(systemName: "info.circle")
         static let threeDots = Image(systemName: "ellipsis")
         static let addToQueue = Image(systemName: "text.badge.plus")
+        static let artist = Image(systemName: "person.crop.circle.dashed")
+        static let album = Image(systemName: "play.square.stack")
     }
     
     struct Search {

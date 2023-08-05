@@ -62,6 +62,7 @@ final class HomeViewModel: ObservableObject {
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
     var onDidSelectTrackRow: PassthroughSubject<Track, Never>?
     let onDidTapArtistRow = PassthroughSubject<Artist, Never>()
+    let onDidTapAlbumButton = PassthroughSubject<Album, Never>()
     let onDidTapPlaylistRow = PassthroughSubject<Playlist, Never>()
     
     // MARK: - Public properties
@@ -119,11 +120,17 @@ extension HomeViewModel {
         onDidTapPlaylistRow.send(playlist)
     }
     
-    func artistOptionsTapped(for artist: Artist) {
-        
-    }
-    
     func trackOptionsTapped(for track: Track) {
+        options = [addToQueueOption(track), viewAlbumOption(track), viewArtistOption(track)]
+        withAnimation {
+            isOptionsSheetPresented = true
+        }
+    }
+}
+
+// MARK: - Track options
+private extension HomeViewModel {
+    func addToQueueOption(_ track: Track) -> OptionRow {
         let addToQueueSubject = PassthroughSubject<Void, Never>()
         
         addToQueueSubject
@@ -136,15 +143,39 @@ extension HomeViewModel {
             }
             .store(in: &cancellables)
         
-        let addToQueueOption = OptionRow.addToQueue(action: addToQueueSubject)
-        options = [addToQueueOption]
-        withAnimation {
-            isOptionsSheetPresented = true
-        }
+        return OptionRow.addToQueue(action: addToQueueSubject)
     }
     
-    func playlistOptionsTapped(for playlist: Playlist) {
+    func viewArtistOption(_ track: Track) -> OptionRow {
+        let viewArtistSubject = PassthroughSubject<Void, Never>()
         
+        viewArtistSubject
+            .sink { [weak self] in
+                withAnimation {
+                    self?.isOptionsSheetPresented = false
+                }
+                self?.onDidTapArtistRow.send(track.artists[.zero])
+            }
+            .store(in: &cancellables)
+        
+        return OptionRow.viewArtist(action: viewArtistSubject)
+    }
+    
+    func viewAlbumOption(_ track: Track) -> OptionRow {
+        let viewAlbumSubject = PassthroughSubject<Void, Never>()
+        
+        viewAlbumSubject
+            .sink { [weak self] in
+                withAnimation {
+                    self?.isOptionsSheetPresented = false
+                }
+                if let album = track.album {
+                    self?.onDidTapAlbumButton.send(album)
+                }
+            }
+            .store(in: &cancellables)
+        
+        return OptionRow.viewAlbum(action: viewAlbumSubject)
     }
 }
 

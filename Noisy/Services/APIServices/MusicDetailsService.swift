@@ -21,26 +21,12 @@ final class MusicDetailsService {
 }
 
 extension MusicDetailsService {
-    func getAlbum(with albumId: String) -> PassthroughSubject<Album, Never> {
-        let album = PassthroughSubject<Album, Never>()
-        
-        api.getAlbum(with: albumId)
-            .decode(type: Album.self, decoder: JSONDecoder())
-            .sink(
-                receiveCompletion: NetworkingManager.handleCompletion,
-                receiveValue: { result in
-                    album.send(result)
-                })
-            .store(in: &cancellables)
-        
-        return album
-    }
     
     func getArtistsTopTracks(for artistId: String) -> PassthroughSubject<[Track], Never> {
         let topTracks = PassthroughSubject<[Track], Never>()
         
         api.getTopTracks(for: artistId)
-            .decode(type: TracksResponse.self, decoder: JSONDecoder())
+            .decode(type: TracksR.self, decoder: JSONDecoder())
             .sink(
                 receiveCompletion: NetworkingManager.handleCompletion,
                 receiveValue: { result in
@@ -84,7 +70,7 @@ extension MusicDetailsService {
     func getPlaylist(for playlistId: String) -> PassthroughSubject<PlaylistResponse, Never> {
         let playlist = PassthroughSubject<PlaylistResponse, Never>()
         
-        api.getPlaylist(for: playlistId)
+        api.getPlaylist(with: playlistId)
             .decode(type: PlaylistResponse.self, decoder: JSONDecoder())
             .sink(
                 receiveCompletion: NetworkingManager.handleCompletion,
@@ -95,5 +81,49 @@ extension MusicDetailsService {
         
         return playlist
     }
-
+    
+    func getPlaylistTracks(for playlistId: String, limit: Int, offset: Int) -> PassthroughSubject<TrackObjectsResponse, Never> {
+        let tracks = PassthroughSubject<TrackObjectsResponse, Never>()
+        
+        api.getPlaylistTracks(for: playlistId, limit: limit, offset: offset)
+            .decode(type: TrackObjectsResponse.self, decoder: JSONDecoder())
+            .sink(
+                receiveCompletion: NetworkingManager.handleCompletion,
+                receiveValue: { result in
+                    tracks.send(result)
+                })
+            .store(in: &cancellables)
+        
+        return tracks
+    }
+    
+    func getAlbum(with albumId: String) -> PassthroughSubject<Album, Never> {
+        let album = PassthroughSubject<Album, Never>()
+        
+        api.getAlbum(with: albumId)
+            .decode(type: Album.self, decoder: JSONDecoder())
+            .sink(
+                receiveCompletion: NetworkingManager.handleCompletion,
+                receiveValue: { result in
+                    album.send(result)
+                })
+            .store(in: &cancellables)
+        
+        return album
+    }
+    
+    func getAlbumTracks(for albumId: String, limit: Int, offset: Int) -> PassthroughSubject<TracksResponse, Never> {
+        let tracks = PassthroughSubject<TracksResponse, Never>()
+        
+        api.getAlbumTracks(for: albumId, limit: limit, offset: offset)
+            .decode(type: TracksResponse.self, decoder: JSONDecoder())
+            .sink(
+                receiveCompletion: NetworkingManager.handleCompletion,
+                receiveValue: { result in
+                    tracks.send(result)
+                })
+            .store(in: &cancellables)
+        
+        return tracks
+    }
 }

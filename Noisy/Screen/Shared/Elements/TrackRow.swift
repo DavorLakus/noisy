@@ -25,7 +25,7 @@ struct TrackRow: View {
                     .font(.nunitoRegular(size: 14))
             }
             
-            LoadImage(url: URL(string: track.element.album.images.first?.url ?? .empty))
+            LoadImage(url: URL(string: track.element.album?.images.first?.url ?? .empty))
                 .scaledToFit()
                 .cornerRadius(18)
                 .frame(width: 36, height: 36)

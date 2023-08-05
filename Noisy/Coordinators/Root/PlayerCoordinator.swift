@@ -31,9 +31,11 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
     internal var playlistViewModelStack = Stack<PlaylistViewModel>()
     internal var playlistsViewModelStack = Stack<PlaylistsViewModel>()
     
+    internal var onDidTapPlayAllButton = PassthroughSubject<[Track], Never>()
     internal var onDidTapPlayerButton = PassthroughSubject<Track, Never>()
     internal var musicDetailsService: MusicDetailsService
     internal var cancellables = Set<AnyCancellable>()
+    internal var queueManager: QueueManager
     
     // MARK: - Services
     private let playerService: PlayerService
@@ -42,7 +44,6 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
     private lazy var playerViewModel = PlayerViewModel(queueManager: queueManager)
     private var optionsViewModel: OptionsViewModel?
     private var queueViewModel: QueueViewModel?
-    private var queueManager: QueueManager
     
     init(playerService: PlayerService, musicDetailsService: MusicDetailsService, queueManager: QueueManager) {
         self.playerService = playerService

@@ -92,7 +92,7 @@ class NetworkingManager {
     
     static func handleBadURLResponse(for router: NoisyHTTPRouter, statusCode: Int) {
         switch router {
-        case .token, .refreshToken, .profile, .search, .recommendation, .recommendationGenres, .authorize, .myTop, .playlists, .playlist, .artist, .album, .artistsAlbums, .artistsTopTracks, .artistsRelatedArtists:
+        case .token, .refreshToken, .profile, .search, .recommendation, .recommendationGenres, .authorize, .myTop, .playlists, .playlist, .playlistTracks, .artist, .album, .albumTracks, .artistsAlbums, .artistsTopTracks, .artistsRelatedArtists:
             break
         }
     }

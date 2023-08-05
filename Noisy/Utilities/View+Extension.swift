@@ -244,12 +244,12 @@ extension View {
             
             self
                 .offset(x: offset.wrappedValue)
-                .gesture(dragGesture(offset: offset, action: action))
+                .simultaneousGesture(dragGesture(offset: offset, action: action))
         }
     }
     
     func dragGesture(offset: Binding<CGFloat>, action: @escaping () -> Void) -> some Gesture {
-        DragGesture()
+        DragGesture(minimumDistance: 30, coordinateSpace: .local)
             .onChanged { dragValue in
                 if dragValue.translation.width < 0 {
                     withAnimation {

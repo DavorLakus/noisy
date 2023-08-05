@@ -38,8 +38,8 @@ final class RootCoordinator: CoordinatorProtocol {
     
     // MARK: - Coordinators
     private lazy var homeCoordinator = HomeCoordinator(homeService: homeService, musicDetailsService: musicDetailsService, queueManager: queueManager)
-    private lazy var searchCoordinator = SearchCoordinator(searchService: searchService, musicDetailsService: musicDetailsService)
-    private lazy var discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce, searchService: searchService, musicDetailsService: musicDetailsService)
+    private lazy var searchCoordinator = SearchCoordinator(searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
+    private lazy var discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce, searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
     private var playerCoordinator: PlayerCoordinator?
     
     // MARK: - Private properties
@@ -108,9 +108,15 @@ private extension RootCoordinator {
             }
             .store(in: &cancellables)
         
+        homeCoordinator.onDidTapPlayAllButton
+            .sink { [weak self] tracks in
+                self?.bindPlayerCoordinator(with: tracks)
+            }
+            .store(in: &cancellables)
+        
         homeCoordinator.onDidTapPlayerButton
             .sink { [weak self] track in
-                self?.bindPlayerCoordinator(with: track)
+                self?.bindPlayerCoordinator(with: [track])
             }
             .store(in: &cancellables)
     }
@@ -122,9 +128,15 @@ private extension RootCoordinator {
             }
             .store(in: &cancellables)
         
+        searchCoordinator.onDidTapPlayAllButton
+            .sink { [weak self] tracks in
+                self?.bindPlayerCoordinator(with: tracks)
+            }
+            .store(in: &cancellables)
+        
         searchCoordinator.onDidTapPlayerButton
             .sink { [weak self] track in
-                self?.bindPlayerCoordinator(with: track)
+                self?.bindPlayerCoordinator(with: [track])
             }
             .store(in: &cancellables)
     }
@@ -136,9 +148,15 @@ private extension RootCoordinator {
             }
             .store(in: &cancellables)
         
+        discoverCoordinator.onDidTapPlayAllButton
+            .sink { [weak self] tracks in
+                self?.bindPlayerCoordinator(with: tracks)
+            }
+            .store(in: &cancellables)
+        
         discoverCoordinator.onDidTapPlayerButton
             .sink { [weak self] track in
-                self?.bindPlayerCoordinator(with: track)
+                self?.bindPlayerCoordinator(with: [track])
             }
             .store(in: &cancellables)
     }
@@ -171,14 +189,14 @@ extension RootCoordinator {
         playerCoordinator?.start()
     }
     
-    func bindPlayerCoordinator(with track: Track? = nil) {
+    func bindPlayerCoordinator(with tracks: [Track]? = nil) {
         if queueManager.state.tracks.isEmpty,
-           let track {
-            queueManager.setState(with: QueueState(tracks: [track]))
+           let tracks {
+            queueManager.setState(with: QueueState(tracks: tracks))
         }
 
-        if let track {
-            queueManager.setState(with: track)
+        if let tracks {
+            queueManager.setState(with: tracks)
         }
         
         persistQueueManagerState()

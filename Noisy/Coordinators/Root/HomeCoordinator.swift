@@ -28,8 +28,10 @@ final class HomeCoordinator: MusicDetailsCoordinatorProtocol {
     internal var playlistViewModelStack = Stack<PlaylistViewModel>()
     internal var playlistsViewModelStack = Stack<PlaylistsViewModel>()
     
+    internal var onDidTapPlayAllButton = PassthroughSubject<[Track], Never>()
     internal var onDidTapPlayerButton = PassthroughSubject<Track, Never>()
     internal var musicDetailsService: MusicDetailsService
+    internal var queueManager: QueueManager
     internal var cancellables = Set<AnyCancellable>()
     
     // MARK: - Private properties
@@ -37,7 +39,6 @@ final class HomeCoordinator: MusicDetailsCoordinatorProtocol {
     
     // MARK: - Services
     private let homeService: HomeService
-    private let queueManager: QueueManager
     
     // MARK: - Class lifecycle
     init(homeService: HomeService, musicDetailsService: MusicDetailsService, queueManager: QueueManager) {
@@ -127,6 +128,12 @@ extension HomeCoordinator {
         homeViewModel?.onDidTapArtistRow
             .sink { [weak self] artist in
                 self?.push(.artist(artist))
+            }
+            .store(in: &cancellables)
+        
+        homeViewModel?.onDidTapAlbumButton
+            .sink { [weak self] album in
+                self?.push(.album(album))
             }
             .store(in: &cancellables)
         

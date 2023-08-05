@@ -38,32 +38,41 @@ extension QueueView {
     }
     
     func queueList() -> some View {
-        List {
-            ForEach(Array(viewModel.queueManager.state.tracks.enumerated()), id: \.offset) { enumeratedTrack in
-                TrackRow(track: enumeratedTrack, isEnumerated: false)
-                    .padding(Constants.spacing)
-                    .readSize { trackRowSize = $0 }
-                    .background {
-                        if enumeratedTrack.element == viewModel.queueManager.state.currentTrack {
-                            Color.green200
-                                .offset(x: -trackRowSize.width + viewModel.currentTime / 29 * trackRowSize.width )
-                        }
-                    }
-                    .cardBackground(backgroundColor: .appBackground, borderColor: .gray300, hasShadow: false)
-                    .offset(x: trackRowOffsets[enumeratedTrack.offset])
-                    .swipeAction(title: String.Shared.remove, gradient: [.red400, .red300], height: trackRowSize.height, offset: $trackRowOffsets[enumeratedTrack.offset]) {
-                        withAnimation(.linear(duration: 1)) {
-                            viewModel.trackRowSwiped(enumeratedTrack)
-                        }
-                        trackRowOffsets = [CGFloat](repeating: .zero, count: viewModel.queueManager.state.tracks.count)
-                    }
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.green400)
+        VStack(alignment: .trailing, spacing: .zero) {
+            Button(action: viewModel.clearAllButtonTapped) {
+                Text(String.Queue.clearQueue)
+                    .font(.nunitoSemiBold(size: 16))
+                    .foregroundColor(.appBackground)
             }
-            .onMove(perform: viewModel.moveTrack)
+            .padding(Constants.margin)
+            List {
+                ForEach(Array(viewModel.tracks.enumerated()), id: \.offset) { enumeratedTrack in
+                    TrackRow(track: enumeratedTrack, isEnumerated: false)
+                        .padding(Constants.spacing)
+                        .readSize { trackRowSize = $0 }
+                        .background {
+                            if enumeratedTrack.element == viewModel.queueManager.state.currentTrack {
+                                Color.green200
+                                    .offset(x: -trackRowSize.width + viewModel.currentTime / 29 * trackRowSize.width )
+                            }
+                        }
+                        .cardBackground(backgroundColor: .appBackground, borderColor: .gray300, hasShadow: false)
+                        .offset(x: trackRowOffsets[enumeratedTrack.offset])
+                        .swipeAction(title: String.Shared.remove, gradient: [.red400, .red300], height: trackRowSize.height, offset: $trackRowOffsets[enumeratedTrack.offset]) {
+                            withAnimation(.linear(duration: 1)) {
+                                viewModel.trackRowSwiped(enumeratedTrack)
+                            }
+                            trackRowOffsets = [CGFloat](repeating: .zero, count: viewModel.queueManager.state.tracks.count)
+                        }
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.green400)
+                }
+                .onMove(perform: viewModel.moveTrack)
+            }
+            .scrollDisabled(false)
+            .background { Color.green400 }
+            .listStyle(.plain)
         }
-        .background { Color.green400 }
-        .listStyle(.plain)
     }
 }
 

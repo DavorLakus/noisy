@@ -15,7 +15,9 @@ enum NoisyHTTPRouter {
     case myTop(type: String, count: Int, timeRange: String)
     case artist(artistId: String)
     case album(albumId: String)
+    case albumTracks(albumId: String, limit: Int, offset: Int)
     case playlist(playlistId: String)
+    case playlistTracks(playlistId: String, limit: Int, offset: Int)
     case playlists(userId: String, count: Int)
     case artistsTopTracks(artistId: String)
     case artistsAlbums(artistId: String)
@@ -30,7 +32,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize, .token, .refreshToken:
             return "accounts.spotify.com"
-        case .profile, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
+        case .profile, .myTop, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
             return "api.spotify.com"
         }
     }
@@ -41,7 +43,7 @@ extension NoisyHTTPRouter: APIEndpoint {
             return .empty
         case .token, .refreshToken:
             return "/api"
-        case .profile, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
+        case .profile, .myTop, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
             return "/v1"
         }
     }
@@ -66,8 +68,12 @@ extension NoisyHTTPRouter: APIEndpoint {
             return "/users/\(id)/playlists"
         case .album(let id):
             return "/albums/\(id)"
+        case .albumTracks(let id, _, _):
+            return "/albums/\(id)/tracks"
         case .playlist(let id):
             return "/playlists/\(id)"
+        case .playlistTracks(let id, _, _):
+            return "/playlists/\(id)/tracks"
         case .artist(let id):
             return "/artists/\(id)"
         case .artistsAlbums(let artistId):
@@ -81,7 +87,7 @@ extension NoisyHTTPRouter: APIEndpoint {
     
     public var method: HTTPMethod {
         switch self {
-        case .profile, .search, .recommendation, .recommendationGenres, .authorize, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .search, .recommendation, .recommendationGenres, .authorize, .myTop, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return .get
         case .token, .refreshToken:
             return .post
@@ -92,7 +98,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize:
             return nil
-        case .profile, .search, .recommendation, .recommendationGenres, .myTop, .playlists, .artist, .playlist, .album, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .search, .recommendation, .recommendationGenres, .myTop, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return authToken
         case .token, .refreshToken:
             return ["Content-Type" : "application/x-www-form-urlencoded"]
@@ -139,9 +145,14 @@ extension NoisyHTTPRouter: APIEndpoint {
             ]
         case .playlists(_, let count):
             return [URLQueryItem(name: "limit", value: "\(count)")]
+        case .playlistTracks(_, let limit, let offset), .albumTracks(_, let limit, let offset):
+            return [
+                URLQueryItem(name: "limit", value: "\(limit)"),
+                URLQueryItem(name: "offset", value: "\(offset)"),
+            ]
         case .artistsTopTracks:
             return [URLQueryItem(name: "market", value: "HR")]
-        case .profile, .artist, .playlist, .album, .artistsAlbums, .artistsRelatedArtists, .recommendationGenres:
+        case .profile, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsAlbums, .artistsRelatedArtists, .recommendationGenres:
             return nil
         case .recommendation(let parameters):
             return parameters

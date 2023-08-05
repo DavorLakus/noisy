@@ -22,6 +22,7 @@ struct AlbumResponse: Codable, Hashable {
 }
 
 struct Album: Codable, Hashable {
+    let id: String
     let name: String
     let releaseDate: String
     let artists: [Artist]?
@@ -30,11 +31,11 @@ struct Album: Codable, Hashable {
     let popularity: Int?
     let images: [SpotifyImage]
     let href: String
-    let items: Tracks?
+    let items: TracksResponse?
     
     enum CodingKeys: String, CodingKey {
         case totalTracks = "total_tracks"
         case releaseDate = "release_date"
-        case name, genres, popularity, href, images, items, artists
+        case id, name, genres, popularity, href, images, items, artists
     }
 }

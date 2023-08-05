@@ -61,6 +61,10 @@ extension String {
         static let addToQueue = "Add to queue"
         static let addedToQueue = "added to queue."
         static let remove = "Remove"
+        static let playlist = "Playlist"
+        static let album = "Album"
+        static let viewArtist = "View artist"
+        static let viewAlbum = "View album"
     }
     
     struct Profile {
@@ -116,6 +120,10 @@ extension String {
         static let mostPlayed = "'s most played"
         static let albums = "Albums"
         static let related = "Related"
+    }
+    
+    struct Queue {
+        static let clearQueue = "Clear queue"
     }
 
     struct MyTeam {

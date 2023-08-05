@@ -12,5 +12,5 @@ struct PlaylistResponse: Codable, Hashable {
     let name: String
     let images: [SpotifyImage]?
     let owner: Owner
-    let items: [Tracks]
+    let items: [TracksResponse]
 }

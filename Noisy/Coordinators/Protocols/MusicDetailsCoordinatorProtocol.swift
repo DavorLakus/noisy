@@ -15,8 +15,10 @@ protocol MusicDetailsCoordinatorProtocol: VerticalCoordinatorProtocol {
     var playlistViewModelStack: Stack<PlaylistViewModel> { get set }
     var playlistsViewModelStack: Stack<PlaylistsViewModel> { get set }
     
+    var onDidTapPlayAllButton: PassthroughSubject<[Track], Never> { get set }
     var onDidTapPlayerButton: PassthroughSubject<Track, Never> { get set }
     var musicDetailsService: MusicDetailsService { get set }
+    var queueManager: QueueManager { get set }
     var cancellables: Set<AnyCancellable> { get set }
 
     func bindArtistViewModel(for artist: Artist)
@@ -58,7 +60,7 @@ extension MusicDetailsCoordinatorProtocol {
     }
     
     func bindAlbumViewModel(for album: Album) {
-        let viewModel = AlbumViewModel(album: album, musicDetailsService: musicDetailsService)
+        let viewModel = AlbumViewModel(album: album, musicDetailsService: musicDetailsService, queueManager: queueManager)
         viewModel.onDidTapBackButton
             .sink { [weak self] in
                 self?.pop()
@@ -66,11 +68,26 @@ extension MusicDetailsCoordinatorProtocol {
             }
             .store(in: &cancellables)
         
+        viewModel.onDidTapPlayAllButton = onDidTapPlayAllButton
+        viewModel.onDidTapTrackRow = onDidTapPlayerButton
+        
+        viewModel.onDidTapArtistButton
+            .sink {[weak self] artist in
+                self?.pushArtistViewModel(for: artist)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.onDidTapAlbumButton
+            .sink {[weak self] album in
+                self?.pushAlbumViewModel(for: album)
+            }
+            .store(in: &cancellables)
+        
         albumViewModelStack.push(viewModel)
     }
 
     func bindPlaylistViewModel(for playlist: Playlist) {
-        let viewModel = PlaylistViewModel(playlist: playlist, musicDetailsService: musicDetailsService)
+        let viewModel = PlaylistViewModel(playlist: playlist, musicDetailsService: musicDetailsService, queueManager: queueManager)
         
         viewModel.onDidTapBackButton
             .sink { [weak self] in
@@ -78,6 +95,21 @@ extension MusicDetailsCoordinatorProtocol {
                     self?.pop()
                     self?.playlistViewModelStack.pop()
                 }
+            }
+            .store(in: &cancellables)
+        
+        viewModel.onDidTapPlayAllButton = onDidTapPlayAllButton
+        viewModel.onDidTapTrackRow = onDidTapPlayerButton
+        
+        viewModel.onDidTapArtistButton
+            .sink {[weak self] artist in
+                self?.pushArtistViewModel(for: artist)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.onDidTapAlbumButton
+            .sink {[weak self] album in
+                self?.pushAlbumViewModel(for: album)
             }
             .store(in: &cancellables)
         

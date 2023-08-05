@@ -50,7 +50,7 @@ struct CustomSlider: View {
                                 }
                             }
                         }
-                        .onEnded { dragValue in
+                        .onEnded { _ in
                             isSliding(false)
                         }
                 )
@@ -64,7 +64,7 @@ struct CustomSlider: View {
 extension PlayerView {
     func bodyView() -> some View {
         VStack(spacing: 28) {
-            LoadImage(url: URL(string: viewModel.currentTrack?.album.images.first?.url ?? .empty), placeholder: Image.albumPlaceholder)
+            LoadImage(url: URL(string: viewModel.currentTrack?.album?.images.first?.url ?? .empty), placeholder: Image.albumPlaceholder)
                 .readSize { albumWidth = $0.width }
                 .frame(height: albumWidth)
                 .cornerRadius(Constants.smallCornerRadius)

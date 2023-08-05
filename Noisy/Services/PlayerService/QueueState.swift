@@ -59,6 +59,15 @@ final class QueueState: Codable {
         persist()
     }
     
+    func append(_ tracks: [Track], playNext: Bool) {
+        if playNext {
+            self.tracks.insert(contentsOf: tracks, at: currentTrackIndex + 1)
+        } else {
+            self.tracks += tracks
+        }
+        persist()
+    }
+    
     func remove(_ track: EnumeratedSequence<[Track]>.Element) -> Bool {
         if tracks.count > 1 {
             tracks.remove(at: track.offset)
@@ -72,6 +81,18 @@ final class QueueState: Codable {
         }
         persist()
         return false
+    }
+    
+    func clearAll() {
+        var removalOffsets = IndexSet()
+        tracks.enumerated().forEach { enumeratedTrack in
+            if enumeratedTrack.element != currentTrack,
+               enumeratedTrack.offset != currentTrackIndex {
+                removalOffsets.insert(enumeratedTrack.offset)
+            }
+        }
+        tracks.remove(atOffsets: removalOffsets)
+        persist()
     }
     
     func persist() {

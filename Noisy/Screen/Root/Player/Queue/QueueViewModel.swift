@@ -11,6 +11,7 @@ import Combine
 final class QueueViewModel: ObservableObject {
     // MARK: - Published properties
     @Published var currentTime: Double = 0
+    @Published var tracks: [Track] = []
     
     // MARK: - Coordinator actions
     let onDidTapBackButton = PassthroughSubject<Void, Never>()
@@ -26,6 +27,7 @@ final class QueueViewModel: ObservableObject {
         self.queueManager = queueManager
         
        bindCurrentTime()
+        getTracks()
     }
 }
 
@@ -33,6 +35,11 @@ final class QueueViewModel: ObservableObject {
 extension QueueViewModel {
     func backButtonTapped() {
         onDidTapBackButton.send()
+    }
+    
+    func clearAllButtonTapped() {
+        queueManager.clearAll()
+        getTracks()
     }
     
     func moveTrack(from source: IndexSet, to destination: Int) {
@@ -61,5 +68,11 @@ private extension QueueViewModel {
             }
             .store(in: &cancellables)
         currentTime = queueManager.state.currentTime
+    }
+    
+    func getTracks() {
+        withAnimation {
+            tracks = queueManager.state.tracks
+        }
     }
 }

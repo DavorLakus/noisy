@@ -28,8 +28,10 @@ final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
     internal var playlistViewModelStack = Stack<PlaylistViewModel>()
     internal var playlistsViewModelStack = Stack<PlaylistsViewModel>()
     
+    internal var onDidTapPlayAllButton = PassthroughSubject<[Track], Never>()
     internal var onDidTapPlayerButton = PassthroughSubject<Track, Never>()
     internal var musicDetailsService: MusicDetailsService
+    internal var queueManager: QueueManager
     internal var cancellables = Set<AnyCancellable>()
     
     // MARK: - Private properties
@@ -38,9 +40,10 @@ final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
     private var searchViewModel: SearchViewModel?
     
     // MARK: - Class lifecycle
-    init(searchService: SearchService, musicDetailsService: MusicDetailsService) {
+    init(searchService: SearchService, musicDetailsService: MusicDetailsService, queueManager: QueueManager) {
         self.searchService = searchService
         self.musicDetailsService = musicDetailsService
+        self.queueManager = queueManager
         
         bindSearchViewModel()
     }

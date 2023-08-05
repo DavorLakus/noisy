@@ -17,8 +17,10 @@ protocol NoisyAPIProtocol {
     func getTopTracks(for artistId: String) -> AnyPublisher<Data, Error>
     func getTopArtists(count: Int, timeRange: String) -> AnyPublisher<Data, Error>
     func getPlaylists(for userId: String, count: Int) -> AnyPublisher<Data, Error>
-    func getPlaylist(for playlistId: String) -> AnyPublisher<Data, Error>
+    func getPlaylist(with playlistId: String) -> AnyPublisher<Data, Error>
+    func getPlaylistTracks(for playlistId: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error>
     func getAlbum(with albumId: String) -> AnyPublisher<Data, Error>
+    func getAlbumTracks(for albumId: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error>
     func getArtistsAlbums(for artistId: String) -> AnyPublisher<Data, Error>
     func getArtistsRelatedArtists(for artistId: String) -> AnyPublisher<Data, Error>
     func search(for query: String, type: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error>
@@ -73,12 +75,20 @@ extension NoisyService {
         NetworkingManager.download(.playlists(userId: userId, count: count))
     }
     
-    func getPlaylist(for playlistId: String) -> AnyPublisher<Data, Error> {
+    func getPlaylist(with playlistId: String) -> AnyPublisher<Data, Error> {
         NetworkingManager.download(.playlist(playlistId: playlistId))
+    }
+    
+    func getPlaylistTracks(for playlistId: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error> {
+        NetworkingManager.download(.playlistTracks(playlistId: playlistId, limit: limit, offset: offset))
     }
     
     func getAlbum(with albumId: String) -> AnyPublisher<Data, Error> {
         NetworkingManager.download(.album(albumId: albumId))
+    }
+    
+    func getAlbumTracks(for albumId: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error> {
+        NetworkingManager.download(.albumTracks(albumId: albumId, limit: limit, offset: offset))
     }
     
     func getArtistsAlbums(for artistId: String) -> AnyPublisher<Data, Error> {
