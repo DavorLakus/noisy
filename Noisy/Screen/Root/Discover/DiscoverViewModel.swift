@@ -40,6 +40,8 @@ final class DiscoverViewModel: ObservableObject {
     // MARK: Published properties
     @Published var isSeedsSheetPresented = false
     @Published var isSeedParametersSheetPresented = false
+    @Published var isOptionsSheetPresented = false
+    @Published var isToastPresented = false
     @Published var limit: Double = 10
     @Published var lowerBounds = [Double](repeating: 0.0, count: 14)
     @Published var targets = [Double](repeating: 0.5, count: 14)
@@ -57,21 +59,26 @@ final class DiscoverViewModel: ObservableObject {
     @Published var seedCategory: SeedCategory = .artists
     @Published var isSearchActive = false
     @Published var query: String = .empty
-    var hasAnySeeds: Bool { !seedArtists.isEmpty || !seedTracks.isEmpty || !seedGenres.isEmpty }
-    var notAllSeedParametersSelected: Bool { seedToggles.contains(false) }
     
     // MARK: - Coordinator actions
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
     var onDidTapRecommendedTrackRow: PassthroughSubject<Track, Never>?
+    let onDidTapArtistButton = PassthroughSubject<Artist, Never>()
+    let onDidTapAlbumButton = PassthroughSubject<Album, Never>()
     
     // MARK: - Private properties
     private let discoverService: DiscoverService
     private let searchService: SearchService
+    private let queueManager: QueueManager
     private var availableGenres: [String] = []
     private var canAddSeedEntities: Bool { seedArtists.count + seedTracks.count + seedGenres.count <= 5 }
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Public properties
+    var hasAnySeeds: Bool { !seedArtists.isEmpty || !seedTracks.isEmpty || !seedGenres.isEmpty }
+    var notAllSeedParametersSelected: Bool { seedToggles.contains(false) }
+    var options: [OptionRow] = []
+    var toastMessage: String = .empty
     var profile: Profile? {
         guard let profile  = UserDefaults.standard.object(forKey: .Login.profile) as? Data
         else { return nil }
@@ -79,9 +86,10 @@ final class DiscoverViewModel: ObservableObject {
     }
     
     // MARK: - Class lifecycle
-    init(discoverService: DiscoverService, searchService: SearchService) {
+    init(discoverService: DiscoverService, searchService: SearchService, queueManager: QueueManager) {
         self.discoverService = discoverService
         self.searchService = searchService
+        self.queueManager = queueManager
         
         getGenres()
         bind()
@@ -189,8 +197,62 @@ extension DiscoverViewModel {
         onDidTapRecommendedTrackRow?.send(track)
     }
     
-    func recommendedTrackOptionsSelected(_ track: Track) {
+    func trackOptionsTapped(for track: Track) {
+        options = [addToQueueOption(track), viewAlbumOption(track), viewArtistOption(track)]
+        withAnimation {
+            isOptionsSheetPresented = true
+        }
+    }
+}
+
+// MARK: - Track options
+private extension DiscoverViewModel {
+    func addToQueueOption(_ track: Track) -> OptionRow {
+        let addToQueueSubject = PassthroughSubject<Void, Never>()
         
+        addToQueueSubject
+            .sink { [weak self] in
+                self?.queueManager.append(track)
+                self?.toastMessage = "\(track.name) \(String.Shared.addedToQueue)"
+                withAnimation {
+                    self?.isToastPresented = true
+                }
+            }
+            .store(in: &cancellables)
+        
+        return OptionRow.addToQueue(action: addToQueueSubject)
+    }
+    
+    func viewArtistOption(_ track: Track) -> OptionRow {
+        let viewArtistSubject = PassthroughSubject<Void, Never>()
+        
+        viewArtistSubject
+            .sink { [weak self] in
+                withAnimation {
+                    self?.isOptionsSheetPresented = false
+                }
+                self?.onDidTapArtistButton.send(track.artists[.zero])
+            }
+            .store(in: &cancellables)
+        
+        return OptionRow.viewArtist(action: viewArtistSubject)
+    }
+    
+    func viewAlbumOption(_ track: Track) -> OptionRow {
+        let viewAlbumSubject = PassthroughSubject<Void, Never>()
+        
+        viewAlbumSubject
+            .sink { [weak self] in
+                withAnimation {
+                    self?.isOptionsSheetPresented = false
+                }
+                if let album = track.album {
+                    self?.onDidTapAlbumButton.send(album)
+                }
+            }
+            .store(in: &cancellables)
+        
+        return OptionRow.viewAlbum(action: viewAlbumSubject)
     }
 }
 

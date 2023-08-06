@@ -51,11 +51,11 @@ struct MiniPlayerView: View {
 extension MiniPlayerView {
     func bodyView() -> some View {
         HStack(spacing: 24) {
-            (viewModel.isPlaying ? Image.Player.pause : Image.Player.play)
+            (viewModel.isPlaying ? Image.Player.pause : Image.Player.playFill)
                 .resizable()
                 .scaledToFit()
                 .frame(height: 20)
-                .foregroundColor(.red600)
+                .foregroundColor(.purple900)
                 .highPriorityGesture(playPauseGesture())
             
             VStack(alignment: .leading, spacing: .zero) {
@@ -64,14 +64,14 @@ extension MiniPlayerView {
                     .font(.nunitoBold(size: 16))
                 Text(viewModel.queueManager.state.currentTrack?.artists.first?.name ?? .empty)
                     .font(.nunitoSemiBold(size: 14))
-                    .foregroundColor(.gray700)
+                    .foregroundColor(.gray600)
                 
             }
             Spacer()
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 24)
-        .background { Color.appBackground.shadow(radius: 2) }
+        .background { Color.orange400.shadow(radius: 2) }
         .offset(y: -1)
         .onTapGesture(perform: viewModel.miniPlayerTapped)
     }

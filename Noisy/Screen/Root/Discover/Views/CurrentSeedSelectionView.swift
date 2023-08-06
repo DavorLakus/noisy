@@ -43,6 +43,6 @@ struct CurrentSeedSelectionView: View {
             }
         }
         .padding(Constants.smallSpacing)
-        .cardBackground(backgroundColor: viewModel.hasAnySeeds ? .yellow100 : .yellow200)
+        .cardBackground(backgroundColor: viewModel.hasAnySeeds ? .yellow100 : .yellow200, borderColor: .gray400, hasShadow: false)
     }
 }

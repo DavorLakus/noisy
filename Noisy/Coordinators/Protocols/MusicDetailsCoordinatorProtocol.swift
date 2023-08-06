@@ -16,7 +16,7 @@ protocol MusicDetailsCoordinatorProtocol: VerticalCoordinatorProtocol {
     var playlistsViewModelStack: Stack<PlaylistsViewModel> { get set }
     
     var onDidTapPlayAllButton: PassthroughSubject<[Track], Never> { get set }
-    var onDidTapPlayerButton: PassthroughSubject<Track, Never> { get set }
+    var onDidTapTrackRow: PassthroughSubject<Track, Never> { get set }
     var musicDetailsService: MusicDetailsService { get set }
     var queueManager: QueueManager { get set }
     var cancellables: Set<AnyCancellable> { get set }
@@ -34,7 +34,7 @@ protocol MusicDetailsCoordinatorProtocol: VerticalCoordinatorProtocol {
 
 extension MusicDetailsCoordinatorProtocol {
     func bindArtistViewModel(for artist: Artist) {
-        let viewModel = ArtistViewModel(artist: artist, musicDetailsService: musicDetailsService)
+        let viewModel = ArtistViewModel(artist: artist, musicDetailsService: musicDetailsService, queueManager: queueManager)
         viewModel.onDidTapBackButton
             .sink { [weak self] in
                 self?.pop()
@@ -54,7 +54,7 @@ extension MusicDetailsCoordinatorProtocol {
             }
             .store(in: &cancellables)
         
-        viewModel.onDidTapTrackRow = onDidTapPlayerButton
+        viewModel.onDidTapTrackRow = onDidTapTrackRow
         
         artistViewModelStack.push(viewModel)
     }
@@ -69,7 +69,7 @@ extension MusicDetailsCoordinatorProtocol {
             .store(in: &cancellables)
         
         viewModel.onDidTapPlayAllButton = onDidTapPlayAllButton
-        viewModel.onDidTapTrackRow = onDidTapPlayerButton
+        viewModel.onDidTapTrackRow = onDidTapTrackRow
         
         viewModel.onDidTapArtistButton
             .sink {[weak self] artist in
@@ -99,7 +99,7 @@ extension MusicDetailsCoordinatorProtocol {
             .store(in: &cancellables)
         
         viewModel.onDidTapPlayAllButton = onDidTapPlayAllButton
-        viewModel.onDidTapTrackRow = onDidTapPlayerButton
+        viewModel.onDidTapTrackRow = onDidTapTrackRow
         
         viewModel.onDidTapArtistButton
             .sink {[weak self] artist in

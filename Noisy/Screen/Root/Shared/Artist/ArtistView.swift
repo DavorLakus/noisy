@@ -9,12 +9,19 @@ import SwiftUI
 
 struct ArtistView: View {
     @ObservedObject var viewModel: ArtistViewModel
+    @State var detents = Set<PresentationDetent>()
     
     var body: some View {
         bodyView()
             .navigationBarBackButtonHidden()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(content: toolbarContent)
+            .sheet(isPresented: $viewModel.isOptionsSheetPresented) {
+                OptionsView(isPresented: $viewModel.isOptionsSheetPresented, options: viewModel.options)
+                    .readSize { detents = [.height($0.height)] }
+                    .presentationDetents(detents)
+                    .toast(isPresented: $viewModel.isToastPresented, message: viewModel.toastMessage)
+            }
     }
 }
 
@@ -54,7 +61,7 @@ extension ArtistView {
     }
     
     func albums() -> some View {
-        SimpleAccordionView(isExpanded: $viewModel.isAlbumsExpanded, title: .Artist.albums, data: viewModel.albums.enumerated(), dataRowView: albumRow, action: viewModel.albumRowTapped, optionsAction: viewModel.albumOptionsTapped)
+        SimpleAccordionView(isExpanded: $viewModel.isAlbumsExpanded, title: .Artist.albums, data: viewModel.albums.enumerated(), dataRowView: albumRow, action: viewModel.albumRowTapped, optionsAction: nil)
     }
     
     @ViewBuilder

@@ -14,7 +14,7 @@ class NetworkingManager {
     public static let invalidToken = PassthroughSubject<Void, Never>()
     public static let state = CurrentValueSubject<AppState, Never>(.loaded)
     
-    static func download(_ router: NoisyHTTPRouter) -> AnyPublisher<Data, Error> {
+    static func performRequest(_ router: NoisyHTTPRouter) -> AnyPublisher<Data, Error> {
         URLSession.shared.dataTaskPublisher(for: router.request)
             .handleEvents(receiveSubscription: loading, receiveOutput: loaded)
             .subscribe(on: DispatchQueue.global(qos: .default))
@@ -92,7 +92,7 @@ class NetworkingManager {
     
     static func handleBadURLResponse(for router: NoisyHTTPRouter, statusCode: Int) {
         switch router {
-        case .token, .refreshToken, .profile, .search, .recommendation, .recommendationGenres, .authorize, .myTop, .playlists, .playlist, .playlistTracks, .artist, .album, .albumTracks, .artistsAlbums, .artistsTopTracks, .artistsRelatedArtists:
+        case .token, .refreshToken, .profile, .search, .recommendation, .recommendationGenres, .authorize, .track, .myTop, .playlists, .playlist, .playlistTracks, .artist, .album, .albumTracks, .artistsAlbums, .artistsTopTracks, .artistsRelatedArtists:
             break
         }
     }

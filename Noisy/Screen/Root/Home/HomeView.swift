@@ -10,14 +10,20 @@ import WebKit
 
 struct HomeView: View {
     @ObservedObject var viewModel: HomeViewModel
-    @State var detents = Set<PresentationDetent>() 
+    @State var detents = Set<PresentationDetent>()
     
     var body: some View {
         ZStack(alignment: .top) {
-            Color.appBackground.ignoresSafeArea()
+            Color.appBackground.ignoresSafeArea(edges: .top)
+                .circleOverlay(xOffset: -0.8, yOffset: 0.8)
             
-            bodyView()
+            ZStack(alignment: .top) {
+                bodyView()
+                headerView()
+            }
+            .ignoresSafeArea(edges: .top)
         }
+        .toolbar(.hidden, for: .navigationBar)
         .onAppear(perform: viewModel.viewDidAppear)
         .sheet(isPresented: $viewModel.isOptionsSheetPresented) {
             OptionsView(isPresented: $viewModel.isOptionsSheetPresented, options: viewModel.options)
@@ -25,51 +31,48 @@ struct HomeView: View {
                 .presentationDetents(detents)
                 .toast(isPresented: $viewModel.isToastPresented, message: viewModel.toastMessage)
         }
-        .toolbar {
-            trailingNavigationBarItem()
-        }
-    }
-}
-
-extension View {
-    func toast(isPresented: Binding<Bool>, message: String, alignment: Alignment = .bottom, duration: TimeInterval = 2.5) -> some View {
-        ZStack(alignment: alignment) {
-            self
-            if isPresented.wrappedValue {
-                Text(message)
-                    .font(.nunitoBold(size: 18))
-                    .foregroundColor(.white)
-                    .padding(12)
-                    .cardBackground(backgroundColor: .green200)
-                    .zStackTransition(.slide)
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
-                            withAnimation {
-                                isPresented.wrappedValue = false
-                            }
-                        }
-                    }
-            }
-        }
     }
 }
 
 // MARK: - Body components
 private extension HomeView {
+    func headerView() -> some View {
+        HStack {
+            Spacer()
+            Button {
+                viewModel.profileButtonTapped()
+            } label: {
+                AsyncImage(url: URL(string: viewModel.profile?.images.first?.url ?? .empty)) { image in
+                    image.resizable()
+                } placeholder: {
+                    Image.Home.profile.resizable()
+                }
+                .scaledToFit()
+                .cornerRadius(18)
+                .frame(width: 36, height: 36)
+            }
+            .background {
+                Circle()
+                    .fill(Color.yellow300)
+                    .shadow(color: .gray500, radius: 2)
+//                    .overlay { Circle().stroke(Color.gray400) }
+                    .frame(width: 160, height: 160)
+                    .offset(x: 20, y: -30)
+            }
+        }
+        .padding(Constants.margin)
+        .padding(.top, 40)
+    }
+    
     func bodyView() -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Constants.margin) {
-                if let name = viewModel.profile?.displayName {
-                    Text("\(String.Home.welcome) \(name)")
-                        .foregroundColor(.gray600)
-                        .font(.nunitoBold(size: 24))
-                        .padding(Constants.margin)
-                }
-                
+                Spacer(minLength: 100)
                 topTracksAccordion()
                 topArtistsAccordion()
                 playlistsAccordion()
             }
+            .padding(.vertical, Constants.margin)
         }
         .refreshable(action: viewModel.viewDidAppear)
     }
@@ -99,30 +102,14 @@ extension HomeView {
 // MARK: - ToolbarContentBuilder
 private extension HomeView {
     @ToolbarContentBuilder
-    func trailingNavigationBarItem() -> some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) {
-            HStack(spacing: 16) {
-                Button {
-                    
-                } label: {
-                    Image.Home.sparkles
-                        .foregroundColor(.gray700)
-                }
-                
-                Button {
-                    viewModel.profileButtonTapped()
-                } label: {
-                    AsyncImage(url: URL(string: viewModel.profile?.images.first?.url ?? .empty)) { image in
-                        image.resizable()
-                    } placeholder: {
-                        Image.Home.profile.resizable()
-                    }
-                    .scaledToFit()
-                    .cornerRadius(18)
-                    .frame(width: 36, height: 36)
-                }
+    func leadingTitle() -> some ToolbarContent {
+        ToolbarItem(placement: .navigationBarLeading) {
+            if let name = viewModel.profile?.displayName {
+                Text("\(String.Home.welcome) \(name)")
+                    .foregroundColor(.gray800)
+                    .font(.nunitoBold(size: 24))
             }
-            .padding(8)
         }
     }
+    
 }

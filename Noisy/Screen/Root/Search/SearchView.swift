@@ -14,17 +14,14 @@ struct SearchView: View {
     var body: some View {
         ZStack {
             Color.appBackground.ignoresSafeArea()
-            
-            VStack(spacing: 12) {
-                SearchBar(isActive: $viewModel.searchIsActive, query: $viewModel.query)
-                    .frame(height: 40)
-                    .background { Color.appBackground }
-                
-                    loadedStateView()
+                .circleOverlay(xOffset: -0.5, yOffset: 0.5, frameMultiplier: 1.5, color: .orange100)
+
+            ZStack(alignment: .top) {
+                bodyView()
+                headerView()
             }
-            .padding(.horizontal, Constants.margin)
+            .ignoresSafeArea(edges: .top)
         }
-        .toolbar(content: toolbarContent)
         .onAppear(perform: viewModel.pullToRefresh)
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -32,6 +29,49 @@ struct SearchView: View {
 
 // MARK: - Body
 private extension SearchView {
+    func headerView() -> some View {
+        HStack {
+            Text(String.Tabs.search)
+                .foregroundColor(.gray700)
+                .font(.nunitoBold(size: 24))
+            Spacer()
+            Button {
+                viewModel.profileButtonTapped()
+            } label: {
+                AsyncImage(url: URL(string: viewModel.profile?.images.first?.url ?? .empty)) { image in
+                    image.resizable()
+                } placeholder: {
+                    Image.Home.profile.resizable()
+                }
+                .scaledToFit()
+                .cornerRadius(18)
+                .frame(width: 36, height: 36)
+            }
+            .background {
+                Circle()
+                    .fill(Color.yellow300)
+                    .shadow(color: .gray500, radius: 2)
+                    .frame(width: 160, height: 160)
+                    .offset(x: 20, y: -30)
+            }
+        }
+        .padding(Constants.margin)
+        .padding(.top, 40)
+    }
+    
+    @ViewBuilder
+    func bodyView() -> some View {
+        VStack(spacing: 12) {
+            Spacer(minLength: 110)
+            SearchBar(isActive: $viewModel.searchIsActive, query: $viewModel.query)
+                .frame(height: 40)
+                .background { Color.appBackground }
+            
+                loadedStateView()
+        }
+        .padding(Constants.margin)
+    }
+    
     @ViewBuilder
     func loadedStateView() -> some View {
         Group {

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RootCoordinatorView: View {
     @StateObject var coordinator: RootCoordinator
+    @State var detents = Set<PresentationDetent>()
     @Namespace var namespace
 
     var body: some View {
@@ -26,9 +27,13 @@ struct RootCoordinatorView: View {
                 .tabItem { tab(name: .Tabs.search, icon: .Tabs.search) }
                 .tag(RootTab.search)
         }
-        .modalSheet(isPresented: $coordinator.isProfileDrawerPresented, content: coordinator.presentProfileView)
+        .sheet(isPresented: $coordinator.isProfileDrawerPresented) {
+            coordinator.presentProfileView()
+                .readSize { detents = [.height($0.height)] }
+                .presentationDetents(detents)
+        }
         .alert(isPresented: $coordinator.isAlertPresented, alert: coordinator.presentAlertView)
-        .tint(.green500)
+        .tint(.purple900)
         .fullScreenCover(isPresented: $coordinator.isPlayerCoordinatorViewPresented, content: coordinator.presentPlayerCoordinatorView)
     }
 }

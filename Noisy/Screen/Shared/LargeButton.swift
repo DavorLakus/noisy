@@ -28,6 +28,6 @@ struct LargeButton: View {
                 .frame(maxWidth: .infinity)
         }
         .padding(12)
-        .cardBackground(backgroundColor: backgroundColor)
+        .cardBackground(backgroundColor: backgroundColor, borderColor: .gray400, hasShadow: false)
     }
 }

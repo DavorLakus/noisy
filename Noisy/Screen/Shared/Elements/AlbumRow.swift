@@ -12,7 +12,7 @@ struct AlbumRow: View {
     let isEnumerated: Bool
     let action: ((Album) -> Void)?
     
-    init(album: EnumeratedSequence<[Album]>.Iterator.Element, isEnumerated: Bool = true, action:((Album) -> Void)? = nil) {
+    init(album: EnumeratedSequence<[Album]>.Iterator.Element, isEnumerated: Bool = false, action:((Album) -> Void)? = nil) {
         self.album = album
         self.isEnumerated = isEnumerated
         self.action = action

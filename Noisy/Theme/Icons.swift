@@ -48,6 +48,7 @@ extension Image {
     
     struct Player {
         static let play = Image(systemName: "play")
+        static let playFill = Image(systemName: "play.fill")
         static let playCircle = Image(systemName: "play.circle")
         static let pause = Image(systemName: "pause")
         static let pauseCircle = Image(systemName: "pause.circle")

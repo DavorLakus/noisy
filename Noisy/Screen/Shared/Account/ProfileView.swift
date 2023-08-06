@@ -12,20 +12,7 @@ struct ProfileView: View {
     @State var width: CGFloat = .zero
     
     var body: some View {
-        ZStack {
-            if viewModel.viewLoaded {
-                Color.alertShadow
-                    .ignoresSafeArea()
-                    .opacity(0.7)
-                    .zStackTransition(viewModel.isPushNavigation ? .move(edge: .leading) : .opacity)
-                    .onTapGesture { viewModel.viewWillDisappear() }
-                
-                bodyView()
-                    .padding(.leading, 80)
-                    .zStackTransition(viewModel.isPushNavigation ? .move(edge: .leading) : .move(edge: .trailing))
-            }
-        }
-        .onAppear(perform: viewModel.viewDidAppear)
+        bodyView()
     }
 }
 
@@ -38,18 +25,11 @@ extension ProfileView {
             
             VStack(spacing: .zero) {
                 closeButton()
-                
-                VStack(spacing: 36) {
-                    profileView()
-                    
-                    generalView()
-                    
-                    Spacer()
-                }
-                .padding(Constants.margin)
+                profileView()
+                generalView()
             }
+            .padding(Constants.margin)
         }
-        .navigationBarBackButtonHidden()
     }
     
     @ViewBuilder
@@ -57,13 +37,13 @@ extension ProfileView {
         HStack {
             Spacer()
             Button {
-                viewModel.viewWillDisappear()
+                viewModel.closeButtonTapped()
             } label: {
                 Image.Shared.close
                     .tint(.gray700)
             }
         }
-        .padding(Constants.margin)
+        .padding([.trailing, .top], Constants.margin)
         
     }
     
@@ -78,46 +58,28 @@ extension ProfileView {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(profile.displayName)
-                        .font(.nunitoSemiBold(size: 14))
+                        .font(.nunitoSemiBold(size: 26))
                         .foregroundColor(.gray900)
-                    Text(String.Profile.viewProfile)
-                        .font(.nunitoSemiBold(size: 12))
-                        .underline()
-                        .foregroundColor(.gray600)
                 }
                 Spacer()
-                Image.Shared.chevronRight
-                    .foregroundColor(.purple600)
             }
         }
         .padding(.vertical)
         .bottomBorder()
         .background { Color.appBackground }
-        .onTapGesture {
-            viewModel.profileViewTapped()
-        }
     }
     
     @ViewBuilder
     func generalView() -> some View {
-        VStack(alignment: .leading, spacing: .zero) {
-            Text(String.Profile.general)
-                .font(.nunitoSemiBold(size: 14))
-                .foregroundColor(.gray700)
-            Group {
-                Button {
-                    viewModel.signOutTapped()
-                } label: {
-                    Text(String.Profile.signoutTitle)
-                        .font(.nunitoRegular(size: 16))
-                        .foregroundColor(.gray600)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background { Color.appBackground }
-            .padding(.vertical, 16)
-            .bottomBorder()
+        Button(action: viewModel.signOutTapped) {
+            Text(String.Profile.signoutTitle)
+                .font(.nunitoSemiBold(size: 18))
+                .foregroundColor(.gray600)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background { Color.appBackground }
+        .padding(16)
+        .bottomBorder()
     }
 }

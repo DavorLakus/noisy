@@ -34,6 +34,7 @@ extension AlbumView {
             ScrollView {
                 VStack(spacing: Constants.margin) {
                     headerView()
+                    titleView()
                     tracks()
                     relatedArtists()
                 }
@@ -47,19 +48,29 @@ extension AlbumView {
         ZStack(alignment: .bottomLeading) {
             LoadImage(url: URL(string: viewModel.album.images.first?.url ?? .empty))
                 .scaledToFit()
-            LinearGradient(colors: [.clear, .clear, .clear, .gray600], startPoint: .top, endPoint: .bottom)
-            
-            HStack {
-                Text(viewModel.album.name)
-                    .font(.nunitoBold(size: 36))
-                    .padding(Constants.margin)
-                    .foregroundColor(.white)
-                Button(action: viewModel.albumOptionsTapped) {
-                    Image.Shared.threeDots
-                        .foregroundColor(.appBackground)
-                }
+        }
+    }
+    
+    @ViewBuilder
+    func titleView() -> some View {
+        HStack {
+            Text(viewModel.album.name)
+                .font(.nunitoBold(size: 24))
+                .foregroundColor(.gray700)
+            Button(action: viewModel.albumOptionsTapped) {
+                Image.Shared.threeDots
+                    .foregroundColor(.gray700)
+            }
+            .padding(Constants.margin)
+            Spacer()
+            Button(action: viewModel.playAllButtonTapped) {
+                Image.Player.playCircle
+                    .resizable()
+                    .frame(width: 48, height: 48)
+                    .foregroundColor(.purple600)
             }
         }
+        .padding(.horizontal, Constants.margin)
     }
     
     @ViewBuilder
@@ -67,19 +78,15 @@ extension AlbumView {
         if viewModel.tracks.isEmpty {
             
         } else {
-            VStack(alignment: .leading) {
-                Text(String.Search.tracks)
-                    .font(.nunitoBold(size: 14))
-                    .foregroundColor(.gray600)
-                LazyVStack(spacing: 4) {
-                    ForEach(Array(viewModel.tracks.enumerated()), id: \.offset) { enumeratedTrack in
-                        TrackRow(track: enumeratedTrack, isEnumerated: false, action: viewModel.trackOptionsTapped)
-                            .background(.white)
-                            .onTapGesture { viewModel.trackRowTapped(for: enumeratedTrack.element) }
-                    }
+            LazyVStack(spacing: 4) {
+                ForEach(Array(viewModel.tracks.enumerated()), id: \.offset) { enumeratedTrack in
+                    TrackRow(track: enumeratedTrack, isEnumerated: false, showAlbumImage: false, tint: .gray600, action: viewModel.trackOptionsTapped)
+                        .padding(12)
+                        .background { RoundedRectangle(cornerRadius: 8).fill(Color.purple100) }
+                        .onTapGesture { viewModel.trackRowTapped(for: enumeratedTrack.element) }
                 }
             }
-            .padding(Constants.margin)
+            .padding(.horizontal, Constants.margin)
         }
     }
     

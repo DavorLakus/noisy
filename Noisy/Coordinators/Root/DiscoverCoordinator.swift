@@ -29,7 +29,7 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     internal var playlistsViewModelStack = Stack<PlaylistsViewModel>()
     
     internal var onDidTapPlayAllButton = PassthroughSubject<[Track], Never>()
-    internal var onDidTapPlayerButton = PassthroughSubject<Track, Never>()
+    internal var onDidTapTrackRow = PassthroughSubject<Track, Never>()
     internal var musicDetailsService: MusicDetailsService
     internal var queueManager: QueueManager
     internal var cancellables = Set<AnyCancellable>()
@@ -50,7 +50,7 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     }
     
     func bindDiscoverViewModel() {
-        discoverViewModel = DiscoverViewModel(discoverService: discoverService, searchService: searchService)
+        discoverViewModel = DiscoverViewModel(discoverService: discoverService, searchService: searchService, queueManager: queueManager)
         
         discoverViewModel?.onDidTapProfileButton
             .sink { [weak self] in
@@ -58,7 +58,19 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
             }
             .store(in: &cancellables)
         
-        discoverViewModel?.onDidTapRecommendedTrackRow = onDidTapPlayerButton
+        discoverViewModel?.onDidTapArtistButton
+            .sink { [weak self] artist in
+                self?.push(.artist(artist))
+            }
+            .store(in: &cancellables)
+        
+        discoverViewModel?.onDidTapAlbumButton
+            .sink { [weak self] album in
+                self?.push(.album(album))
+            }
+            .store(in: &cancellables)
+        
+        discoverViewModel?.onDidTapRecommendedTrackRow = onDidTapTrackRow
     }
     
     func start() -> some CoordinatorViewProtocol {

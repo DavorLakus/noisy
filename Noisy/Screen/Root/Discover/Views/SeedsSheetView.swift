@@ -40,7 +40,7 @@ struct SeedsSheetView: View {
                 }
                 .padding(.horizontal, Constants.margin)
                 
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: Constants.margin) {
                     HStack {
                         ForEach(SeedCategory.allCases, id: \.self) { seedCategory in
                             Text(seedCategory.displayName)

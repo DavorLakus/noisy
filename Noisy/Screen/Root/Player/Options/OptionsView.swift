@@ -45,7 +45,12 @@ struct OptionsView: View {
     let options: [OptionRow]
     
     var body: some View {
-        bodyView()
+        ZStack {
+            Color.yellow100
+                .circleOverlay(xOffset: 0.4, yOffset: 0.4)
+            
+            bodyView()
+        }
     }
 }
 
@@ -91,6 +96,6 @@ extension OptionsView {
             }
         }
         .padding(.horizontal, Constants.margin)
-        .background(.white)
+        .background(.clear)
     }
 }

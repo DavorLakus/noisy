@@ -124,7 +124,7 @@ struct ParameterizedAccordionView<AccordionData: Hashable, Content: View>: View 
             }
         }
         .padding(Constants.margin)
-        .cardBackground()
+        .cardBackground(borderColor: .gray400, hasShadow: false)
         .padding(.horizontal, Constants.margin)
     }
 }

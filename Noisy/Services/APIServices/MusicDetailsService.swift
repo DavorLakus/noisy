@@ -22,6 +22,21 @@ final class MusicDetailsService {
 
 extension MusicDetailsService {
     
+    func getTrack(with id: String) -> PassthroughSubject<Track, Never> {
+        let track = PassthroughSubject<Track, Never>()
+        
+        api.getTrack(with: id)
+            .decode(type: Track.self, decoder: JSONDecoder())
+            .sink(
+                receiveCompletion: NetworkingManager.handleCompletion,
+                receiveValue: { result in
+                    track.send(result)
+                })
+            .store(in: &cancellables)
+        
+        return track
+    }
+    
     func getArtistsTopTracks(for artistId: String) -> PassthroughSubject<[Track], Never> {
         let topTracks = PassthroughSubject<[Track], Never>()
         

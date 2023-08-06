@@ -13,6 +13,7 @@ enum NoisyHTTPRouter {
     case refreshToken(refreshToken: String)
     case profile
     case myTop(type: String, count: Int, timeRange: String)
+    case track(id: String)
     case artist(artistId: String)
     case album(albumId: String)
     case albumTracks(albumId: String, limit: Int, offset: Int)
@@ -32,7 +33,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize, .token, .refreshToken:
             return "accounts.spotify.com"
-        case .profile, .myTop, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
+        case .profile, .myTop, .track, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
             return "api.spotify.com"
         }
     }
@@ -43,7 +44,7 @@ extension NoisyHTTPRouter: APIEndpoint {
             return .empty
         case .token, .refreshToken:
             return "/api"
-        case .profile, .myTop, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
+        case .profile, .myTop, .track, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
             return "/v1"
         }
     }
@@ -56,6 +57,8 @@ extension NoisyHTTPRouter: APIEndpoint {
             return "/me"
         case .search:
             return "/search"
+        case .track(let id):
+            return "/tracks/\(id)"
         case .recommendation:
             return "/recommendations"
         case .recommendationGenres:
@@ -87,7 +90,7 @@ extension NoisyHTTPRouter: APIEndpoint {
     
     public var method: HTTPMethod {
         switch self {
-        case .profile, .search, .recommendation, .recommendationGenres, .authorize, .myTop, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .search, .recommendation, .recommendationGenres, .authorize, .myTop, .track, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return .get
         case .token, .refreshToken:
             return .post
@@ -98,7 +101,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize:
             return nil
-        case .profile, .search, .recommendation, .recommendationGenres, .myTop, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .search, .recommendation, .recommendationGenres, .myTop, .track, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return authToken
         case .token, .refreshToken:
             return ["Content-Type" : "application/x-www-form-urlencoded"]
@@ -148,11 +151,11 @@ extension NoisyHTTPRouter: APIEndpoint {
         case .playlistTracks(_, let limit, let offset), .albumTracks(_, let limit, let offset):
             return [
                 URLQueryItem(name: "limit", value: "\(limit)"),
-                URLQueryItem(name: "offset", value: "\(offset)"),
+                URLQueryItem(name: "offset", value: "\(offset)")
             ]
         case .artistsTopTracks:
             return [URLQueryItem(name: "market", value: "HR")]
-        case .profile, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsAlbums, .artistsRelatedArtists, .recommendationGenres:
+        case .profile, .track, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsAlbums, .artistsRelatedArtists, .recommendationGenres:
             return nil
         case .recommendation(let parameters):
             return parameters

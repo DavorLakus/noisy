@@ -13,6 +13,7 @@ protocol NoisyAPIProtocol {
     func postToken(verifier: String, code: String) -> AnyPublisher<Data, Error>
     func postRefreshToken(with refreshToken: String) -> AnyPublisher<Data, Error>
     func getProfile() -> AnyPublisher<Data, Error>
+    func getTrack(with id: String) -> AnyPublisher<Data, Error>
     func getMyTopTracks(count: Int, timeRange: String) -> AnyPublisher<Data, Error>
     func getTopTracks(for artistId: String) -> AnyPublisher<Data, Error>
     func getTopArtists(count: Int, timeRange: String) -> AnyPublisher<Data, Error>
@@ -41,69 +42,73 @@ extension NoisyService {
     }
     
     func postToken(verifier: String, code: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.token(verifier: verifier, code: code))
+        NetworkingManager.performRequest(.token(verifier: verifier, code: code))
     }
     
     func postRefreshToken(with refreshToken: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.refreshToken(refreshToken: refreshToken))
+        NetworkingManager.performRequest(.refreshToken(refreshToken: refreshToken))
     }
 }
 
 // MARK: - Main
 extension NoisyService {
     func getProfile() -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.profile)
+        NetworkingManager.performRequest(.profile)
     }
 
     func search(for query: String, type: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.search(query: query, type: type, limit: limit, offset: offset))
+        NetworkingManager.performRequest(.search(query: query, type: type, limit: limit, offset: offset))
+    }
+    
+    func getTrack(with id: String) -> AnyPublisher<Data, Error> {
+        NetworkingManager.performRequest(.track(id: id))
     }
     
     func getMyTopTracks(count: Int, timeRange: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.myTop(type: "tracks", count: count, timeRange: timeRange))
+        NetworkingManager.performRequest(.myTop(type: "tracks", count: count, timeRange: timeRange))
     }
     
     func getTopTracks(for artistId: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.artistsTopTracks(artistId: artistId))
+        NetworkingManager.performRequest(.artistsTopTracks(artistId: artistId))
     }
     
     func getTopArtists(count: Int, timeRange: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.myTop(type: "artists", count: count, timeRange: timeRange))
+        NetworkingManager.performRequest(.myTop(type: "artists", count: count, timeRange: timeRange))
     }
     
     func getPlaylists(for userId: String, count: Int) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.playlists(userId: userId, count: count))
+        NetworkingManager.performRequest(.playlists(userId: userId, count: count))
     }
     
     func getPlaylist(with playlistId: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.playlist(playlistId: playlistId))
+        NetworkingManager.performRequest(.playlist(playlistId: playlistId))
     }
     
     func getPlaylistTracks(for playlistId: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.playlistTracks(playlistId: playlistId, limit: limit, offset: offset))
+        NetworkingManager.performRequest(.playlistTracks(playlistId: playlistId, limit: limit, offset: offset))
     }
     
     func getAlbum(with albumId: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.album(albumId: albumId))
+        NetworkingManager.performRequest(.album(albumId: albumId))
     }
     
     func getAlbumTracks(for albumId: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.albumTracks(albumId: albumId, limit: limit, offset: offset))
+        NetworkingManager.performRequest(.albumTracks(albumId: albumId, limit: limit, offset: offset))
     }
     
     func getArtistsAlbums(for artistId: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.artistsAlbums(artistId: artistId))
+        NetworkingManager.performRequest(.artistsAlbums(artistId: artistId))
     }
     
     func getArtistsRelatedArtists(for artistId: String) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.artistsRelatedArtists(artistId: artistId))
+        NetworkingManager.performRequest(.artistsRelatedArtists(artistId: artistId))
     }
     
     func discover(parameters: [URLQueryItem]) -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.recommendation(parameters: parameters))
+        NetworkingManager.performRequest(.recommendation(parameters: parameters))
     }
     
     func getRecommendationGenres() -> AnyPublisher<Data, Error> {
-        NetworkingManager.download(.recommendationGenres)
+        NetworkingManager.performRequest(.recommendationGenres)
     }
 }

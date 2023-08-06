@@ -56,6 +56,13 @@ extension AlbumViewModel {
     }
     
     func albumOptionsTapped() {
+        options = [addAlbumToQueueOption()]
+        withAnimation {
+            isOptionsSheetPresented = true
+        }
+    }
+    
+    func addAlbumToQueueOption() -> OptionRow {
         let addToQueueSubject = PassthroughSubject<Void, Never>()
         
         addToQueueSubject
@@ -69,11 +76,7 @@ extension AlbumViewModel {
             }
             .store(in: &cancellables)
         
-        let addToQueueOption = OptionRow.addToQueue(action: addToQueueSubject)
-        options = [addToQueueOption]
-        withAnimation {
-            isOptionsSheetPresented = true
-        }
+        return OptionRow.addToQueue(action: addToQueueSubject)
     }
     
     func playAllButtonTapped() {
@@ -89,6 +92,13 @@ extension AlbumViewModel {
     }
     
     func trackOptionsTapped(for track: Track) {
+        options = [addTrackToQueueOption(track)]
+        withAnimation {
+            isOptionsSheetPresented = true
+        }
+    }
+    
+    func addTrackToQueueOption(_ track: Track) -> OptionRow {
         let addToQueueSubject = PassthroughSubject<Void, Never>()
         
         addToQueueSubject
@@ -101,11 +111,7 @@ extension AlbumViewModel {
             }
             .store(in: &cancellables)
         
-        let addToQueueOption = OptionRow.addToQueue(action: addToQueueSubject)
-        options = [addToQueueOption]
-        withAnimation {
-            isOptionsSheetPresented = true
-        }
+        return OptionRow.addToQueue(action: addToQueueSubject)
     }
 }
 

@@ -29,7 +29,7 @@ final class HomeCoordinator: MusicDetailsCoordinatorProtocol {
     internal var playlistsViewModelStack = Stack<PlaylistsViewModel>()
     
     internal var onDidTapPlayAllButton = PassthroughSubject<[Track], Never>()
-    internal var onDidTapPlayerButton = PassthroughSubject<Track, Never>()
+    internal var onDidTapTrackRow = PassthroughSubject<Track, Never>()
     internal var musicDetailsService: MusicDetailsService
     internal var queueManager: QueueManager
     internal var cancellables = Set<AnyCancellable>()
@@ -143,7 +143,7 @@ extension HomeCoordinator {
             }
             .store(in: &cancellables)
         
-        homeViewModel?.onDidSelectTrackRow = onDidTapPlayerButton
+        homeViewModel?.onDidSelectTrackRow = onDidTapTrackRow
     }
 }
 

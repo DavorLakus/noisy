@@ -9,11 +9,15 @@ import SwiftUI
 struct TrackRow: View {
     let track: EnumeratedSequence<[Track]>.Iterator.Element
     let isEnumerated: Bool
+    let showAlbumImage: Bool
+    let tint: Color
     let action: ((Track) -> Void)?
     
-    init(track: EnumeratedSequence<[Track]>.Iterator.Element, isEnumerated: Bool = true, action: ((Track) -> Void)? = nil) {
+    init(track: EnumeratedSequence<[Track]>.Iterator.Element, isEnumerated: Bool = true, showAlbumImage: Bool = true, tint: Color = .gray700, action: ((Track) -> Void)? = nil) {
         self.track = track
         self.isEnumerated = isEnumerated
+        self.showAlbumImage = showAlbumImage
+        self.tint = tint
         self.action = action
     }
     
@@ -25,20 +29,22 @@ struct TrackRow: View {
                     .font(.nunitoRegular(size: 14))
             }
             
-            LoadImage(url: URL(string: track.element.album?.images.first?.url ?? .empty))
-                .scaledToFit()
-                .cornerRadius(18)
-                .frame(width: 36, height: 36)
-                .shadow(radius: 2)
+            if showAlbumImage {
+                LoadImage(url: URL(string: track.element.album?.images.first?.url ?? .empty))
+                    .scaledToFit()
+                    .cornerRadius(18)
+                    .frame(width: 36, height: 36)
+                    .shadow(radius: 2)
+            }
             
             VStack(alignment: .leading, spacing: .zero) {
                 Text(track.element.name)
-                    .foregroundColor(.gray700)
+                    .foregroundColor(tint)
+                    .lineLimit(1)
                     .font(.nunitoBold(size: 16))
                 Text(track.element.artists.first?.name ?? .empty)
-                    .foregroundColor(.gray700)
+                    .foregroundColor(tint)
                     .font(.nunitoSemiBold(size: 14))
-                
             }
             Spacer()
             
@@ -47,6 +53,7 @@ struct TrackRow: View {
                     action(track.element)
                 } label: {
                     Image.Shared.threeDots
+                        .foregroundColor(tint)
                 }
             }
         }

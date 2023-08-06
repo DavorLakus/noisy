@@ -19,6 +19,8 @@ final class ArtistViewModel: ObservableObject, Equatable {
     @Published var relatedArtists: [Artist] = []
     @Published var isMostPlayedExpanded = false
     @Published var isAlbumsExpanded = false
+    @Published var isToastPresented = false
+    @Published var isOptionsSheetPresented = false
 
     // MARK: - Coordinator actions
     var onDidTapTrackRow: PassthroughSubject<Track, Never>?
@@ -28,15 +30,19 @@ final class ArtistViewModel: ObservableObject, Equatable {
     
     // MARK: - Public properties
     let artist: Artist
+    var options: [OptionRow] = []
+    var toastMessage: String = .empty
     
     // MARK: - Private properties
     private let musicDetailsService: MusicDetailsService
+    private let queueManager: QueueManager
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Class lifecycle
-    init(artist: Artist, musicDetailsService: MusicDetailsService) {
+    init(artist: Artist, musicDetailsService: MusicDetailsService, queueManager: QueueManager) {
         self.artist = artist
         self.musicDetailsService = musicDetailsService
+        self.queueManager = queueManager
         
         fetchTopTracks()
         fetchAlbums()
@@ -67,11 +73,26 @@ extension ArtistViewModel {
     }
     
     func trackOptionsTapped(for track: Track) {
-        
+        options = [addTrackToQueueOption(track)]
+        withAnimation {
+            isOptionsSheetPresented = true
+        }
     }
     
-    func albumOptionsTapped(for album: Album) {
+    func addTrackToQueueOption(_ track: Track) -> OptionRow {
+        let addToQueueSubject = PassthroughSubject<Void, Never>()
         
+        addToQueueSubject
+            .sink { [weak self] in
+                self?.queueManager.append(track)
+                self?.toastMessage = "\(track.name) \(String.Shared.addedToQueue)"
+                withAnimation {
+                    self?.isToastPresented = true
+                }
+            }
+            .store(in: &cancellables)
+        
+        return OptionRow.addToQueue(action: addToQueueSubject)
     }
 }
 

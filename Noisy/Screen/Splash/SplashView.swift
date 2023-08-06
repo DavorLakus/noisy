@@ -12,12 +12,12 @@ struct SplashView: View {
 
     var body: some View {
         ZStack(alignment: .center) {
-            Color.green200.ignoresSafeArea()
+            Color.green400.ignoresSafeArea()
 
             VStack(alignment: .center, spacing: Constants.margin) {
                 Text(viewModel.title)
-                    .font(.nunitoBold(size: 24))
-                    .foregroundColor(.cream50)
+                    .font(.nunitoBold(size: 36))
+                    .foregroundColor(.yellow100)
                     .frame(width: 264, alignment: .leading)
             }
         }

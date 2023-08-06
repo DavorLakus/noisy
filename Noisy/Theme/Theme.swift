@@ -21,16 +21,16 @@ private extension Theme {
         UITabBar.appearance().shadowImage = UIImage()
         UITabBar.appearance().backgroundImage = UIImage()
         UITabBar.appearance().isTranslucent = true
-        UITabBar.appearance().backgroundColor = UIColor(Color.appBackground)
-        UITabBar.appearance().unselectedItemTintColor = UIColor(Color.gray400)
+        UITabBar.appearance().backgroundColor = UIColor(Color.orange100)
+        UITabBar.appearance().unselectedItemTintColor = UIColor(Color.gray600)
         
-        let appearance = UITabBarAppearance()
-        appearance.shadowColor = UIColor(Color.gray300)
-        appearance.shadowImage = UIImage(named: "tab-shadow")?.withRenderingMode(.alwaysTemplate)
-        appearance.backgroundColor = UIColor(Color.appBackground)
-
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
+//        let appearance = UITabBarAppearance()
+//        appearance.shadowColor = UIColor(Color.red)
+//        appearance.shadowImage = UIImage(named: "tab-shadow")?.withRenderingMode(.alwaysTemplate)
+//        appearance.backgroundColor = UIColor(Color.yellow300)
+//
+//        UITabBar.appearance().standardAppearance = appearance
+//        UITabBar.appearance().scrollEdgeAppearance = appearance
     }
     
     func setupNavigationBarAppearance() {

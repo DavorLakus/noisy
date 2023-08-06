@@ -32,7 +32,7 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
     internal var playlistsViewModelStack = Stack<PlaylistsViewModel>()
     
     internal var onDidTapPlayAllButton = PassthroughSubject<[Track], Never>()
-    internal var onDidTapPlayerButton = PassthroughSubject<Track, Never>()
+    internal var onDidTapTrackRow = PassthroughSubject<Track, Never>()
     internal var musicDetailsService: MusicDetailsService
     internal var cancellables = Set<AnyCancellable>()
     internal var queueManager: QueueManager
@@ -41,7 +41,7 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
     private let playerService: PlayerService
     
     // MARK: - Private propeties
-    private lazy var playerViewModel = PlayerViewModel(queueManager: queueManager)
+    private lazy var playerViewModel = PlayerViewModel(musicDetailsService: musicDetailsService, queueManager: queueManager)
     private var optionsViewModel: OptionsViewModel?
     private var queueViewModel: QueueViewModel?
     
@@ -145,6 +145,18 @@ extension PlayerCoordinator {
         playerViewModel.onDidTapQueueButton
             .sink { [weak self] in
                 self?.push(.queue)
+            }
+            .store(in: &cancellables)
+        
+        playerViewModel.onDidTapArtistButton
+            .sink { [weak self] artist in
+                self?.push(.artist(artist))
+            }
+            .store(in: &cancellables)
+        
+        playerViewModel.onDidTapAlbumButton
+            .sink { [weak self] album in
+                self?.push(.album(album))
             }
             .store(in: &cancellables)
     }

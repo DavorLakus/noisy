@@ -10,10 +10,24 @@ import SwiftUI
 struct PlayerView: View {
     @ObservedObject var viewModel: PlayerViewModel
     @State var albumWidth: CGFloat = 0
+    @State var detents = Set<PresentationDetent>()
     
     var body: some View {
-        bodyView()
-            .toolbar(content: toolbarContent)
+        ZStack {
+            Color.appBackground.ignoresSafeArea()
+                .circleOverlay(xOffset: 0.3, yOffset: -0.4, frameMultiplier: 1.7, color: .mint600)
+                .circleOverlay(xOffset: -0.8, yOffset: 0.8, color: .purple100)
+                .circleOverlay(xOffset: 0.3, yOffset: 0.3, frameMultiplier: 1, color: .yellow100)
+            
+            bodyView()
+                .toolbar(content: toolbarContent)
+                .sheet(isPresented: $viewModel.isOptionsSheetPresented) {
+                    OptionsView(isPresented: $viewModel.isOptionsSheetPresented, options: viewModel.options)
+                        .readSize { detents = [.height($0.height)] }
+                        .presentationDetents(detents)
+                        .toast(isPresented: $viewModel.isToastPresented, message: viewModel.toastMessage)
+                }
+        }
     }
 }
 
