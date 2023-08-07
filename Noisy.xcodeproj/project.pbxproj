@@ -37,6 +37,7 @@
 		41B647802A38912200C1485C /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B6477F2A38912200C1485C /* Token.swift */; };
 		41B647832A389FC300C1485C /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B647822A389FC300C1485C /* Profile.swift */; };
 		41BBFD652A8182C300F4A7D3 /* CircleOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41BBFD642A8182C300F4A7D3 /* CircleOverlay.swift */; };
+		41BBFD672A81918100F4A7D3 /* SpotifyErrorAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41BBFD662A81918100F4A7D3 /* SpotifyErrorAlert.swift */; };
 		41D3A29B2A31E141000AC6FE /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D3A29A2A31E141000AC6FE /* DiscoverView.swift */; };
 		41D3A29D2A31E152000AC6FE /* DiscoverViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D3A29C2A31E152000AC6FE /* DiscoverViewModel.swift */; };
 		41D3A29F2A31E18A000AC6FE /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D3A29E2A31E18A000AC6FE /* SearchView.swift */; };
@@ -190,6 +191,7 @@
 		41B6477F2A38912200C1485C /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
 		41B647822A389FC300C1485C /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		41BBFD642A8182C300F4A7D3 /* CircleOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleOverlay.swift; sourceTree = "<group>"; };
+		41BBFD662A81918100F4A7D3 /* SpotifyErrorAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyErrorAlert.swift; sourceTree = "<group>"; };
 		41D3A29A2A31E141000AC6FE /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
 		41D3A29C2A31E152000AC6FE /* DiscoverViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverViewModel.swift; sourceTree = "<group>"; };
 		41D3A29E2A31E18A000AC6FE /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
@@ -448,6 +450,7 @@
 			isa = PBXGroup;
 			children = (
 				41DE39D72A6438A50048CB51 /* AlertView.swift */,
+				41BBFD662A81918100F4A7D3 /* SpotifyErrorAlert.swift */,
 				41DE39D92A6438A90048CB51 /* AlertViewModel.swift */,
 			);
 			path = Alert;
@@ -1094,6 +1097,7 @@
 				41E0FB4A2A66A39400991D31 /* MusicDetailsCoordinatorProtocol.swift in Sources */,
 				41E0FB5E2A679A1500991D31 /* MusicDetailsService.swift in Sources */,
 				41F8F5272A26436300F7A2B8 /* MainCoordinator.swift in Sources */,
+				41BBFD672A81918100F4A7D3 /* SpotifyErrorAlert.swift in Sources */,
 				41E0FB802A67E09E00991D31 /* Stack.swift in Sources */,
 				41F8F5982A27434E00F7A2B8 /* Colors.swift in Sources */,
 				41D3A29B2A31E141000AC6FE /* DiscoverView.swift in Sources */,

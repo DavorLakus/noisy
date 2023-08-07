@@ -54,12 +54,12 @@ struct RandomCircleOverlay<Content: View>: View {
     let colors: [Color]
     var content: () -> Content
     
-    internal init(colors: [Color], content: @escaping () -> Content) {
+    internal init(colors: [Color], maxFrameMultiplier: CGFloat = 1.75, content: @escaping () -> Content) {
         self.width = .zero
         xOffsets = [CGFloat](repeating: 0.0, count: colors.count).map { $0 + CGFloat.random(in: -0.5...0.5) }
 
         yOffsets = [CGFloat](repeating: 0.0, count: colors.count).map { $0 + CGFloat.random(in: -0.5...0.5) }
-        frameMultipliers = [CGFloat](repeating: 0.0, count: colors.count).map { $0 + CGFloat.random(in: 0.75...1.75) }
+        frameMultipliers = [CGFloat](repeating: 0.0, count: colors.count).map { $0 + CGFloat.random(in: 0.75...maxFrameMultiplier) }
         self.colors = colors
         self.content = content
     }
@@ -99,8 +99,8 @@ extension View {
         }
     }
     
-    func randomCirclesOverlay(count: Int) -> some View {
-        RandomCircleOverlay(colors: Pastel.randomPastelColors(count: count)) {
+    func randomCirclesOverlay(count: Int, maxFrameMultiplier: CGFloat = 1.75) -> some View {
+        RandomCircleOverlay(colors: Pastel.randomPastelColors(count: count), maxFrameMultiplier: maxFrameMultiplier) {
             self
         }
     }

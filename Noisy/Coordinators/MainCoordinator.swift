@@ -22,6 +22,8 @@ final class MainCoordinator: CoordinatorProtocol {
     // MARK: - Published properties
     @Published var flow: Flow = .splash
     @Published var isLoading = false
+    @Published var isSpotifyAlertPresented = false
+    @Published var spotifyError: SpotifyError?
     @Published var state: AppState = .loaded
     
     // MARK: - Private properties
@@ -65,8 +67,8 @@ final class MainCoordinator: CoordinatorProtocol {
     }
 }
 
+// MARK: - App state
 extension MainCoordinator {
-    
     func bindAppState() {
         NetworkingManager.state
             .sink { [weak self] state in
@@ -94,6 +96,15 @@ extension MainCoordinator {
                 }
             }
             .store(in: &cancellables)
+        
+        NetworkingManager.showSpotifyError
+            .sink { [weak self] error in
+                withAnimation {
+                    self?.spotifyError = error
+                    self?.isSpotifyAlertPresented = true
+                }
+            }
+            .store(in: &cancellables)
     }
     
     func attemptRefreshToken() {
@@ -115,8 +126,8 @@ extension MainCoordinator {
     }
 }
 
+// MARK: - Flows
 extension MainCoordinator {
-
     func showSplashView() -> some View {
         let viewModel = SplashViewModel()
         let view = SplashView(viewModel: viewModel)
@@ -141,6 +152,7 @@ extension MainCoordinator {
     }
 }
 
+// MARK: - Coordinator binding
 extension MainCoordinator {
     func bindLoginCoordinator() {
         loginCoordinator = LoginCoordinator(loginService: loginSerice)

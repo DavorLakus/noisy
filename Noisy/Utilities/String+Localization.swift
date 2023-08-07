@@ -54,6 +54,8 @@ extension String {
     }
     
     struct Shared {
+        static let ok = "OK"
+        static let errorTitle = "Error"
         static let artists = "artists"
         static let tracks = "tracks"
         static let genres = "genres"

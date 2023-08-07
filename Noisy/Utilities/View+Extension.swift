@@ -56,7 +56,10 @@ extension View {
     func alert<Alert: View>(isPresented: Binding<Bool>, alert: @escaping  () -> Alert) -> some View {
         ZStack {
             self
-            alert()
+            if isPresented.wrappedValue {
+                alert()
+                    .ignoresSafeArea()
+            }
         }
         .animation(.easeInOut, value: isPresented.wrappedValue)
     }

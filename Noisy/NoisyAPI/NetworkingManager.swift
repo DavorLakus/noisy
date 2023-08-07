@@ -10,6 +10,7 @@ import SwiftUI
 
 class NetworkingManager {
     public static let showError = PassthroughSubject<NoisyHTTPRouter, Never>()
+    public static let showSpotifyError = PassthroughSubject<SpotifyError, Never>()
     public static let unauthorizedAccess = PassthroughSubject<Void, Never>()
     public static let invalidToken = PassthroughSubject<Void, Never>()
     public static let state = CurrentValueSubject<AppState, Never>(.loaded)
@@ -52,6 +53,10 @@ class NetworkingManager {
             if case .token = router,
                response.statusCode == 400 {
                 unauthorizedAccess.send()
+            }
+            
+            if let error = try? JSONDecoder().decode(SpotifyErrorResponse.self, from: output.data) {
+                showSpotifyError.send(error.error)
             }
 //            throw NetworkError.badURLResponse(router: router, statusCode: response.statusCode)
         }
@@ -96,4 +101,15 @@ class NetworkingManager {
             break
         }
     }
+}
+
+struct SpotifyErrorResponse: Codable {
+    let error: SpotifyError
+}
+
+struct SpotifyError: Codable, Identifiable {
+    let status: Int
+    let message: String
+    
+    var id: Int { status }
 }
