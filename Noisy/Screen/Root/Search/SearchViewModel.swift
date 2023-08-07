@@ -20,14 +20,6 @@ enum SearchFilterOption: Identifiable, CaseIterable {
 }
 
 final class SearchViewModel: ObservableObject {
-    
-    // MARK: - Coordinator actions
-    let onDidTapProfileButton = PassthroughSubject<Void, Never>()
-    var onDidSelectTrackRow: PassthroughSubject<Track, Never>?
-    let onDidTapArtistRow = PassthroughSubject<Artist, Never>()
-    let onDidTapAlbumRow = PassthroughSubject<Album, Never>()
-    let onDidTapPlaylistRow = PassthroughSubject<Playlist, Never>()
-    
     // MARK: - Published properties
     @Published var searchIsActive = false
     @Published var query = String.empty
@@ -40,6 +32,13 @@ final class SearchViewModel: ObservableObject {
     @Published var albums: [Album] = []
     @Published var playlists: [Playlist] = []
     @Published var state: AppState = .loaded
+    
+    // MARK: - Coordinator actions
+    let onDidTapProfileButton = PassthroughSubject<Void, Never>()
+    var onDidSelectTrackRow: PassthroughSubject<Track, Never>?
+    let onDidTapArtistRow = PassthroughSubject<Artist, Never>()
+    let onDidTapAlbumRow = PassthroughSubject<Album, Never>()
+    let onDidTapPlaylistRow = PassthroughSubject<Playlist, Never>()
     
     // MARK: - Public properties
     var profile: Profile? {

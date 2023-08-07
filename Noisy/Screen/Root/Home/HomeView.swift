@@ -14,15 +14,14 @@ struct HomeView: View {
     
     var body: some View {
         ZStack(alignment: .top) {
-            Color.appBackground.ignoresSafeArea(edges: .top)
+            Color.appBackground
+                .circleOverlay(xOffset: -0.5, yOffset: -0.2, frameMultiplier: 1.0, color: .mint600)
                 .circleOverlay(xOffset: -0.8, yOffset: 0.8)
             
-            ZStack(alignment: .top) {
-                bodyView()
-                headerView()
-            }
-            .ignoresSafeArea(edges: .top)
+            bodyView()
+            headerView()
         }
+        .ignoresSafeArea(edges: .top)
         .toolbar(.hidden, for: .navigationBar)
         .onAppear(perform: viewModel.viewDidAppear)
         .sheet(isPresented: $viewModel.isOptionsSheetPresented) {
@@ -36,34 +35,6 @@ struct HomeView: View {
 
 // MARK: - Body components
 private extension HomeView {
-    func headerView() -> some View {
-        HStack {
-            Spacer()
-            Button {
-                viewModel.profileButtonTapped()
-            } label: {
-                AsyncImage(url: URL(string: viewModel.profile?.images.first?.url ?? .empty)) { image in
-                    image.resizable()
-                } placeholder: {
-                    Image.Home.profile.resizable()
-                }
-                .scaledToFit()
-                .cornerRadius(18)
-                .frame(width: 36, height: 36)
-            }
-            .background {
-                Circle()
-                    .fill(Color.yellow300)
-                    .shadow(color: .gray500, radius: 2)
-//                    .overlay { Circle().stroke(Color.gray400) }
-                    .frame(width: 160, height: 160)
-                    .offset(x: 20, y: -30)
-            }
-        }
-        .padding(Constants.margin)
-        .padding(.top, 40)
-    }
-    
     func bodyView() -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Constants.margin) {
@@ -71,6 +42,7 @@ private extension HomeView {
                 topTracksAccordion()
                 topArtistsAccordion()
                 playlistsAccordion()
+                Spacer(minLength: 80)
             }
             .padding(.vertical, Constants.margin)
         }
@@ -99,17 +71,33 @@ extension HomeView {
     }
 }
 
-// MARK: - ToolbarContentBuilder
+// MARK: - Header view
 private extension HomeView {
-    @ToolbarContentBuilder
-    func leadingTitle() -> some ToolbarContent {
-        ToolbarItem(placement: .navigationBarLeading) {
-            if let name = viewModel.profile?.displayName {
-                Text("\(String.Home.welcome) \(name)")
-                    .foregroundColor(.gray800)
-                    .font(.nunitoBold(size: 24))
+    func headerView() -> some View {
+        HStack {
+            Spacer()
+            Button {
+                viewModel.profileButtonTapped()
+            } label: {
+                AsyncImage(url: URL(string: viewModel.profile?.images.first?.url ?? .empty)) { image in
+                    image.resizable()
+                } placeholder: {
+                    Image.Home.profile.resizable()
+                }
+                .scaledToFit()
+                .cornerRadius(18)
+                .frame(width: 36, height: 36)
+            }
+            .background {
+                Circle()
+                    .fill(Color.yellow300)
+                    .shadow(color: .gray500, radius: 2)
+                    .frame(width: 160, height: 160)
+                    .offset(x: 20, y: -30)
             }
         }
+        .padding(Constants.margin)
+        .padding(.top, 40)
     }
     
 }

@@ -24,10 +24,10 @@ struct LargeButton: View {
         Button(action: action) {
             Text(title)
                 .foregroundColor(foregroundColor)
-                .font(.nunitoSemiBold(size: 16))
+                .font(.nunitoBold(size: 17))
                 .frame(maxWidth: .infinity)
         }
-        .padding(12)
+        .padding(16)
         .cardBackground(backgroundColor: backgroundColor, borderColor: .gray400, hasShadow: false)
     }
 }

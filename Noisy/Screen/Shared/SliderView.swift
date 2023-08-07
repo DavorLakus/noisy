@@ -27,11 +27,11 @@ struct SliderView: View {
             HStack(spacing: Constants.smallSpacing) {
                 Text("\(Int(min))")
                     .font(.nunitoRegular(size: 12))
-                    .foregroundColor(.gray500)
+                    .foregroundColor(.gray700)
                 Slider(value: $value, in: min...max)
                 Text("\(Int(max))")
                     .font(.nunitoRegular(size: 12))
-                    .foregroundColor(.gray500)
+                    .foregroundColor(.gray700)
             }
         }
     }

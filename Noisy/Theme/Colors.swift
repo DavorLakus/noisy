@@ -50,3 +50,32 @@ extension Color {
     static let yellow300 = Color("yellow300")
     static let yellow400 = Color("yellow400")
 }
+
+enum Pastel: CaseIterable {
+    case yellow
+    case orange
+    case purple
+    case mint
+    
+    var color: Color {
+        switch self {
+        case .yellow:
+            return .yellow100
+        case .orange:
+            return .orange100
+        case .purple:
+            return .purple900.opacity(0.7)
+        case .mint:
+            return .mint600
+        }
+    }
+    
+    static func randomPastelColors(count: Int) -> [Color] {
+        [Color](repeating: .white, count: count)
+            .compactMap { _ in
+                Pastel.allCases.map {
+                    $0.color.opacity(Double.random(in: 0.55...0.9))
+                }.randomElement()
+            }
+    }
+}

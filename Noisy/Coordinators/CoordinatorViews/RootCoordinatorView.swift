@@ -29,7 +29,10 @@ struct RootCoordinatorView: View {
         }
         .sheet(isPresented: $coordinator.isProfileDrawerPresented) {
             coordinator.presentProfileView()
-                .readSize { detents = [.height($0.height)] }
+                .readSize {
+                    print($0.height)
+                    detents = [.height($0.height)]
+                }
                 .presentationDetents(detents)
         }
         .alert(isPresented: $coordinator.isAlertPresented, alert: coordinator.presentAlertView)
@@ -40,7 +43,7 @@ struct RootCoordinatorView: View {
 
 extension View {
     func miniPlayerView<Content: View>(_ miniPlayer: () -> Content) -> some View {
-        VStack(spacing: .zero) {
+        ZStack(alignment: .bottom) {
             self
             miniPlayer()
         }

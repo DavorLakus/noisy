@@ -85,7 +85,7 @@ extension PlayerView {
                 .background {
                     Color.appBackground
                         .cornerRadius(Constants.smallCornerRadius)
-                        .shadow(radius: 2)
+                        .shadow(radius: 8)
                 }
             trackTitleView()
             controlsView()

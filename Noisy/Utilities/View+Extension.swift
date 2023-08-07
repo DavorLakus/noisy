@@ -269,12 +269,6 @@ extension View {
         }
     }
     
-    func circleOverlay(xOffset: CGFloat, yOffset: CGFloat, frameMultiplier: CGFloat = 2, color: Color = .yellow300) -> some View {
-        CircleOverlay(xOffset: xOffset, yOffset: yOffset, frameMultiplier: frameMultiplier, color: color) {
-            self
-        }
-    }
-    
     func dragGesture(offset: Binding<CGFloat>, action: @escaping () -> Void) -> some Gesture {
         DragGesture(minimumDistance: 30, coordinateSpace: .local)
             .onChanged { dragValue in
@@ -297,44 +291,4 @@ extension View {
                 }
             }
     }
-}
-
-struct CircleOverlay<Content: View>: View {
-    @State var width: CGFloat = .zero
-    let xOffset: CGFloat
-    let yOffset: CGFloat
-    let frameMultiplier: CGFloat
-    let color: Color
-    var content: () -> Content
-    
-    internal init(xOffset: CGFloat, yOffset: CGFloat, frameMultiplier: CGFloat, color: Color, content: @escaping () -> Content) {
-        self.width = .zero
-        self.xOffset = xOffset
-        self.yOffset = yOffset
-        self.frameMultiplier = frameMultiplier
-        self.color = color
-        self.content = content
-    }
-    
-    var body: some View {
-        content()
-            .readSize { size in
-                withAnimation {
-                    width = size.width
-                }
-            }
-            .onAppear {
-                withAnimation {
-                    width /= frameMultiplier
-                    width *= frameMultiplier
-                }
-            }
-            .overlay {
-                Circle()
-                    .fill(color)
-                    .frame(width: width * frameMultiplier, height: width * frameMultiplier)
-                    .offset(x: width * xOffset, y: width * yOffset)
-            }
-    }
-    
 }

@@ -13,15 +13,14 @@ struct DiscoverView: View {
     
     var body: some View {
         ZStack(alignment: .top) {
-            Color.appBackground.ignoresSafeArea(edges: .top)
-                .circleOverlay(xOffset: -0.8, yOffset: 0.8)
+            Color.appBackground.ignoresSafeArea()
+                .circleOverlay(xOffset: -0.6, yOffset: -0.4, frameMultiplier: 1.0, color: .mint600)
+                .circleOverlay(xOffset: 0.7, yOffset: 0.6, color: .purple900.opacity(0.7))
             
-            ZStack(alignment: .top) {
-                bodyView()
-                headerView()
-            }
-            .ignoresSafeArea(edges: .top)
+            bodyView()
+            headerView()
         }
+        .ignoresSafeArea(edges: .top)
         .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $viewModel.isOptionsSheetPresented) {
             OptionsView(isPresented: $viewModel.isOptionsSheetPresented, options: viewModel.options)
@@ -57,7 +56,7 @@ extension DiscoverView {
             }
             .background {
                 Circle()
-                    .fill(Color.appBackground)
+                    .fill(Color.yellow300)
                     .shadow(color: .gray500, radius: 2)
                     .frame(width: 160, height: 160)
                     .offset(x: 20, y: -30)
@@ -68,44 +67,74 @@ extension DiscoverView {
     }
     
     func bodyView() -> some View {
-        ZStack {
-            Color.appBackground.ignoresSafeArea()
-                .circleOverlay(xOffset: 0.7, yOffset: 0.6, color: .purple900)
-            
             ScrollView {
                 VStack {
-                    Spacer(minLength: 120)
-                    CurrentSeedSelectionView(viewModel: viewModel)
-                    LargeButton(foregroundColor: .appBackground, backgroundColor: .purple600, title: .Discover.manageSeeds, action: viewModel.manageSeedsButtonTapped)
-                    LargeButton(foregroundColor: .appBackground, backgroundColor: .orange400, title: .Discover.changeSeedParameters, action: viewModel.changeSeedParametersButtonTapped)
-                    if viewModel.recommendedTracks.isEmpty {
-                        Spacer()
-                    } else {
-                        SliderView(value: $viewModel.limit)
-                        recommendedTracks()
-                    }
+                    Spacer(minLength: 140)
+                    seedSelectionView()
+
+                    recommendationResultsView()
+                    Spacer(minLength: 80)
                 }
-                .padding(Constants.margin)
             }
             .refreshable(action: viewModel.refreshToggled)
+    }
+    
+    func seedSelectionView() -> some View {
+        Group {
+            CurrentSeedSelectionView(viewModel: viewModel)
+            LargeButton(foregroundColor: .appBackground, backgroundColor: .purple600, title: .Discover.manageSeeds, action: viewModel.manageSeedsButtonTapped)
+            LargeButton(foregroundColor: .appBackground, backgroundColor: .orange400, title: .Discover.changeSeedParameters, action: viewModel.changeSeedParametersButtonTapped)
         }
+        .padding(.horizontal, Constants.margin)
+    }
+    
+    @ViewBuilder
+    func recommendationResultsView() -> some View {
+        if viewModel.recommendedTracks.isEmpty {
+            initialView()
+        } else {
+            recommendedTracks()
+        }
+    }
+    
+    func initialView() -> some View {
+        VStack {
+            LinearGradient(gradient: Gradient(colors: [.orange400, .yellow300, .white]), startPoint: .top, endPoint: .bottom)
+                .mask {
+                    Image.Shared.sunDust
+                        .resizable()
+                        .scaledToFit()
+                }
+                .frame(width: Constants.mediumIconSize, height: Constants.mediumIconSize)
+            
+            Text(String.Discover.initialResultsMessage)
+                .foregroundColor(.white)
+                .font(.nunitoBold(size: 17))
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 160)
+        }
+        .padding(.top, Constants.mediumIconSize)
     }
 }
 
 // MARK: - Recommended tracks
 extension DiscoverView {
     func recommendedTracks() -> some View {
-        VStack(alignment: .leading) {
-            Text(String.Search.tracks)
-                .font(.nunitoBold(size: 14))
-                .foregroundColor(.gray600)
+        VStack {
+            SliderView(value: $viewModel.limit)
             LazyVStack(spacing: 4) {
                 ForEach(Array(viewModel.recommendedTracks.enumerated()), id: \.offset) { enumeratedTrack in
                     TrackRow(track: enumeratedTrack, isEnumerated: false, action: viewModel.trackOptionsTapped)
-                        .background(.white)
                         .onTapGesture { viewModel.recommendedTrackRowSelected(enumeratedTrack.element) }
                 }
             }
+        }
+        .padding(Constants.margin)
+        .padding(.bottom, 50)
+        .background {
+            Color.appBackground
+                .opacity(0.5)
+                .blur(radius: 15)
         }
     }
 }

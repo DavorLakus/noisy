@@ -15,7 +15,7 @@ struct CurrentSeedSelectionView: View {
         VStack(alignment: .leading) {
             Text(title)
                 .font(.nunitoBold(size: 16))
-                .foregroundColor(viewModel.hasAnySeeds ? .green300 : .green500)
+                .foregroundColor(.gray700)
                 .frame(maxWidth: .infinity)
             
             if !viewModel.seedArtists.isEmpty {
@@ -42,7 +42,7 @@ struct CurrentSeedSelectionView: View {
                 }
             }
         }
-        .padding(Constants.smallSpacing)
-        .cardBackground(backgroundColor: viewModel.hasAnySeeds ? .yellow100 : .yellow200, borderColor: .gray400, hasShadow: false)
+        .padding(12)
+        .cardBackground(backgroundColor: .yellow300.opacity(0.9), borderColor: .gray400, hasShadow: false)
     }
 }

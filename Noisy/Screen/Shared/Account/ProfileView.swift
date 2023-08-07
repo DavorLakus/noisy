@@ -22,6 +22,7 @@ extension ProfileView {
     func bodyView() -> some View {
         ZStack(alignment: .topTrailing) {
             Color.appBackground.ignoresSafeArea()
+                .randomCirclesOverlay(with: [.yellow300.opacity(0.9)])
             
             VStack(spacing: .zero) {
                 closeButton()
@@ -66,7 +67,6 @@ extension ProfileView {
         }
         .padding(.vertical)
         .bottomBorder()
-        .background { Color.appBackground }
     }
     
     @ViewBuilder
@@ -78,7 +78,6 @@ extension ProfileView {
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background { Color.appBackground }
         .padding(16)
         .bottomBorder()
     }

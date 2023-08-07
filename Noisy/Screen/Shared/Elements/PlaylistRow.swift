@@ -48,7 +48,6 @@ struct PlaylistRow: View {
                 }
             }
         }
-        .background { Color.white }
         .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 }

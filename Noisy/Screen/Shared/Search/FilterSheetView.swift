@@ -23,7 +23,9 @@ struct FilterSheetView: View {
 private extension FilterSheetView {
     func bodyView() -> some View {
         ZStack(alignment: .topLeading) {
-            Color.green200.ignoresSafeArea()
+            Color.appBackground.ignoresSafeArea()
+                .randomCirclesOverlay(count: 3)
+                .opacity(0.9)
 
             VStack(spacing: 0) {
                 sheetHeader(title: .Search.searchOptions)
@@ -50,6 +52,12 @@ private extension FilterSheetView {
 
                 filterBody(options: SearchFilterOption.allCases.map(\.id))
             }
+//            .background {
+//                Color.appBackground
+//                    .opacity(0.3)
+//                    .blur(radius: 1)
+//                    .ignoresSafeArea()
+//            }
         }
     }
     

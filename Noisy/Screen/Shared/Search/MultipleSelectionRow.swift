@@ -18,7 +18,7 @@ struct MultipleSelectionRow: View {
             HStack {
                 Text(title.capitalized(with: .current))
                     .foregroundColor(.gray700)
-                    .font(.nunitoRegular(size: 20))
+                    .font(.nunitoSemiBold(size: 20))
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 (isSelected ? Image.Shared.checkboxFill : Image.Shared.checkbox)
@@ -29,7 +29,7 @@ struct MultipleSelectionRow: View {
             }
             .padding(.horizontal, 48)
             .padding(.vertical, Constants.spacing)
-            .background(Color.green200)
+            .background { Color.appBackground.opacity(0.01) }
         }
         .buttonStyle(.plain)
     }

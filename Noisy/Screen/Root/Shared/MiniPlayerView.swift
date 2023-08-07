@@ -71,8 +71,11 @@ extension MiniPlayerView {
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 24)
-        .background { Color.orange400.shadow(radius: 2) }
-        .offset(y: -1)
+        .background {
+            Color.appBackground
+                .opacity(0.92)
+                .shadow(radius: 4)
+        }
         .onTapGesture(perform: viewModel.miniPlayerTapped)
     }
     

@@ -93,6 +93,7 @@ extension String {
         static let currentSeedSelection = "Current seed selection:"
         static let pleaseSelectSomeDiscoverySeeds = "Select some discovery seeds to get started"
         static let discover = "Discover"
+        static let initialResultsMessage = "Your recommendation results will appear here"
         static let includeAllSeeds = "Include all parameter seeds"
         static let removeAllSeeds = "Remove all parameter seeds"
         static let min = "min"
