@@ -26,7 +26,7 @@ final class QueueViewModel: ObservableObject {
     init(queueManager: QueueManager) {
         self.queueManager = queueManager
         
-       bindCurrentTime()
+        bindCurrentTime()
         getTracks()
     }
 }

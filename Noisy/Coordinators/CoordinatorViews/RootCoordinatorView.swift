@@ -30,7 +30,6 @@ struct RootCoordinatorView: View {
         .sheet(isPresented: $coordinator.isProfileDrawerPresented) {
             coordinator.presentProfileView()
                 .readSize {
-                    print($0.height)
                     detents = [.height($0.height)]
                 }
                 .presentationDetents(detents)

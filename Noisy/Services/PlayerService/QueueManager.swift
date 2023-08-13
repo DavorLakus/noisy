@@ -97,11 +97,16 @@ final class QueueManager: ObservableObject {
     }
     
     func onDidTapPreviousButton() {
-        if trackPosition.value < 1 {
-            play(track: state.previous())
+        if !isPlaying.value {
+            currentTrack.send(state.previous())
+            
         } else {
-            state.currentTime = .zero
-            play(track: state.currentTrack)
+            if trackPosition.value < 1 {
+                play(track: state.previous())
+            } else {
+                state.currentTime = .zero
+                play(track: state.currentTrack)
+            }
         }
     }
     
@@ -127,9 +132,18 @@ final class QueueManager: ObservableObject {
     }
     
     func bindPlayer() {
+        setPlayback()
         bindPeriodicTimeObserver()
         bindTimeControlStatus()
         bindItemDuration()
+    }
+    
+    func setPlayback() {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback)
+        } catch let error {
+            print(error.localizedDescription)
+        }
     }
 
     func bindTimeControlStatus() {

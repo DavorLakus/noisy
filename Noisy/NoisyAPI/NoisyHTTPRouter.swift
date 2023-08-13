@@ -14,6 +14,10 @@ enum NoisyHTTPRouter {
     case profile
     case myTop(type: String, count: Int, timeRange: String)
     case track(id: String)
+    case savedTracks(limit: Int, offset: Int)
+    case checkSavedTracks(ids: String)
+    case saveTracks(ids: String)
+    case removeTracks(ids: String)
     case artist(artistId: String)
     case album(albumId: String)
     case albumTracks(albumId: String, limit: Int, offset: Int)
@@ -33,7 +37,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize, .token, .refreshToken:
             return "accounts.spotify.com"
-        case .profile, .myTop, .track, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
+        case .profile, .myTop, .track, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
             return "api.spotify.com"
         }
     }
@@ -44,7 +48,7 @@ extension NoisyHTTPRouter: APIEndpoint {
             return .empty
         case .token, .refreshToken:
             return "/api"
-        case .profile, .myTop, .track, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
+        case .profile, .myTop, .track, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
             return "/v1"
         }
     }
@@ -59,6 +63,12 @@ extension NoisyHTTPRouter: APIEndpoint {
             return "/search"
         case .track(let id):
             return "/tracks/\(id)"
+        case .checkSavedTracks:
+            return "/me/tracks/contains"
+        case .saveTracks, .savedTracks:
+            return "/me/tracks"
+        case .removeTracks:
+            return "/me/tracks"
         case .recommendation:
             return "/recommendations"
         case .recommendationGenres:
@@ -90,10 +100,14 @@ extension NoisyHTTPRouter: APIEndpoint {
     
     public var method: HTTPMethod {
         switch self {
-        case .profile, .search, .recommendation, .recommendationGenres, .authorize, .myTop, .track, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .search, .recommendation, .recommendationGenres, .authorize, .myTop, .track, .savedTracks, .checkSavedTracks, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return .get
         case .token, .refreshToken:
             return .post
+        case .saveTracks:
+            return .put
+        case .removeTracks:
+            return .delete
         }
     }
     
@@ -101,7 +115,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize:
             return nil
-        case .profile, .search, .recommendation, .recommendationGenres, .myTop, .track, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .search, .recommendation, .recommendationGenres, .myTop, .track, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return authToken
         case .token, .refreshToken:
             return ["Content-Type" : "application/x-www-form-urlencoded"]
@@ -132,6 +146,16 @@ extension NoisyHTTPRouter: APIEndpoint {
                 URLQueryItem(name:"grant_type", value: "refresh_token"),
                 URLQueryItem(name:"refresh_token", value: refreshToken),
                 URLQueryItem(name:"client_id", value: APIConstants.clientID)
+            ]
+        case .savedTracks(let limit, let offset):
+            return [
+                URLQueryItem(name: "limit", value: "\(limit)"),
+                URLQueryItem(name: "offset", value: "\(offset)"),
+                URLQueryItem(name: "market", value: "HR")
+            ]
+        case .checkSavedTracks(ids: let ids), .saveTracks(ids: let ids), .removeTracks(ids: let ids):
+            return [
+                URLQueryItem(name: "ids", value: ids)
             ]
         case .search(let query, let type, let limit, let offset):
             return [

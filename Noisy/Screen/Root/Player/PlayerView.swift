@@ -31,49 +31,6 @@ struct PlayerView: View {
     }
 }
 
-struct CustomSlider: View {
-    @Binding var value: Double
-    let range: ClosedRange<Double>
-    @State var width: CGFloat = .zero
-    let isSliding: (Bool) -> Void
-    
-    var body: some View {
-        ZStack(alignment: .leading) {
-            RoundedRectangle(cornerRadius: 4)
-                .fill(Color.gray500)
-                .frame(height: 4)
-                .frame(maxWidth: .infinity)
-                .readSize { width = $0.width }
-            
-            RoundedRectangle(cornerRadius: 5)
-                .fill(Color.green400)
-                .frame(height: 5)
-                .frame(width: width * value / range.upperBound + 10, height: 5)
-            Circle()
-                .fill(Color.orange100)
-                .frame(width: 20, height: 20)
-                .padding(.trailing, 5)
-                .offset(x: width * value / range.upperBound)
-                .gesture(
-                    DragGesture()
-                        .onChanged { dragValue in
-                            isSliding(true)
-                            if (0...width).contains(dragValue.location.x) {
-                                withAnimation(.linear) {
-                                    value = dragValue.location.x / width * range.upperBound
-                                }
-                            }
-                        }
-                        .onEnded { _ in
-                            isSliding(false)
-                        }
-                )
-        }
-        .clipped()
-    }
-    
-}
-
 // MARK: - Body
 extension PlayerView {
     func bodyView() -> some View {
@@ -98,24 +55,26 @@ extension PlayerView {
     func trackTitleView() -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 8) {
-                Text("\(String.Track.name) \(viewModel.currentTrack?.name ?? .empty)")
+                Text("\(viewModel.currentTrack?.name ?? .empty)")
                     .font(.nunitoBold(size: 18))
+                    .foregroundColor(.gray700)
+                Text("\(viewModel.currentTrackArists())")
+                    .font(.nunitoSemiBold(size: 16))
                     .foregroundColor(.gray600)
-                Text("\(String.Track.artist) \(viewModel.currentTrack?.artists.first?.name ?? .empty)")
-                    .font(.nunitoRegular(size: 16))
-                    .foregroundColor(.gray500)
             }
             Spacer()
-            Image.Player.plus
-                .resizable()
-                .frame(width: 28, height: 28)
-                .foregroundColor(.gray600)
-                .background {
-                    Color.appBackground
-                        .cornerRadius(Constants.cornerRadius)
-                        .shadow(radius: 2)
-                }
-                .padding(.trailing, 20)
+            Button(action: viewModel.addToFavoritesButtonTapped) {
+                (viewModel.isSaved ? Image.Player.checkmarkFill : Image.Player.plus)
+                    .resizable()
+                    .frame(width: 28, height: 28)
+                    .foregroundColor(viewModel.isSaved ? .green500 : .gray600)
+                    .background {
+                        (viewModel.isSaved ? Color.yellow100 : Color.appBackground)
+                            .cornerRadius(Constants.cornerRadius)
+                            .shadow(radius: 2)
+                    }
+                    .padding(.trailing, 20)
+            }
         }
     }
     
@@ -133,7 +92,7 @@ extension PlayerView {
                     .fill(Color.gray300)
                     .frame(height: 2)
                 ZStack(alignment: .trailing) {
-                    CustomSlider(value: $viewModel.trackPosition,
+                    PlaybackSlider(value: $viewModel.trackPosition,
                                  range: (0...viewModel.trackMaxPosition)) { isSliding in
                         if isSliding {
                             self.viewModel.sliderState = .slideStarted
@@ -153,6 +112,7 @@ extension PlayerView {
                     .font(.nunitoRegular(size: 12))
                     .foregroundColor(.gray500)
             }
+            .animation(nil, value: viewModel.trackPosition)
         }
     }
     

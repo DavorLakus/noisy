@@ -8,23 +8,28 @@
 import SwiftUI
 
 struct SeedCard: View {
-    let title: String
-    let id: String
-    let background: Color
-    let action: (String) -> Void
+    let model: SeedCardModel
+    let cropTitle: Bool
     
     var body: some View {
         HStack {
-            Text(title)
+            Text(model.title)
                 .font(.nunitoBold(size: 14))
                 .foregroundColor(.gray700)
+                .lineLimit(cropTitle ? 1 : 0)
+            if let subtitle = model.subtitle {
+                Text(subtitle)
+                    .font(.nunitoSemiBold(size: 14))
+                    .foregroundColor(.gray600)
+                    .lineLimit(cropTitle ? 1 : 0)
+            }
             Image.Shared.close
                 .onTapGesture {
-                    action(id)
+                    model.action(model.id)
                 }
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 8)
-        .cardBackground(backgroundColor: background, borderColor: .gray700)
+        .cardBackground(backgroundColor: model.background, borderColor: .gray700, hasShadow: false)
     }
 }

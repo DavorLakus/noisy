@@ -24,7 +24,7 @@ extension PlaylistsView {
         ZStack {
             Color.yellow100.ignoresSafeArea()
             VStack {
-                Text("Playlist")
+                Text("Playlists")
             }
             .padding(Constants.margin)
         }

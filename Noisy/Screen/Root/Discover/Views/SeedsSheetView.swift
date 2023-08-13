@@ -9,78 +9,148 @@ import SwiftUI
 
 struct SeedsSheetView: View {
     @ObservedObject var viewModel: DiscoverViewModel
+    @State var isGenerateRandomSeedsExpanded = false
+    @Namespace var namespace
     let columns: [GridItem] = [
         GridItem(.flexible(), spacing: Constants.margin, alignment: nil),
         GridItem(.flexible(), spacing: Constants.margin, alignment: nil)
     ]
     
     var body: some View {
-        VStack {
-            HStack {
-                Spacer()
-                Button(action: viewModel.manageSeedsButtonTapped) {
-                    Text(String.Shared.done)
-                        .foregroundColor(.green500)
-                        .font(.nunitoBold(size: 18))
-                }
-            }
-            .padding([.horizontal, .top], Constants.margin)
-            
-            ScrollView {
-                VStack(alignment: .leading) {
-                    Text(String.Discover.seedsTitle)
-                        .font(.nunitoBold(size: 18))
-                        .foregroundColor(.gray800)
-                    Text(String.Discover.seedsSubtitle)
-                        .font(.nunitoSemiBold(size: 13))
-                        .foregroundColor(.gray500)
-                    
-                    CurrentSeedSelectionView(viewModel: viewModel)
-                    
-                }
-                .padding(.horizontal, Constants.margin)
-                
-                VStack(alignment: .leading, spacing: Constants.margin) {
-                    HStack {
-                        ForEach(SeedCategory.allCases, id: \.self) { seedCategory in
-                            Text(seedCategory.displayName)
-                                .padding(12)
-                                .font(viewModel.seedCategory == seedCategory ? .nunitoBold(size: 16) : .nunitoSemiBold(size: 16))
-                                .foregroundColor(viewModel.seedCategory == seedCategory ? .appBackground : .green500)
-                                .background {
-                                    if viewModel.seedCategory == seedCategory {
-                                        RoundedRectangle(cornerRadius: Constants.cornerRadius).fill(Color.green500)
-                                    }
-                                }
-                                .animation(nil, value: viewModel.seedCategory)
-                                .onTapGesture {
-                                    viewModel.seedCategorySelected(seedCategory)
-                                }
-                                .frame(maxWidth: .infinity)
-                        }
-                    }
-
-                    SearchBar(isActive: $viewModel.isSearchActive, query: $viewModel.query, placeholder: "\(String.Tabs.search) \(String(describing: viewModel.seedCategory))...")
-                    
-                    VStack {
-                        switch viewModel.seedCategory {
-                        case .artists:
-                            artistsSection()
-                        case .tracks:
-                            tracksSection()
-                        case .genres:
-                            genresSection()
-                        }
-                    }
-                }
-                .padding(.horizontal, Constants.margin)
-            }
-            .scrollDismissesKeyboard(.immediately)
+        VStack(spacing: Constants.margin) {
+            headerView()
+            generateRandomSeeds()
+            searchSection()
         }
     }
 }
 
 extension SeedsSheetView {
+    @ViewBuilder
+    func headerView() -> some View {
+        HStack {
+            Spacer()
+            Button(action: viewModel.manageSeedsButtonTapped) {
+                Text(String.Shared.done)
+                    .foregroundColor(.green500)
+                    .font(.nunitoBold(size: 18))
+            }
+        }
+        .padding([.horizontal, .top], Constants.margin)
+        VStack(alignment: .leading) {
+            Text(String.Discover.seedsTitle)
+                .font(.nunitoBold(size: 18))
+                .foregroundColor(.gray800)
+            Text(String.Discover.seedsSubtitle)
+                .font(.nunitoSemiBold(size: 13))
+                .foregroundColor(.gray500)
+            
+            CurrentSeedSelectionView(viewModel: viewModel)
+            
+        }
+        .padding(.horizontal, Constants.margin)
+    }
+    
+    func generateRandomSeeds() -> some View {
+        VStack {
+            HStack {
+                Button(action: viewModel.generateRandomSeedsTapped) {
+                    Text(String.Discover.generateRandomSeeds)
+                        .font(.nunitoBold(size: 17))
+                }
+                Button {
+                    
+                } label: {
+                    Image.Shared.info
+                        .foregroundColor(.green600)
+                }
+                
+                Spacer()
+                Button {
+                    withAnimation {
+                        isGenerateRandomSeedsExpanded.toggle()
+                    }
+                } label: {
+                    Image.Shared.chevronRight
+                        .rotationEffect(.degrees(isGenerateRandomSeedsExpanded ? 90 : .zero ))
+                }
+            }
+            if isGenerateRandomSeedsExpanded {
+                HStack {
+                    Text("For:")
+                        .font(.nunitoSemiBold(size: 14))
+                        .foregroundColor(.gray600)
+                    
+                    Button { viewModel.randomSeedCategorySelected(.artists) } label: {
+                        HStack {
+                            (viewModel.randomSeedCategory == .artists ? Image.Shared.checkboxFill : Image.Shared.checkbox)
+                            Text(String.Search.artists)
+                                .font(.nunitoSemiBold(size: 14))
+                                .foregroundColor(.gray600)
+                        }
+                    }
+                    
+                    Button { viewModel.randomSeedCategorySelected(.tracks) } label: {
+                        HStack {
+                            (viewModel.randomSeedCategory == .tracks ? Image.Shared.checkboxFill : Image.Shared.checkbox)
+                            Text(String.Search.tracks)
+                                .font(.nunitoSemiBold(size: 14))
+                                .foregroundColor(.gray600)
+
+                        }
+                    }
+                }
+            }
+        }
+        .padding(12)
+        .cardBackground(backgroundColor: .yellow300, borderColor: .gray600, hasShadow: false)
+        .padding(.horizontal, Constants.margin)
+    }
+    
+    func searchSection() -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: Constants.margin) {
+                HStack {
+                    ForEach(SeedCategory.allCases, id: \.self) { seedCategory in
+                        Text(seedCategory.displayName)
+                            .padding(12)
+                            .font(viewModel.seedCategory == seedCategory ? .nunitoBold(size: 16) : .nunitoSemiBold(size: 16))
+                            .foregroundColor(viewModel.seedCategory == seedCategory ? .appBackground : .green500)
+                            .background {
+                                if viewModel.seedCategory == seedCategory {
+                                    RoundedRectangle(cornerRadius: Constants.cornerRadius).stroke(Color.green600, lineWidth: 3)
+                                        .background {
+                                            RoundedRectangle(cornerRadius: Constants.cornerRadius).fill(Color.mint600)
+                                        }
+                                        .matchedGeometryEffect(id: String.Tabs.discover, in: namespace)
+                                }
+                            }
+                            .padding(3)
+                            .onTapGesture {
+                                viewModel.seedCategorySelected(seedCategory)
+                            }
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+
+                SearchBar(isActive: $viewModel.isSearchActive, query: $viewModel.query, placeholder: "\(String.Tabs.search) \(String(describing: viewModel.seedCategory))...")
+                
+                VStack {
+                    switch viewModel.seedCategory {
+                    case .artists:
+                        artistsSection()
+                    case .tracks:
+                        tracksSection()
+                    case .genres:
+                        genresSection()
+                    }
+                }
+            }
+            .padding(.horizontal, Constants.margin)
+        }
+        .scrollDismissesKeyboard(.immediately)
+    }
+    
     @ViewBuilder
     func tracksSection() -> some View {
         if !viewModel.tracks.isEmpty {

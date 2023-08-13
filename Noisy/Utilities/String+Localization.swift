@@ -18,6 +18,7 @@ extension String {
         static let codeVerifier = "code_verifier"
         static let refreshToken = "refresh_token"
         static let accessToken = "access_token"
+        static let tokenExpirationDate = "expiration_date"
         static let queueState = "queue_state"
     }
     
@@ -95,6 +96,7 @@ extension String {
         static let currentSeedSelection = "Current seed selection:"
         static let pleaseSelectSomeDiscoverySeeds = "Select some discovery seeds to get started"
         static let discover = "Discover"
+        static let generateRandomSeeds = "Generate random seeds"
         static let initialResultsMessage = "Your recommendation results will appear here"
         static let includeAllSeeds = "Include all parameter seeds"
         static let removeAllSeeds = "Remove all parameter seeds"

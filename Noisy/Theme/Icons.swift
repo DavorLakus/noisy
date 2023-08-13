@@ -57,6 +57,7 @@ extension Image {
         static let pause = Image(systemName: "pause")
         static let pauseCircle = Image(systemName: "pause.circle")
         static let plus = Image(systemName: "plus.app")
+        static let checkmarkFill: Image = Image(systemName: "checkmark.square.fill")
         static let previous = Image(systemName: "arrowtriangle.left")
         static let next = Image(systemName: "arrowtriangle.right")
         static let queue = Image(systemName: "list.triangle")

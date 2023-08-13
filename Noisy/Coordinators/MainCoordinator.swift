@@ -16,6 +16,15 @@ enum Flow: Equatable {
     static func isAuthorized() -> Self {
         UserDefaults.standard.string(forKey: .UserDefaults.accessToken) != nil ? .home() : .login()
     }
+    
+    static func isTokenValid() -> Bool {
+        if let expirationDateData = UserDefaults.standard.data(forKey: .UserDefaults.tokenExpirationDate),
+           let expirationDate = try? JSONDecoder().decode(Date.self, from: expirationDateData),
+            expirationDate > .now {
+            return true
+        }
+        return false
+    }
 }
 
 final class MainCoordinator: CoordinatorProtocol {
@@ -43,8 +52,8 @@ final class MainCoordinator: CoordinatorProtocol {
     
     // MARK: - Class lifecycle
     init() {
-        bindFlow()
         bindAppState()
+        bindFlow()
     }
     
     @ViewBuilder
@@ -91,6 +100,7 @@ extension MainCoordinator {
                 print("refresh token no longer valid, logging out")
                 UserDefaults.standard.set(nil, forKey: .UserDefaults.accessToken)
                 UserDefaults.standard.set(nil, forKey: .UserDefaults.refreshToken)
+                UserDefaults.standard.set(nil, forKey: .UserDefaults.tokenExpirationDate)
                 withAnimation {
                     self?.flow = .login()
                 }
@@ -107,14 +117,28 @@ extension MainCoordinator {
             .store(in: &cancellables)
     }
     
+    func setupFlow() {
+        if Flow.isTokenValid() {
+            flow = Flow.isAuthorized()
+        } else {
+            attemptRefreshToken()
+        }
+    }
+    
     func attemptRefreshToken() {
         if let refreshToken = UserDefaults.standard.string(forKey: .UserDefaults.refreshToken) {
             loginSerice.refreshToken(with: refreshToken)
                 .sink { [weak self] response in
                     UserDefaults.standard.set(response.accessToken, forKey: .UserDefaults.accessToken)
                     UserDefaults.standard.set(response.refreshToken, forKey: .UserDefaults.refreshToken)
+                    let expirationDate = Date.now.advanced(by: Double(response.expiresIn) - 60)
+                    if let expirateionDateData = try? JSONEncoder().encode(expirationDate) {
+                        UserDefaults.standard.set(expirateionDateData, forKey: .UserDefaults.tokenExpirationDate)
+                    }
+
                     withAnimation {
-                        self?.flow = .home()
+                        self?.rootCoordinator?.tokenDidRefresh.send()
+                        self?.setupFlow()
                     }
                 }
                 .store(in: &cancellables)
@@ -134,7 +158,7 @@ extension MainCoordinator {
 
         viewModel.onSplashAnimationDidEnd
             .sink { [weak self] in
-                self?.flow = Flow.isAuthorized()
+                self?.setupFlow()
             }
             .store(in: &cancellables)
 
@@ -171,6 +195,7 @@ extension MainCoordinator {
             .sink { [weak self] in
                 UserDefaults.standard.set(nil, forKey: .UserDefaults.accessToken)
                 UserDefaults.standard.set(nil, forKey: .UserDefaults.refreshToken)
+                UserDefaults.standard.set(nil, forKey: .UserDefaults.tokenExpirationDate)
                 self?.flow = .login()
             }
             .store(in: &cancellables)

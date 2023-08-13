@@ -56,6 +56,8 @@ final class DiscoverViewModel: ObservableObject {
     @Published var genres: [String] = []
     @Published var recommendedTracks: [Track] = []
     
+    @Published var isRandomSeedsSelectionExpanded = false
+    @Published var randomSeedCategory: SeedCategory = .artists
     @Published var seedCategory: SeedCategory = .artists
     @Published var isSearchActive = false
     @Published var query: String = .empty
@@ -65,14 +67,6 @@ final class DiscoverViewModel: ObservableObject {
     var onDidTapRecommendedTrackRow: PassthroughSubject<Track, Never>?
     let onDidTapArtistButton = PassthroughSubject<Artist, Never>()
     let onDidTapAlbumButton = PassthroughSubject<Album, Never>()
-    
-    // MARK: - Private properties
-    private let discoverService: DiscoverService
-    private let searchService: SearchService
-    private let queueManager: QueueManager
-    private var availableGenres: [String] = []
-    private var canAddSeedEntities: Bool { seedArtists.count + seedTracks.count + seedGenres.count <= 5 }
-    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Public properties
     var hasAnySeeds: Bool { !seedArtists.isEmpty || !seedTracks.isEmpty || !seedGenres.isEmpty }
@@ -85,13 +79,27 @@ final class DiscoverViewModel: ObservableObject {
         return try? JSONDecoder().decode(Profile.self, from: profile)
     }
     
+    // MARK: - Private properties
+    private var savedTracksLimit: Int = 10
+    private var savedTracksOffset: Int = .zero
+    private var savedTracksCount: Int = .zero
+    private let discoverService: DiscoverService
+    private let searchService: SearchService
+    private let musicDetailsService: MusicDetailsService
+    private let queueManager: QueueManager
+    private var availableGenres: [String] = []
+    private var canAddSeedEntities: Bool { seedArtists.count + seedTracks.count + seedGenres.count <= 5 }
+    private var cancellables = Set<AnyCancellable>()
+    
     // MARK: - Class lifecycle
-    init(discoverService: DiscoverService, searchService: SearchService, queueManager: QueueManager) {
+    init(discoverService: DiscoverService, searchService: SearchService, musicDetailsService: MusicDetailsService, queueManager: QueueManager) {
         self.discoverService = discoverService
         self.searchService = searchService
+        self.musicDetailsService = musicDetailsService
         self.queueManager = queueManager
         
         getGenres()
+        getSavedTracksCount()
         bind()
     }
 }
@@ -105,7 +113,8 @@ extension DiscoverViewModel {
         withAnimation {
             isSeedsSheetPresented.toggle()
         }
-        if !isSeedsSheetPresented {
+        if !isSeedsSheetPresented,
+           hasAnySeeds {
             discover()
         }
     }
@@ -114,9 +123,21 @@ extension DiscoverViewModel {
         withAnimation {
             isSeedParametersSheetPresented.toggle()
         }
-        if !isSeedParametersSheetPresented {
+        if !isSeedParametersSheetPresented,
+           hasAnySeeds {
             discover()
         }
+    }
+    
+    func generateRandomSeedsTapped() {
+        generateRandomSeeds()
+    }
+    
+    func randomSeedCategorySelected(_ category: SeedCategory) {
+        withAnimation {
+            randomSeedCategory = category
+        }
+        generateRandomSeeds()
     }
     
     func seedCategorySelected(_ category: SeedCategory) {
@@ -298,6 +319,43 @@ private extension DiscoverViewModel {
             .store(in: &cancellables)
     }
     
+    func getSavedTracksCount() {
+        musicDetailsService.getSavedTracks(limit: savedTracksLimit, offset: savedTracksOffset)
+            .sink { [weak self] response in
+                self?.savedTracksCount = response.total
+            }
+            .store(in: &cancellables)
+    }
+    
+    func generateRandomSeeds() {
+        resetSeeds()
+        switch randomSeedCategory {
+        case .artists:
+            (0..<5).forEach { _ in
+                musicDetailsService.getSavedTracks(limit: 1, offset: Int.random(in: (1...savedTracksCount)))
+                    .sink { [weak self] response in
+                        guard let self else { return }
+                        if let artist = response.items.map(\.track).first?.artists.first,
+                           !self.seedArtists.contains(artist) {
+                            self.seedArtists.append(artist)
+                        }
+                    }
+                    .store(in: &cancellables)
+            }
+        case .tracks:
+            (0..<5).forEach { _ in
+                musicDetailsService.getSavedTracks(limit: 1, offset: Int.random(in: (1...savedTracksCount)))
+                    .sink { [weak self] response in
+                        if let track = response.items.map(\.track).first {
+                            self?.seedTracks.append(track)
+                        }
+                    }
+                    .store(in: &cancellables)
+            }
+        default: break
+        }
+    }
+    
     func discover() {
         discoverService.discover(seedParameters: createDiscoverQueryParameters())
             .sink { [weak self] result in
@@ -306,6 +364,12 @@ private extension DiscoverViewModel {
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    func resetSeeds() {
+        seedArtists = []
+        seedTracks = []
+        seedGenres = []
     }
     
     func resetSearchResults() {
@@ -321,7 +385,6 @@ private extension DiscoverViewModel {
         let limit = 10
         if !query.isEmpty {
             if seedCategory != .genres {
-                print("searching for \(seedCategory.displayName)")
                 searchService.search(for: query, type: seedCategory.type, limit: limit, offset: .zero)
                     .sink { [weak self] searchResult in
                         if let tracksResponse = searchResult.tracks {

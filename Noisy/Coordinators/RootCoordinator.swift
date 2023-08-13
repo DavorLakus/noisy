@@ -28,6 +28,7 @@ final class RootCoordinator: CoordinatorProtocol {
     
     // MARK: - Public properties
     let onDidEnd = PassthroughSubject<Void, Never>()
+    let tokenDidRefresh = PassthroughSubject<Void, Never>()
     
     // MARK: - Services
     private let homeService: HomeService
@@ -37,9 +38,9 @@ final class RootCoordinator: CoordinatorProtocol {
     private let musicDetailsService: MusicDetailsService
     
     // MARK: - Coordinators
-    private lazy var homeCoordinator = HomeCoordinator(homeService: homeService, musicDetailsService: musicDetailsService, queueManager: queueManager)
-    private lazy var searchCoordinator = SearchCoordinator(searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
-    private lazy var discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce, searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
+    private var homeCoordinator: HomeCoordinator?
+    private var searchCoordinator: SearchCoordinator?
+    private var discoverCoordinator: DiscoverCoordinator?
     private var playerCoordinator: PlayerCoordinator?
     
     // MARK: - Private properties
@@ -70,16 +71,25 @@ final class RootCoordinator: CoordinatorProtocol {
 extension RootCoordinator {
 
     // Grafika muzike, statistike, itd.
+    @ViewBuilder
     func homeTab() -> some View {
-        homeCoordinator.start()
+        if let homeCoordinator {
+            homeCoordinator.start()
+        }
     }
     
+    @ViewBuilder
     func discoverTab() -> some View {
-        discoverCoordinator.start()
+        if let discoverCoordinator {
+            discoverCoordinator.start()
+        }
     }
     
+    @ViewBuilder
     func searchTab() -> some View {
-        searchCoordinator.start()
+        if let searchCoordinator {
+            searchCoordinator.start()
+        }
     }
     
     // možda music map
@@ -102,6 +112,7 @@ private extension RootCoordinator {
     }
     
     func bindHomeCoordinator() {
+        let homeCoordinator = HomeCoordinator(homeService: homeService, musicDetailsService: musicDetailsService, queueManager: queueManager, tokenDidRefresh: tokenDidRefresh)
         homeCoordinator.onDidTapProfileButton
             .sink { [weak self] in
                 self?.bindProfileViewModel()
@@ -119,9 +130,12 @@ private extension RootCoordinator {
                 self?.bindPlayerCoordinator(with: [track])
             }
             .store(in: &cancellables)
+        
+        self.homeCoordinator = homeCoordinator
     }
     
     func bindSearchCoordinator() {
+        let searchCoordinator = SearchCoordinator(searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
         searchCoordinator.onDidTapProfileButton
             .sink { [weak self] in
                 self?.bindProfileViewModel()
@@ -139,9 +153,11 @@ private extension RootCoordinator {
                 self?.bindPlayerCoordinator(with: [track])
             }
             .store(in: &cancellables)
+        self.searchCoordinator = searchCoordinator
     }
     
     func bindDiscoverCoordinator() {
+        let discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce, searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
         discoverCoordinator.onDidTapProfileButton
             .sink { [weak self] in
                 self?.bindProfileViewModel()
@@ -159,6 +175,7 @@ private extension RootCoordinator {
                 self?.bindPlayerCoordinator(with: [track])
             }
             .store(in: &cancellables)
+        self.discoverCoordinator = discoverCoordinator
     }
 }
 

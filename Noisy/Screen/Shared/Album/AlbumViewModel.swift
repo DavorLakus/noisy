@@ -35,6 +35,8 @@ final class AlbumViewModel: ObservableObject, Equatable {
     // MARK: - Private properties
     private var offset: Int = .zero
     private let limit = 50
+    private var fullTrackObjects = CurrentValueSubject<[Track], Never>([])
+    private var addToQueueCancellable: AnyCancellable?
     private let musicDetailsService: MusicDetailsService
     private let queueManager: QueueManager
     private var cancellables = Set<AnyCancellable>()
@@ -67,12 +69,7 @@ extension AlbumViewModel {
         
         addToQueueSubject
             .sink { [weak self] in
-                guard let self else { return }
-                self.queueManager.append(self.tracks)
-                self.toastMessage = "\(String.Shared.album) \(String.Shared.addedToQueue)"
-                withAnimation {
-                    self.isToastPresented = true
-                }
+                self?.addAllTracksToQueue()
             }
             .store(in: &cancellables)
         
@@ -128,5 +125,47 @@ private extension AlbumViewModel {
                 self.tracks += result.items
             }
             .store(in: &cancellables)
+    }
+    
+    func addAllTracksToQueue() {
+        tracks.forEach {
+            musicDetailsService.getTrack(with: $0.id)
+                .sink { [weak self] track in
+                    guard let self else { return }
+                    var currentArray = fullTrackObjects.value
+                    currentArray.append(track)
+                    fullTrackObjects.send(currentArray)
+                }
+                .store(in: &cancellables)
+        }
+        
+        addToQueueCancellable = fullTrackObjects
+            .sink {[weak self] tracks in
+                guard let self else { return }
+                
+                if tracks.count == self.tracks.count {
+                    self.queueManager.append(tracks)
+                    self.toastMessage = "\(String.Shared.album) \(String.Shared.addedToQueue)"
+                    withAnimation {
+                        self.isToastPresented = true
+                    }
+                    self.fullTrackObjects.send([])
+                    self.addToQueueCancellable?.cancel()
+                }
+            }
+    }
+    
+    func addTrackToQueue(trackId: String) {
+        addToQueueCancellable = musicDetailsService.getTrack(with: trackId)
+            .sink { [weak self] track in
+                guard let self else { return }
+                self.queueManager.append(track)
+                self.toastMessage = "\(track.name) \(String.Shared.addedToQueue)"
+                withAnimation {
+                    self.isToastPresented = true
+                }
+                self.addToQueueCancellable?.cancel()
+            }
+
     }
 }

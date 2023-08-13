@@ -14,6 +14,10 @@ protocol NoisyAPIProtocol {
     func postRefreshToken(with refreshToken: String) -> AnyPublisher<Data, Error>
     func getProfile() -> AnyPublisher<Data, Error>
     func getTrack(with id: String) -> AnyPublisher<Data, Error>
+    func getSavedTracks(limit: Int, offset: Int) -> AnyPublisher<Data, Error>
+    func checkSavedTracks(trackIds: String) -> AnyPublisher<Data, Error>
+    func saveTracks(with ids: String) -> AnyPublisher<Data, Error>
+    func removeTracks(with id: String) -> AnyPublisher<Data, Error>
     func getMyTopTracks(count: Int, timeRange: String) -> AnyPublisher<Data, Error>
     func getTopTracks(for artistId: String) -> AnyPublisher<Data, Error>
     func getTopArtists(count: Int, timeRange: String) -> AnyPublisher<Data, Error>
@@ -62,6 +66,22 @@ extension NoisyService {
     
     func getTrack(with id: String) -> AnyPublisher<Data, Error> {
         NetworkingManager.performRequest(.track(id: id))
+    }
+    
+    func getSavedTracks(limit: Int, offset: Int) -> AnyPublisher<Data, Error> {
+        NetworkingManager.performRequest(.savedTracks(limit: limit, offset: offset))
+    }
+    
+    func checkSavedTracks(trackIds: String) -> AnyPublisher<Data, Error> {
+        NetworkingManager.performRequest(.checkSavedTracks(ids: trackIds))
+    }
+    
+    func saveTracks(with ids: String) -> AnyPublisher<Data, Error> {
+        NetworkingManager.performRequest(.saveTracks(ids: ids))
+    }
+    
+    func removeTracks(with ids: String) -> AnyPublisher<Data, Error> {
+        NetworkingManager.performRequest(.removeTracks(ids: ids))
     }
     
     func getMyTopTracks(count: Int, timeRange: String) -> AnyPublisher<Data, Error> {

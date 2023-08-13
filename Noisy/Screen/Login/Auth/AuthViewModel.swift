@@ -36,6 +36,10 @@ extension AuthViewModel {
             .sink { [weak self ] token in
                 UserDefaults.standard.set(token.refreshToken, forKey: .UserDefaults.refreshToken)
                 UserDefaults.standard.set(token.accessToken, forKey: .UserDefaults.accessToken)
+                let expirationDate = Date.now.advanced(by: Double(token.expiresIn) - 60)
+                if let expirateionDateData = try? JSONEncoder().encode(expirationDate) {
+                    UserDefaults.standard.set(expirateionDateData, forKey: .UserDefaults.tokenExpirationDate)
+                }
                 self?.onDidAuthorize.send()
             }
             .store(in: &cancellables)

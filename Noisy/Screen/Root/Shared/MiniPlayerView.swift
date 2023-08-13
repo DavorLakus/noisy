@@ -12,6 +12,7 @@ import AVKit
 final class MiniPlayerViewModel: ObservableObject {
     // MARK: - Published properties
     @Published var isPlaying = false
+    @Published var currentTrack: Track?
     @Published var timeControlStatus: AVPlayer.TimeControlStatus = .paused
     
     // MARK: - Coordinator actions
@@ -20,14 +21,14 @@ final class MiniPlayerViewModel: ObservableObject {
     // MARK: - Public properties
     let queueManager: QueueManager
     
+    // MARK: - Private properties
+    private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - Class lifecycle
     init(queueManager: QueueManager) {
         self.queueManager = queueManager
         
         bindQueueManager()
-    }
-    
-    func bindQueueManager() {
-        queueManager.isPlaying.assign(to: &_isPlaying.projectedValue)
     }
     
     func playPauseButtonTapped() {
@@ -36,6 +37,19 @@ final class MiniPlayerViewModel: ObservableObject {
     
     func miniPlayerTapped() {
         onDidTapMiniPlayer.send()
+    }
+    
+    func currentTrackArists() -> String {
+        currentTrack?.artists.compactMap({ $0.name }).joined(separator: ", ") ?? .empty
+    }
+    
+    func bindQueueManager() {
+        queueManager.currentTrack
+            .sink { [weak self] track in
+                self?.currentTrack = track
+            }
+            .store(in: &cancellables)
+        queueManager.isPlaying.assign(to: &_isPlaying.projectedValue)
     }
 }
 
@@ -60,12 +74,13 @@ extension MiniPlayerView {
             
             VStack(alignment: .leading, spacing: .zero) {
                 Text(viewModel.queueManager.state.currentTrack?.name ?? .empty)
+                    .lineLimit(1)
                     .foregroundColor(.gray700)
                     .font(.nunitoBold(size: 16))
-                Text(viewModel.queueManager.state.currentTrack?.artists.first?.name ?? .empty)
+                Text(viewModel.currentTrackArists())
+                    .lineLimit(1)
                     .font(.nunitoSemiBold(size: 14))
                     .foregroundColor(.gray600)
-                
             }
             Spacer()
         }

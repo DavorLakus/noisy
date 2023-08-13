@@ -21,6 +21,7 @@ final class HomeCoordinator: MusicDetailsCoordinatorProtocol {
     
     // MARK: - Public properties
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
+    var tokenDidRefresh: PassthroughSubject<Void, Never>?
     
     // MARK: - Internal properties
     internal var artistViewModelStack = Stack<ArtistViewModel>()
@@ -41,10 +42,11 @@ final class HomeCoordinator: MusicDetailsCoordinatorProtocol {
     private let homeService: HomeService
     
     // MARK: - Class lifecycle
-    init(homeService: HomeService, musicDetailsService: MusicDetailsService, queueManager: QueueManager) {
+    init(homeService: HomeService, musicDetailsService: MusicDetailsService, queueManager: QueueManager, tokenDidRefresh: PassthroughSubject<Void, Never>) {
         self.homeService = homeService
         self.musicDetailsService = musicDetailsService
         self.queueManager = queueManager
+        self.tokenDidRefresh = tokenDidRefresh
         
         bindHomeViewModel()
     }
@@ -117,33 +119,37 @@ extension HomeCoordinator {
 // MARK: - Binding
 extension HomeCoordinator {
     func bindHomeViewModel() {
-        homeViewModel = HomeViewModel(homeService: homeService, queueManager: queueManager)
+        let homeViewModel = HomeViewModel(homeService: homeService, queueManager: queueManager)
         
-        homeViewModel?.onDidTapProfileButton
+        homeViewModel.onDidTapProfileButton
             .sink { [weak self] in
                 self?.onDidTapProfileButton.send()
             }
             .store(in: &cancellables)
         
-        homeViewModel?.onDidTapArtistRow
+        homeViewModel.onDidTapArtistRow
             .sink { [weak self] artist in
                 self?.push(.artist(artist))
             }
             .store(in: &cancellables)
         
-        homeViewModel?.onDidTapAlbumButton
+        homeViewModel.onDidTapAlbumButton
             .sink { [weak self] album in
                 self?.push(.album(album))
             }
             .store(in: &cancellables)
         
-        homeViewModel?.onDidTapPlaylistRow
+        homeViewModel.onDidTapPlaylistRow
             .sink { [weak self] playlist in
                 self?.push(.playlist(playlist))
             }
             .store(in: &cancellables)
         
-        homeViewModel?.onDidSelectTrackRow = onDidTapTrackRow
+        homeViewModel.tokenDidRefresh = tokenDidRefresh
+        
+        homeViewModel.onDidSelectTrackRow = onDidTapTrackRow
+        
+        self.homeViewModel = homeViewModel
     }
 }
 
@@ -154,11 +160,5 @@ struct HomeCoordinatorView<Coordinator: VerticalCoordinatorProtocol>: Coordinato
     var body: some View {
         NavigationStack(path: $coordinator.navigationPath, root: coordinator.rootView)
             .navigationViewStyle(StackNavigationViewStyle())
-
-//        .alert(isPresented: $coordinator.alertIsPresented) {
-//            coordinator.presentAlert()
-//        }
-//        .onAppear(perform: coordinator.viewDidAppear)
-//        .onDisappear(perform: coordinator.viewDidDisappear)
     }
 }

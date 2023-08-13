@@ -26,6 +26,7 @@ final class PlayerViewModel: ObservableObject {
     @Published var currentTrack: Track?
     @Published var isOptionsSheetPresented = false
     @Published var isToastPresented = false
+    @Published var isSaved = false
 
     // MARK: - Coordinator actions
     var onDidTapDismissButton: PassthroughSubject<Void, Never>?
@@ -61,8 +62,12 @@ extension PlayerViewModel {
         onDidTapDismissButton?.send()
     }
     
+    func currentTrackArists() -> String {
+        currentTrack?.artists.compactMap({ $0.name }).joined(separator: ", ") ?? .empty
+    }
+    
     func addToFavoritesButtonTapped() {
-        
+        isSaved ? removeFromSaved() : addToSaved()
     }
     
     func previousButtonTapped() {
@@ -147,7 +152,6 @@ private extension PlayerViewModel {
     }
 }
 
-
 // MARK: - Private extension
 private extension PlayerViewModel {
     func bindQueueManager() {
@@ -167,17 +171,20 @@ private extension PlayerViewModel {
         }
         .store(in: &cancellables)
         trackPosition = queueManager.state.currentTime
+        
         queueManager.currentTrack
             .sink { [weak self] track in
                 guard let track else { return }
+                if let albumImages = self?.currentTrack?.album?.images,
+                   !albumImages.isEmpty {
+                    guard let self,
+                          let currentTrack = self.currentTrack,
+                          track.id != currentTrack.id
+                    else { return }
+                }
                 self?.currentTrack = track
-            }
-            .store(in: &cancellables)
-        
-        $currentTrack
-            .sink { [weak self] track in
-                guard let track else { return }
                 self?.fetchTrackInfo(for: track.id)
+                self?.checkIfTrackSaved(id: track.id)
             }
             .store(in: &cancellables)
     }
@@ -186,6 +193,32 @@ private extension PlayerViewModel {
         musicDetailsService.getTrack(with: trackId)
             .sink { [weak self] track in
                 self?.currentTrack = track
+            }
+            .store(in: &cancellables)
+    }
+    
+    func checkIfTrackSaved(id: String) {
+        musicDetailsService.checkSavedTracks(with: id)
+            .sink { [weak self] isSaved in
+                self?.isSaved = isSaved[0]
+            }
+            .store(in: &cancellables)
+    }
+    
+    func addToSaved() {
+        guard let currentTrack else { return }
+        musicDetailsService.saveTracks(with: currentTrack.id)
+            .sink { [weak self] isSaved in
+                self?.checkIfTrackSaved(id: currentTrack.id)
+            }
+            .store(in: &cancellables)
+    }
+    
+    func removeFromSaved() {
+        guard let currentTrack else { return }
+        musicDetailsService.removeTracks(with: currentTrack.id)
+            .sink { [weak self] isSaved in
+                self?.checkIfTrackSaved(id: currentTrack.id)
             }
             .store(in: &cancellables)
     }

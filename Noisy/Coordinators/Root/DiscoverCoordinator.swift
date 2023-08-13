@@ -50,7 +50,7 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     }
     
     func bindDiscoverViewModel() {
-        discoverViewModel = DiscoverViewModel(discoverService: discoverService, searchService: searchService, queueManager: queueManager)
+        discoverViewModel = DiscoverViewModel(discoverService: discoverService, searchService: searchService,  musicDetailsService: musicDetailsService, queueManager: queueManager)
         
         discoverViewModel?.onDidTapProfileButton
             .sink { [weak self] in

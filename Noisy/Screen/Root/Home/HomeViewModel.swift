@@ -59,6 +59,7 @@ final class HomeViewModel: ObservableObject {
     @Published var isToastPresented = false
     
     // MARK: - Coordinator actions
+    var tokenDidRefresh: PassthroughSubject<Void, Never>?
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
     var onDidSelectTrackRow: PassthroughSubject<Track, Never>?
     let onDidTapArtistRow = PassthroughSubject<Artist, Never>()
@@ -78,7 +79,6 @@ final class HomeViewModel: ObservableObject {
     init(homeService: HomeService, queueManager: QueueManager) {
         self.homeService = homeService
         self.queueManager = queueManager
-        bind()
     }
 }
 
@@ -87,6 +87,8 @@ extension HomeViewModel {
     
     @Sendable
     func viewDidAppear() {
+        cancellables.removeAll()
+        bind()
         getProfile()
         getTopTracks()
         getTopArtists()
@@ -216,6 +218,12 @@ private extension HomeViewModel {
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .sink { [weak self] _ in
                 self?.getPlaylists()
+            }
+            .store(in: &cancellables)
+        
+        tokenDidRefresh?
+            .sink { [weak self] in
+                self?.viewDidAppear()
             }
             .store(in: &cancellables)
     }

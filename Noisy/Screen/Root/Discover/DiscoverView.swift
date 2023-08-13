@@ -81,7 +81,7 @@ extension DiscoverView {
     
     func seedSelectionView() -> some View {
         Group {
-            CurrentSeedSelectionView(viewModel: viewModel)
+            CurrentSeedSelectionView(viewModel: viewModel, cropTitle: true)
             LargeButton(foregroundColor: .appBackground, backgroundColor: .purple600, title: .Discover.manageSeeds, action: viewModel.manageSeedsButtonTapped)
             LargeButton(foregroundColor: .appBackground, backgroundColor: .orange400, title: .Discover.changeSeedParameters, action: viewModel.changeSeedParametersButtonTapped)
         }

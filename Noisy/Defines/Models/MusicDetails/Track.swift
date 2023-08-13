@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TracksR: Codable, Hashable {
+struct Tracks: Codable, Hashable {
     let tracks: [Track]
 }
 
@@ -51,5 +51,3 @@ struct TrackObjectsResponse: Codable, Hashable {
 struct TrackObject: Codable, Hashable {
     let track: Track
 }
-
-

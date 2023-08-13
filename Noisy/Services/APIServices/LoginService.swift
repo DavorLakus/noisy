@@ -32,7 +32,6 @@ extension LoginService {
         if let codeVerifier = UserDefaults.standard.string(forKey: .UserDefaults.codeVerifier) {
             
             api.postToken(verifier: codeVerifier, code: code)
-                .debugPrint()
                 .decode(type: TokenResponse.self, decoder: JSONDecoder())
                 .sink(
                     receiveCompletion: NetworkingManager.handleCompletion,
