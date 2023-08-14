@@ -64,9 +64,10 @@ final class DiscoverViewModel: ObservableObject {
     
     // MARK: - Coordinator actions
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
-    var onDidTapRecommendedTrackRow: PassthroughSubject<Track, Never>?
+    var onDidTapRecommendedTrackRow: PassthroughSubject<Void, Never>?
     let onDidTapArtistButton = PassthroughSubject<Artist, Never>()
     let onDidTapAlbumButton = PassthroughSubject<Album, Never>()
+    let onDidTapAddToPlaylist = PassthroughSubject<[Track], Never>()
     
     // MARK: - Public properties
     var hasAnySeeds: Bool { !seedArtists.isEmpty || !seedTracks.isEmpty || !seedGenres.isEmpty }
@@ -214,12 +215,20 @@ extension DiscoverViewModel {
         discover()
     }
     
+    func recommendationsOptionsTapped() {
+        options = [addRecommendationsToQueueOption(), addRecommendationsToPlaylistOption()]
+        withAnimation {
+            isOptionsSheetPresented = true
+        }
+    }
+    
     func recommendedTrackRowSelected(_ track: Track) {
-        onDidTapRecommendedTrackRow?.send(track)
+        queueManager.setState(with: recommendedTracks, currentTrackIndex: recommendedTracks.firstIndex(of: track))
+        onDidTapRecommendedTrackRow?.send()
     }
     
     func trackOptionsTapped(for track: Track) {
-        options = [addToQueueOption(track), viewAlbumOption(track), viewArtistOption(track)]
+        options = [addToQueueOption(track), viewAlbumOption(track), viewArtistOption(track), addToPlaylistOption(track)]
         withAnimation {
             isOptionsSheetPresented = true
         }
@@ -228,6 +237,39 @@ extension DiscoverViewModel {
 
 // MARK: - Track options
 private extension DiscoverViewModel {
+    func addRecommendationsToQueueOption() -> OptionRow {
+        let addToQueueSubject = PassthroughSubject<Void, Never>()
+        
+        addToQueueSubject
+            .sink { [weak self] in
+                guard let self else { return }
+                self.queueManager.append(self.recommendedTracks)
+                self.toastMessage = "\(String.Discover.recommendations) \(String.Shared.addedToQueue)"
+                withAnimation {
+                    self.isToastPresented = true
+                }
+            }
+            .store(in: &cancellables)
+        
+        return OptionRow.addToQueue(action: addToQueueSubject)
+    }
+    
+    func addRecommendationsToPlaylistOption() -> OptionRow {
+        let addToPlaylistSubject = PassthroughSubject<Void, Never>()
+        
+        addToPlaylistSubject
+            .sink { [weak self] in
+                guard let self else { return }
+                self.onDidTapAddToPlaylist.send(recommendedTracks)
+                withAnimation {
+                    self.isOptionsSheetPresented = false
+                }
+            }
+            .store(in: &cancellables)
+        
+        return OptionRow.addToPlaylist(action: addToPlaylistSubject)
+    }
+    
     func addToQueueOption(_ track: Track) -> OptionRow {
         let addToQueueSubject = PassthroughSubject<Void, Never>()
         
@@ -275,6 +317,21 @@ private extension DiscoverViewModel {
         
         return OptionRow.viewAlbum(action: viewAlbumSubject)
     }
+    
+    func addToPlaylistOption(_ track: Track) -> OptionRow {
+        let addToPlaylistSubject = PassthroughSubject<Void, Never>()
+        
+        addToPlaylistSubject
+            .sink { [weak self] in
+                self?.onDidTapAddToPlaylist.send([track])
+                withAnimation {
+                    self?.isOptionsSheetPresented = false
+                }
+            }
+            .store(in: &cancellables)
+        
+        return OptionRow.addToPlaylist(action: addToPlaylistSubject)
+    }
 }
 
 // MARK: - Private extension
@@ -314,7 +371,10 @@ private extension DiscoverViewModel {
             .dropFirst()
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .sink { [weak self] _ in
-                self?.discover()
+                if let self,
+                   self.hasAnySeeds {
+                    self.discover()
+                }
             }
             .store(in: &cancellables)
     }
@@ -337,7 +397,9 @@ private extension DiscoverViewModel {
                         guard let self else { return }
                         if let artist = response.items.map(\.track).first?.artists.first,
                            !self.seedArtists.contains(artist) {
-                            self.seedArtists.append(artist)
+                            withAnimation {
+                                self.seedArtists.append(artist)
+                            }
                         }
                     }
                     .store(in: &cancellables)
@@ -347,7 +409,9 @@ private extension DiscoverViewModel {
                 musicDetailsService.getSavedTracks(limit: 1, offset: Int.random(in: (1...savedTracksCount)))
                     .sink { [weak self] response in
                         if let track = response.items.map(\.track).first {
-                            self?.seedTracks.append(track)
+                            withAnimation {
+                                self?.seedTracks.append(track)
+                            }
                         }
                     }
                     .store(in: &cancellables)
@@ -356,11 +420,29 @@ private extension DiscoverViewModel {
         }
     }
     
-    func discover() {
-        discoverService.discover(seedParameters: createDiscoverQueryParameters())
+    func discover(limit: Int? = nil) {
+        if limit == nil { recommendedTracks.removeAll() }
+        discoverService.discover(seedParameters: createDiscoverQueryParameters(limit: limit))
             .sink { [weak self] result in
+                self?.checkIfNotAlreadySaved(tracks: result.tracks)
+            }
+            .store(in: &cancellables)
+    }
+    
+    func checkIfNotAlreadySaved(tracks: [Track]) {
+        musicDetailsService.checkSavedTracks(with: tracks.map(\.id).joined(separator: ","))
+            .sink { [weak self] alreadySavedArray in
+                guard let self else { return }
                 withAnimation {
-                    self?.recommendedTracks = result.tracks
+                    self.recommendedTracks += alreadySavedArray.enumerated()
+                        .compactMap { $0.element ? nil : tracks[$0.offset] }
+                }
+                if alreadySavedArray.contains(true) {
+                    let limit = alreadySavedArray.reduce(0, { initialResult, alreadySavedValue in
+                        let value = alreadySavedValue ? 1 : 0
+                        return initialResult + value
+                    })
+                    self.discover(limit: limit)
                 }
             }
             .store(in: &cancellables)
@@ -370,6 +452,26 @@ private extension DiscoverViewModel {
         seedArtists = []
         seedTracks = []
         seedGenres = []
+    }
+    
+    func createDiscoverQueryParameters(limit: Int? = nil) -> [URLQueryItem] {
+        var queryItems: [URLQueryItem] = [
+            URLQueryItem(name: "market", value: "HR"),
+            URLQueryItem(name: "limit", value:  "\(limit ?? Int(self.limit))"),
+            URLQueryItem(name: "seed_artists", value: seedArtists.map(\.id).joined(separator: ",")),
+            URLQueryItem(name: "seed_genres", value: seedGenres.joined(separator: ",")),
+            URLQueryItem(name: "seed_tracks", value: seedTracks.map(\.id).joined(separator: ","))
+        ]
+        
+        Seed.allCases.forEach { seed in
+            if seedToggles[seed.id] {
+                queryItems.append(URLQueryItem(name: seed.minCodingKey, value: seed.valueToString(value: lowerBounds[seed.id])))
+                queryItems.append(URLQueryItem(name: seed.maxCodingKey, value: seed.valueToString(value: upperBounds[seed.id])))
+                queryItems.append(URLQueryItem(name: seed.targetCodingKey, value: seed.valueToString(value: targets[seed.id])))
+            }
+        }
+        
+        return queryItems
     }
     
     func resetSearchResults() {
@@ -409,25 +511,5 @@ private extension DiscoverViewModel {
                 self?.availableGenres = genres
             }
             .store(in: &cancellables)
-    }
-    
-    func createDiscoverQueryParameters() -> [URLQueryItem] {
-        var queryItems: [URLQueryItem] = [
-            URLQueryItem(name: "market", value: "HR"),
-            URLQueryItem(name: "limit", value:  "\(Int(limit))"),
-            URLQueryItem(name: "seed_artists", value: seedArtists.map(\.id).joined(separator: ",")),
-            URLQueryItem(name: "seed_genres", value: seedGenres.joined(separator: ",")),
-            URLQueryItem(name: "seed_tracks", value: seedTracks.map(\.id).joined(separator: ","))
-        ]
-        
-        Seed.allCases.forEach { seed in
-            if seedToggles[seed.id] {
-                queryItems.append(URLQueryItem(name: seed.minCodingKey, value: seed.valueToString(value: lowerBounds[seed.id])))
-                queryItems.append(URLQueryItem(name: seed.maxCodingKey, value: seed.valueToString(value: upperBounds[seed.id])))
-                queryItems.append(URLQueryItem(name: seed.targetCodingKey, value: seed.valueToString(value: targets[seed.id])))
-            }
-        }
-        
-        return queryItems
     }
 }

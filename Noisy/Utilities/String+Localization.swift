@@ -56,15 +56,26 @@ extension String {
     
     struct Shared {
         static let ok = "OK"
+        static let title = "Title"
         static let errorTitle = "Error"
         static let artists = "artists"
         static let tracks = "tracks"
         static let genres = "genres"
         static let done = "Done"
         static let addToQueue = "Add to queue"
+        static let addToPlaylist = "Add to playlist"
+        static let addTracksToPlaylists = "Add to playlists"
         static let addedToQueue = "added to queue."
+        static let addedToPlaylist = "Tracks successfully added."
+        static let addedToFavorites = "added to favorites"
+        static let removedFromFavorites = "removed from favorites"
         static let remove = "Remove"
         static let playlist = "Playlist"
+        static let yourPlaylists = "Your playlists"
+        static let createNew = "Create new"
+        static let playlistName = "Playlist name"
+        static let createNewPlaylist = "Create new playlist"
+        static let save = "Save"
         static let album = "Album"
         static let viewArtist = "View artist"
         static let viewAlbum = "View album"
@@ -81,7 +92,7 @@ extension String {
     struct Home {
         static let welcome = "Welcome"
         static let pickerTitle = "In:"
-        static let sliderCount = "Count:"
+        static let sliderCount = "Limit:"
         static let topTracks = "Your top tracks"
         static let topArtists = "Your top artists"
         static let playlists = "Your playlists"
@@ -96,6 +107,7 @@ extension String {
         static let currentSeedSelection = "Current seed selection:"
         static let pleaseSelectSomeDiscoverySeeds = "Select some discovery seeds to get started"
         static let discover = "Discover"
+        static let recommendations = "Recommendations"
         static let generateRandomSeeds = "Generate random seeds"
         static let initialResultsMessage = "Your recommendation results will appear here"
         static let includeAllSeeds = "Include all parameter seeds"
@@ -119,6 +131,8 @@ extension String {
         static let playlists = "Playlists"
         static let genres = "Genres"
         static let allGenres = "All genres"
+        static let searchBarPlaceholder = "Search"
+        static let emptyStateTitle = "Sorry, no results found"
     }
 
     struct Artist {
@@ -131,62 +145,6 @@ extension String {
         static let clearQueue = "Clear queue"
     }
 
-    struct MyTeam {
-        static let remove = "Remove"
-        static let teamMemberRemoveAlertMessage1 = "Do you want to remove"
-        static let teamMemberRemoveAlertMessage2 = "from your Team? This action cannot be reversed."
-        static let noteRemoveAlertMessage = "Do you want to remove this note? This action cannot be reversed."
-        static let newlyAdded = "NEWLY ADDED"
-        static let team = "'s Team"
-        static let memberRemoveErrorTitle = "Unable to remove team member"
-        static let memberRemoveErrorDescription = "Sorry, we couldn't remove your team member at this time."
-    }
-
-    struct Organization {
-        static let title = "Organizational Tree"
-    }
-    
-    struct ProfileTabs {
-        static let main = "Main Info"
-        static let competencies = "Competencies"
-    }
-    
-    struct Notes {
-        static let title = "Notes"
-        static let emptyStateTitle = "There’s nothing here yet"
-        static let emptyStateDescription = "There are no notes for this team member. Tap on the plus icon in the top right corner of the screen to start adding notes."
-        static let noteRemoveErrorTitle = "Unable to delete note"
-        static let noteRemoveErrorDescription = "Sorry, we couldn't delete your note at this time."
-        static let untitled = "Untitled"
-        static let bottomID = "scrollBottom"
-        static let textPlaceholder = "Tap here to start writing..."
-        static let bulletTab = "•   "
-        static let placeholderNumbering = "1.   "
-        static let numberedListRegexPattern = #"\d+.\s{3}"#
-    }
-
-    struct GrowthCheck {
-        static let title = "Growth Check"
-        static let compare = "Compare last 3 years"
-        static let firstHalfYear = "0 - 6 months"
-        static let secondHalfYear = "6 - 12 months"
-        static let experience = "Experience"
-        static let competency = "Competency"
-        static let interest = "Interest"
-        static let nonTech = "Non-Tech Comp."
-        static let prior = "prior"
-        static let previous = "previous"
-        static let current = "current"
-        static let comparison = "comparison"
-        static let growthDetails = "growth details"
-    }
-    
-    struct Dictionary {
-        static let searchBarPlaceholder = "Search"
-        static let emptyStateTitle = "Sorry, no results found"
-        static let emptyStateDescription = "Please check your spelling or try a different search term."
-    }
-    
     struct Utilities {
         static let defaultLocale = "en_US"
         static let backendDateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"

@@ -12,7 +12,7 @@ struct SearchBar: View {
     var query: Binding<String>
     let placeholder: String
     
-    init(isActive: Binding<Bool>, query: Binding<String>, placeholder: String = .Dictionary.searchBarPlaceholder) {
+    init(isActive: Binding<Bool>, query: Binding<String>, placeholder: String = .Search.searchBarPlaceholder) {
         self.isActive = isActive
         self.query = query
         self.placeholder = placeholder

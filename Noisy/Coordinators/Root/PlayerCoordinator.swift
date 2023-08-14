@@ -14,13 +14,17 @@ enum PlayerPath: Hashable {
     case artist(Artist)
     case album(Album)
     case playlist(Playlist)
-    case playlists([Playlist])
+    case playlists([Track])
 }
 
-final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
+enum PlayerSheet: Hashable {
+    case playlists
+}
+
+final class PlayerCoordinator: MusicDetailsCoordinatorProtocol, SheetCoordinatorProtocol {
     // MARK: - Published properties
     @Published var navigationPath = NavigationPath()
-    @Published var isShareViewPresented = false
+    @Published var isSheetPresented: Bool = false
     
     // MARK: - Public properties
     var onShoudEnd = PassthroughSubject<Void, Never>()
@@ -29,13 +33,15 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
     internal var artistViewModelStack = Stack<ArtistViewModel>()
     internal var albumViewModelStack = Stack<AlbumViewModel>()
     internal var playlistViewModelStack = Stack<PlaylistViewModel>()
-    internal var playlistsViewModelStack = Stack<PlaylistsViewModel>()
+    internal var playlistsViewModel: PlaylistsViewModel?
     
-    internal var onDidTapPlayAllButton = PassthroughSubject<[Track], Never>()
-    internal var onDidTapTrackRow = PassthroughSubject<Track, Never>()
+    internal var onDidTapPlayAllButton = PassthroughSubject<Void, Never>()
+    internal var onDidTapTrackRow = PassthroughSubject<Void, Never>()
     internal var musicDetailsService: MusicDetailsService
-    internal var cancellables = Set<AnyCancellable>()
     internal var queueManager: QueueManager
+    internal var sheetPath: PlayerSheet = .playlists
+
+    internal var cancellables = Set<AnyCancellable>()
     
     // MARK: - Services
     private let playerService: PlayerService
@@ -50,11 +56,11 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
         self.musicDetailsService = musicDetailsService
         self.queueManager = queueManager
         
-        bindPlayerView()
+        bindPlayerViewModel()
     }
     
     @ViewBuilder
-    func start() -> some CoordinatorViewProtocol {
+    func start() -> some SheetCoordinatorViewProtocol {
         PlayerCoordinatorView(coordinator: self)
     }
     
@@ -90,8 +96,8 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
             bindAlbumViewModel(for: album)
         case .playlist(let playlist):
             bindPlaylistViewModel(for: playlist)
-        case .playlists(let playlists):
-            bindPlaylistsViewModel(for: playlists)
+        case .playlists(let tracks):
+            bindPlaylistsViewModel(with: tracks)
         }
         
         navigationPath.append(path)
@@ -99,6 +105,14 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol {
     
     func pop() {
         navigationPath.removeLast()
+    }
+    
+    @ViewBuilder
+    func presentSheetView() -> some View {
+        switch sheetPath {
+        case .playlists:
+            presentPlaylistsView()
+        }
     }
 }
 
@@ -116,8 +130,26 @@ extension PlayerCoordinator {
         push(.playlist(playlist))
     }
     
-    func pushPlaylistsViewModel(for playlists: [Playlist]) {
-        push(.playlists(playlists))
+    func pushPlaylistsViewModel(with tracks: [Track]) {
+        push(.playlists(tracks))
+    }
+}
+
+// MARK: - SheetCoordinator
+extension PlayerCoordinator {
+    func bindPlaylistsViewModel(with tracks: [Track]) {
+        let viewModel = PlaylistsViewModel(tracks: tracks, musicDetailsService: musicDetailsService)
+        
+        viewModel.onDidTapBackButton
+            .sink { [weak self] in
+                withAnimation {
+                    self?.isSheetPresented = false
+                    self?.playlistsViewModel = nil
+                }
+            }
+            .store(in: &cancellables)
+        
+        playlistsViewModel = viewModel
     }
 }
 
@@ -133,14 +165,8 @@ extension PlayerCoordinator {
 
 // MARK: - Public extension
 extension PlayerCoordinator {
-    func bindPlayerView() {
+    func bindPlayerViewModel() {
         playerViewModel.onDidTapDismissButton = onShoudEnd
-        
-        playerViewModel.onDidTapShareButton
-            .sink { [weak self] in
-                self?.presentShareView()
-            }
-            .store(in: &cancellables)
         
         playerViewModel.onDidTapQueueButton
             .sink { [weak self] in
@@ -159,14 +185,15 @@ extension PlayerCoordinator {
                 self?.push(.album(album))
             }
             .store(in: &cancellables)
-    }
-    
-    func presentShareView() {
-        print("sharing is caring")
         
-        withAnimation {
-         isShareViewPresented = true
-        }
+        playerViewModel.onDidTapAddToPlaylist
+            .sink { [weak self] tracks in
+                self?.bindPlaylistsViewModel(with: tracks)
+                withAnimation {
+                    self?.isSheetPresented = true
+                }
+            }
+            .store(in: &cancellables)
     }
     
     func bindQueueViewModel() {
@@ -180,10 +207,12 @@ extension PlayerCoordinator {
     }
 }
 
-struct PlayerCoordinatorView<Coordinator: VerticalCoordinatorProtocol>: CoordinatorViewProtocol {
+// MARK: - PlayerCoordinatorView
+struct PlayerCoordinatorView<Coordinator: VerticalCoordinatorProtocol & SheetCoordinatorProtocol>: SheetCoordinatorViewProtocol {
     @ObservedObject var coordinator: Coordinator
     
     var body: some View {
         NavigationStack(path: $coordinator.navigationPath, root: coordinator.rootView)
+            .sheet(isPresented: $coordinator.isSheetPresented, content: coordinator.presentSheetView)
     }
 }

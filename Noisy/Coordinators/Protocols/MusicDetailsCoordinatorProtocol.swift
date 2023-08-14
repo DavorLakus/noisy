@@ -13,10 +13,10 @@ protocol MusicDetailsCoordinatorProtocol: VerticalCoordinatorProtocol {
     var artistViewModelStack: Stack<ArtistViewModel> { get set }
     var albumViewModelStack: Stack<AlbumViewModel> { get set }
     var playlistViewModelStack: Stack<PlaylistViewModel> { get set }
-    var playlistsViewModelStack: Stack<PlaylistsViewModel> { get set }
+    var playlistsViewModel: PlaylistsViewModel? { get set }
     
-    var onDidTapPlayAllButton: PassthroughSubject<[Track], Never> { get set }
-    var onDidTapTrackRow: PassthroughSubject<Track, Never> { get set }
+    var onDidTapPlayAllButton: PassthroughSubject<Void, Never> { get set }
+    var onDidTapTrackRow: PassthroughSubject<Void, Never> { get set }
     var musicDetailsService: MusicDetailsService { get set }
     var queueManager: QueueManager { get set }
     var cancellables: Set<AnyCancellable> { get set }
@@ -24,12 +24,12 @@ protocol MusicDetailsCoordinatorProtocol: VerticalCoordinatorProtocol {
     func bindArtistViewModel(for artist: Artist)
     func bindAlbumViewModel(for album: Album)
     func bindPlaylistViewModel(for tracks: Playlist)
-    func bindPlaylistsViewModel(for playlists: [Playlist])
+    func bindPlaylistsViewModel(with tracks: [Track])
     
     func pushArtistViewModel(for artist: Artist)
     func pushAlbumViewModel(for album: Album)
     func pushPlaylistViewModel(for playlist: Playlist)
-    func pushPlaylistsViewModel(for playlists: [Playlist])
+    func pushPlaylistsViewModel(with tracks: [Track])
 }
 
 extension MusicDetailsCoordinatorProtocol {
@@ -116,19 +116,19 @@ extension MusicDetailsCoordinatorProtocol {
         playlistViewModelStack.push(viewModel)
     }
     
-    func bindPlaylistsViewModel(for playlists: [Playlist]) {
-        let viewModel = PlaylistsViewModel(playlists: playlists, musicDetailsService: musicDetailsService)
+    func bindPlaylistsViewModel(with tracks: [Track]) {
+        let viewModel = PlaylistsViewModel(tracks: tracks, musicDetailsService: musicDetailsService)
         
         viewModel.onDidTapBackButton
             .sink { [weak self] in
                 withAnimation {
                     self?.pop()
-                    self?.playlistsViewModelStack.pop()
+                    self?.playlistsViewModel = nil
                 }
             }
             .store(in: &cancellables)
         
-        playlistsViewModelStack.push(viewModel)
+        self.playlistsViewModel = viewModel
     }
     
     @ViewBuilder
@@ -154,7 +154,7 @@ extension MusicDetailsCoordinatorProtocol {
 
     @ViewBuilder
     func presentPlaylistsView() -> some View {
-        if let playlistsViewModel = playlistsViewModelStack.peek() {
+        if let playlistsViewModel = playlistsViewModel {
             PlaylistsView(viewModel: playlistsViewModel)
         }
     }

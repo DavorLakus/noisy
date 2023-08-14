@@ -9,7 +9,6 @@ import SwiftUI
 
 struct DiscoverView: View {
     @ObservedObject var viewModel: DiscoverViewModel
-    @State var detents = Set<PresentationDetent>()
     
     var body: some View {
         ZStack(alignment: .top) {
@@ -22,10 +21,8 @@ struct DiscoverView: View {
         }
         .ignoresSafeArea(edges: .top)
         .toolbar(.hidden, for: .navigationBar)
-        .sheet(isPresented: $viewModel.isOptionsSheetPresented) {
+        .dynamicModalSheet(isPresented: $viewModel.isOptionsSheetPresented) {
             OptionsView(isPresented: $viewModel.isOptionsSheetPresented, options: viewModel.options)
-                .readSize { detents = [.height($0.height)] }
-                .presentationDetents(detents)
                 .toast(isPresented: $viewModel.isToastPresented, message: viewModel.toastMessage)
         }
         .sheet(isPresented: $viewModel.isSeedParametersSheetPresented) {
@@ -68,12 +65,21 @@ extension DiscoverView {
     
     func bodyView() -> some View {
             ScrollView {
-                VStack {
-                    Spacer(minLength: 140)
-                    seedSelectionView()
-
-                    recommendationResultsView()
-                    Spacer(minLength: 80)
+                ScrollViewReader { scrollProxy in
+                    VStack {
+                        Spacer(minLength: 140)
+                        seedSelectionView()
+                        
+                        recommendationResultsView()
+                            .onChange(of: viewModel.recommendedTracks) { tracks in
+                                if !tracks.isEmpty {
+                                    withAnimation {
+                                        scrollProxy.scrollTo(String.Discover.discover, anchor: .top)
+                                    }
+                                }
+                            }
+                        Spacer(minLength: 80)
+                    }
                 }
             }
             .refreshable(action: viewModel.refreshToggled)
@@ -82,8 +88,10 @@ extension DiscoverView {
     func seedSelectionView() -> some View {
         Group {
             CurrentSeedSelectionView(viewModel: viewModel, cropTitle: true)
+            SliderView(value: $viewModel.limit)
             LargeButton(foregroundColor: .appBackground, backgroundColor: .purple600, title: .Discover.manageSeeds, action: viewModel.manageSeedsButtonTapped)
             LargeButton(foregroundColor: .appBackground, backgroundColor: .orange400, title: .Discover.changeSeedParameters, action: viewModel.changeSeedParametersButtonTapped)
+                .id(String.Discover.discover)
         }
         .padding(.horizontal, Constants.margin)
     }
@@ -121,7 +129,16 @@ extension DiscoverView {
 extension DiscoverView {
     func recommendedTracks() -> some View {
         VStack {
-            SliderView(value: $viewModel.limit)
+            HStack {
+                Text(String.Discover.recommendations)
+                    .font(.nunitoBold(size: 24))
+                    .foregroundColor(.gray700)
+
+                Button(action: viewModel.recommendationsOptionsTapped) {
+                    Image.Shared.threeDots
+                }
+                Spacer()
+            }
             LazyVStack(spacing: 4) {
                 ForEach(Array(viewModel.recommendedTracks.enumerated()), id: \.offset) { enumeratedTrack in
                     TrackRow(track: enumeratedTrack, isEnumerated: false, action: viewModel.trackOptionsTapped)

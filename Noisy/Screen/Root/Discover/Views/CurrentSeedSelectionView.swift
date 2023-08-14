@@ -35,10 +35,6 @@ struct SeedCardModel: Hashable, Equatable {
 struct CurrentSeedSelectionView: View {
     var title: String { viewModel.hasAnySeeds ? .Discover.currentSeedSelection : .Discover.pleaseSelectSomeDiscoverySeeds }
     @ObservedObject var viewModel: DiscoverViewModel
-    @State var artistSeedCardModels = [SeedCardModel]()
-    @State var trackSeedCardModels = [SeedCardModel]()
-    @State var genreSeedCardModels = [SeedCardModel]()
-    @State var containerWidth: CGFloat = .zero
     let cropTitle: Bool
     
     init(viewModel: DiscoverViewModel, cropTitle: Bool = false) {
@@ -55,58 +51,29 @@ struct CurrentSeedSelectionView: View {
             
             if !viewModel.seedArtists.isEmpty {
                 VStack(alignment: .leading) {
-                    ForEach(artistSeedCardModels, id: \.id) { artistModel in
-                        SeedCard(model: artistModel, cropTitle: cropTitle)
+                    ForEach(viewModel.seedArtists, id: \.id) { artist in
+                        SeedCard(model: SeedCardModel(title: artist.name, id: artist.id, background: .green200, action: viewModel.artistSeedCardSelected), cropTitle: cropTitle)
                     }
-                }
-                .onChange(of: viewModel.seedArtists) { _ in
-                    setupFlowGrid(for: .artists)
                 }
             }
             
             if !viewModel.seedTracks.isEmpty {
                 VStack(alignment: .leading) {
-                    ForEach(trackSeedCardModels, id: \.id) { trackModel in
-                        SeedCard(model: trackModel, cropTitle: cropTitle)
+                    ForEach(viewModel.seedTracks, id: \.id) { track in
+                        SeedCard(model: SeedCardModel(title: track.name, subtitle: track.artists.first?.name, id: track.id, background: .orange400, action: viewModel.trackSeedCardSelected), cropTitle: cropTitle)
                     }
-                }
-                .onChange(of: viewModel.seedTracks) { _ in
-                    setupFlowGrid(for: .tracks)
                 }
             }
             
             if !viewModel.seedGenres.isEmpty {
                 VStack(alignment: .leading) {
-                    ForEach(genreSeedCardModels, id: \.self) { genreModel in
-                        SeedCard(model: genreModel, cropTitle: cropTitle)
+                    ForEach(viewModel.seedGenres, id: \.self) { genre in
+                        SeedCard(model: SeedCardModel(title: genre, id: genre, background: .blue400, action: viewModel.genreSeedCardSelected), cropTitle: cropTitle)
                     }
-                }
-                .onChange(of: viewModel.seedGenres) { _ in
-                    setupFlowGrid(for: .genres)
                 }
             }
         }
         .padding(12)
         .cardBackground(backgroundColor: .yellow300.opacity(0.9), borderColor: .gray400, hasShadow: false)
-    }
-}
-
-// MARK: - Private extension
-private extension CurrentSeedSelectionView {
-    func setupFlowGrid(for type: SeedCategory) {
-        switch type {
-        case .artists:
-            artistSeedCardModels = viewModel.seedArtists.map { artist in
-                SeedCardModel(title: artist.name, id: artist.id, background: .green200, action: viewModel.artistSeedCardSelected)
-            }
-        case .tracks:
-            trackSeedCardModels = viewModel.seedTracks.map { track in
-                SeedCardModel(title: track.name, subtitle: track.artists.first?.name, id: track.id, background: .orange400, action: viewModel.trackSeedCardSelected)
-            }
-        case .genres:
-            genreSeedCardModels = viewModel.seedGenres.map { genre in
-                SeedCardModel(title: genre, id: genre, background: .blue400, action: viewModel.genreSeedCardSelected)
-            }
-        }
     }
 }

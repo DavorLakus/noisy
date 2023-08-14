@@ -19,12 +19,13 @@ struct Track: Codable, Hashable {
     let durationMs: Int?
     let popularity: Int?
     let previewUrl: String?
+    let uri: String
     let href: String
     
     enum CodingKeys: String, CodingKey {
         case durationMs = "duration_ms"
         case previewUrl = "preview_url"
-        case id, name, album, artists, popularity, href
+        case id, name, album, artists, popularity, uri, href
     }
 }
 

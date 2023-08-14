@@ -47,7 +47,6 @@ extension LoginService {
     func refreshToken(with refreshToken: String) -> PassthroughSubject<TokenResponse, Never> {
         let token = PassthroughSubject<TokenResponse, Never>()
         api.postRefreshToken(with: refreshToken)
-            .debugPrint()
             .decode(type: TokenResponse.self, decoder: JSONDecoder())
             .sink(
                 receiveCompletion: NetworkingManager.handleCompletion,

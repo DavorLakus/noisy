@@ -39,6 +39,7 @@ extension Image {
         static let addToQueue = Image(systemName: "text.badge.plus")
         static let artist = Image(systemName: "person.crop.circle.dashed")
         static let album = Image(systemName: "play.square.stack")
+        static let playlist = Image(systemName: "square.grid.3x1.folder.fill.badge.plus")
     }
     
     struct Search {

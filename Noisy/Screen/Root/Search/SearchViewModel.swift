@@ -9,8 +9,8 @@ import SwiftUI
 import Combine
 
 enum SearchFilterOption: Identifiable, CaseIterable {
-    case artist
     case track
+    case artist
     case album
     case playlist
     
@@ -35,7 +35,7 @@ final class SearchViewModel: ObservableObject {
     
     // MARK: - Coordinator actions
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
-    var onDidSelectTrackRow: PassthroughSubject<Track, Never>?
+    var onDidSelectTrackRow: PassthroughSubject<Void, Never>?
     let onDidTapArtistRow = PassthroughSubject<Artist, Never>()
     let onDidTapAlbumRow = PassthroughSubject<Album, Never>()
     let onDidTapPlaylistRow = PassthroughSubject<Playlist, Never>()
@@ -56,13 +56,15 @@ final class SearchViewModel: ObservableObject {
     private var artistsOffset = 0
     private var playlistsOffset = 0
     private let searchService: SearchService
+    private let queueManager: QueueManager
     private let filteringOptionsSelected = PassthroughSubject<Void, Never>()
 
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Class llifecycle
-    init(searchService: SearchService) {
+    init(searchService: SearchService, queueManager: QueueManager) {
         self.searchService = searchService
+        self.queueManager = queueManager
         
         bindSearch()
         bindFiltering()
@@ -180,7 +182,8 @@ extension SearchViewModel {
     }
     
     func trackRowSelected(_ track: Track) {
-        onDidSelectTrackRow?.send(track)
+        queueManager.setState(with: tracks, currentTrackIndex: tracks.firstIndex(of: track))
+        onDidSelectTrackRow?.send()
     }
     
     func albumRowSelected(_ album: Album) {

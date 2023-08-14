@@ -35,6 +35,7 @@ final class PlayerViewModel: ObservableObject {
     let onDidTapShareButton = PassthroughSubject<Void, Never>()
     let onDidTapArtistButton = PassthroughSubject<Artist, Never>()
     let onDidTapAlbumButton = PassthroughSubject<Album, Never>()
+    let onDidTapAddToPlaylist = PassthroughSubject<[Track], Never>()
     
     // MARK: - Public properties
     var options: [OptionRow] = []
@@ -94,7 +95,7 @@ extension PlayerViewModel {
     
     func optionsButtonTapped() {
         guard let currentTrack else { return }
-        options = [addToQueueOption(currentTrack), viewAlbumOption(currentTrack), viewArtistOption(currentTrack)]
+        options = [addToQueueOption(currentTrack), viewAlbumOption(currentTrack), viewArtistOption(currentTrack), addToPlaylistOption(currentTrack)]
         withAnimation {
             isOptionsSheetPresented = true
         }
@@ -149,6 +150,21 @@ private extension PlayerViewModel {
             .store(in: &cancellables)
         
         return OptionRow.viewAlbum(action: viewAlbumSubject)
+    }
+    
+    func addToPlaylistOption(_ track: Track) -> OptionRow {
+        let addToPlaylistSubject = PassthroughSubject<Void, Never>()
+        
+        addToPlaylistSubject
+            .sink { [weak self] in
+                self?.onDidTapAddToPlaylist.send([track])
+                withAnimation {
+                    self?.isOptionsSheetPresented = false
+                }
+            }
+            .store(in: &cancellables)
+        
+        return OptionRow.addToPlaylist(action: addToPlaylistSubject)
     }
 }
 
@@ -210,6 +226,10 @@ private extension PlayerViewModel {
         musicDetailsService.saveTracks(with: currentTrack.id)
             .sink { [weak self] isSaved in
                 self?.checkIfTrackSaved(id: currentTrack.id)
+                self?.toastMessage = "\(currentTrack.name) \(String.Shared.addedToFavorites)"
+                withAnimation {
+                    self?.isToastPresented = true
+                }
             }
             .store(in: &cancellables)
     }
@@ -219,6 +239,10 @@ private extension PlayerViewModel {
         musicDetailsService.removeTracks(with: currentTrack.id)
             .sink { [weak self] isSaved in
                 self?.checkIfTrackSaved(id: currentTrack.id)
+                self?.toastMessage = "\(currentTrack.name) \(String.Shared.removedFromFavorites)"
+                withAnimation {
+                    self?.isToastPresented = true
+                }
             }
             .store(in: &cancellables)
     }

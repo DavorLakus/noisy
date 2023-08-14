@@ -52,12 +52,6 @@ private extension FilterSheetView {
 
                 filterBody(options: SearchFilterOption.allCases.map(\.id))
             }
-//            .background {
-//                Color.appBackground
-//                    .opacity(0.3)
-//                    .blur(radius: 1)
-//                    .ignoresSafeArea()
-//            }
         }
     }
     

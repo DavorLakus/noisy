@@ -19,7 +19,6 @@ struct SeedsSheetView: View {
     var body: some View {
         VStack(spacing: Constants.margin) {
             headerView()
-            generateRandomSeeds()
             searchSection()
         }
     }
@@ -44,15 +43,12 @@ extension SeedsSheetView {
             Text(String.Discover.seedsSubtitle)
                 .font(.nunitoSemiBold(size: 13))
                 .foregroundColor(.gray500)
-            
-            CurrentSeedSelectionView(viewModel: viewModel)
-            
         }
         .padding(.horizontal, Constants.margin)
     }
     
-    func generateRandomSeeds() -> some View {
-        VStack {
+    func generateRandomSeedsButton() -> some View {
+        VStack(spacing: 16) {
             HStack {
                 Button(action: viewModel.generateRandomSeedsTapped) {
                     Text(String.Discover.generateRandomSeeds)
@@ -85,7 +81,7 @@ extension SeedsSheetView {
                         HStack {
                             (viewModel.randomSeedCategory == .artists ? Image.Shared.checkboxFill : Image.Shared.checkbox)
                             Text(String.Search.artists)
-                                .font(.nunitoSemiBold(size: 14))
+                                .font(.nunitoBold(size: 14))
                                 .foregroundColor(.gray600)
                         }
                     }
@@ -94,7 +90,7 @@ extension SeedsSheetView {
                         HStack {
                             (viewModel.randomSeedCategory == .tracks ? Image.Shared.checkboxFill : Image.Shared.checkbox)
                             Text(String.Search.tracks)
-                                .font(.nunitoSemiBold(size: 14))
+                                .font(.nunitoBold(size: 14))
                                 .foregroundColor(.gray600)
 
                         }
@@ -104,35 +100,17 @@ extension SeedsSheetView {
         }
         .padding(12)
         .cardBackground(backgroundColor: .yellow300, borderColor: .gray600, hasShadow: false)
-        .padding(.horizontal, Constants.margin)
+        .padding(.vertical, 3)
     }
     
     func searchSection() -> some View {
         ScrollView {
+            
             VStack(alignment: .leading, spacing: Constants.margin) {
-                HStack {
-                    ForEach(SeedCategory.allCases, id: \.self) { seedCategory in
-                        Text(seedCategory.displayName)
-                            .padding(12)
-                            .font(viewModel.seedCategory == seedCategory ? .nunitoBold(size: 16) : .nunitoSemiBold(size: 16))
-                            .foregroundColor(viewModel.seedCategory == seedCategory ? .appBackground : .green500)
-                            .background {
-                                if viewModel.seedCategory == seedCategory {
-                                    RoundedRectangle(cornerRadius: Constants.cornerRadius).stroke(Color.green600, lineWidth: 3)
-                                        .background {
-                                            RoundedRectangle(cornerRadius: Constants.cornerRadius).fill(Color.mint600)
-                                        }
-                                        .matchedGeometryEffect(id: String.Tabs.discover, in: namespace)
-                                }
-                            }
-                            .padding(3)
-                            .onTapGesture {
-                                viewModel.seedCategorySelected(seedCategory)
-                            }
-                            .frame(maxWidth: .infinity)
-                    }
-                }
-
+                generateRandomSeedsButton()
+                CurrentSeedSelectionView(viewModel: viewModel)
+                searchTabBar()
+                
                 SearchBar(isActive: $viewModel.isSearchActive, query: $viewModel.query, placeholder: "\(String.Tabs.search) \(String(describing: viewModel.seedCategory))...")
                 
                 VStack {
@@ -145,10 +123,37 @@ extension SeedsSheetView {
                         genresSection()
                     }
                 }
+                
             }
             .padding(.horizontal, Constants.margin)
         }
+        .scrollIndicators(.hidden)
         .scrollDismissesKeyboard(.immediately)
+    }
+    
+    func searchTabBar() -> some View {
+        HStack {
+            ForEach(SeedCategory.allCases, id: \.self) { seedCategory in
+                Text(seedCategory.displayName)
+                    .padding(12)
+                    .font(viewModel.seedCategory == seedCategory ? .nunitoBold(size: 16) : .nunitoSemiBold(size: 16))
+                    .foregroundColor(viewModel.seedCategory == seedCategory ? .appBackground : .green500)
+                    .background {
+                        if viewModel.seedCategory == seedCategory {
+                            RoundedRectangle(cornerRadius: Constants.cornerRadius).stroke(Color.green600, lineWidth: 3)
+                                .background {
+                                    RoundedRectangle(cornerRadius: Constants.cornerRadius).fill(Color.mint600)
+                                }
+                                .matchedGeometryEffect(id: String.Tabs.discover, in: namespace)
+                        }
+                    }
+                    .padding(3)
+                    .onTapGesture {
+                        viewModel.seedCategorySelected(seedCategory)
+                    }
+                    .frame(maxWidth: .infinity)
+            }
+        }
     }
     
     @ViewBuilder

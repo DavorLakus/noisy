@@ -49,10 +49,15 @@ class NetworkingManager {
             if response.statusCode == 401 {
                 unauthorizedAccess.send()
             }
-            
+
             if case .token = router,
                response.statusCode == 400 {
                 unauthorizedAccess.send()
+            }
+            
+            if case .refreshToken = router,
+               response.statusCode == 400 {
+                invalidToken.send()
             }
             
             if let error = try? JSONDecoder().decode(SpotifyErrorResponse.self, from: output.data) {
@@ -97,7 +102,7 @@ class NetworkingManager {
     
     static func handleBadURLResponse(for router: NoisyHTTPRouter, statusCode: Int) {
         switch router {
-        case .token, .refreshToken, .profile, .search, .recommendation, .recommendationGenres, .authorize, .track, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .myTop, .playlists, .playlist, .playlistTracks, .artist, .album, .albumTracks, .artistsAlbums, .artistsTopTracks, .artistsRelatedArtists:
+        case .token, .refreshToken, .profile, .search, .recommendation, .recommendationGenres, .authorize, .track, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .myTop, .playlists, .playlist, .playlistTracks, .addToPlaylist, .createPlaylist, .artist, .album, .albumTracks, .artistsAlbums, .artistsTopTracks, .artistsRelatedArtists:
             break
         }
     }

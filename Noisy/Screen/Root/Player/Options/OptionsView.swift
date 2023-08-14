@@ -12,6 +12,7 @@ enum OptionRow: Identifiable {
     case addToQueue(action: PassthroughSubject<Void, Never>)
     case viewArtist(action: PassthroughSubject<Void, Never>)
     case viewAlbum(action: PassthroughSubject<Void, Never>)
+    case addToPlaylist(action: PassthroughSubject<Void, Never>)
     
     var icon: Image {
         switch self {
@@ -21,6 +22,8 @@ enum OptionRow: Identifiable {
             return Image.Shared.artist
         case .viewAlbum:
             return Image.Shared.album
+        case .addToPlaylist:
+            return Image.Shared.playlist
         }
     }
     
@@ -32,10 +35,12 @@ enum OptionRow: Identifiable {
             return .Shared.viewArtist
         case .viewAlbum:
             return .Shared.viewAlbum
+        case .addToPlaylist:
+            return .Shared.addToPlaylist
         }
     }
     
-    var id: String {
+            var id: String {
         String(describing: self)
     }
 }
@@ -45,12 +50,11 @@ struct OptionsView: View {
     let options: [OptionRow]
     
     var body: some View {
-        ZStack {
-            Color.yellow100
-                .circleOverlay(xOffset: 0.4, yOffset: 0.4)
-            
-            bodyView()
-        }
+        bodyView()
+            .background {
+                Color.yellow100.ignoresSafeArea()
+                    .circleOverlay(xOffset: 0.5, yOffset: 0.0, frameMultiplier: 0.8)
+            }
     }
 }
 
@@ -83,7 +87,7 @@ extension OptionsView {
     func optionRow(for optionRow: OptionRow) -> some View {
         Button {
             switch optionRow {
-            case .addToQueue(let action), .viewAlbum(let action), .viewArtist(let action):
+            case .addToQueue(let action), .viewAlbum(let action), .viewArtist(let action), .addToPlaylist(let action):
                 action.send()
             }
         } label: {

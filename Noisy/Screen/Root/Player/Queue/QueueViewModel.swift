@@ -50,6 +50,11 @@ extension QueueViewModel {
         }
     }
     
+    func trackRowTapped(_ track: Track) {
+        queueManager.setState(with: tracks, currentTrackIndex: tracks.firstIndex(of: track))
+        queueManager.play()
+    }
+    
     func trackRowSwiped(_ track: EnumeratedSequence<[Track]>.Element) {
         withAnimation {
             queueManager.remove(track)

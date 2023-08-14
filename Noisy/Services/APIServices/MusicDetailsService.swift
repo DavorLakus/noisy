@@ -159,6 +159,24 @@ extension MusicDetailsService {
         return playlist
     }
     
+    func getPlaylists(limit: Int, offset: Int) -> PassthroughSubject<PlaylistsResponse, Never> {
+        let playlists = PassthroughSubject<PlaylistsResponse, Never>()
+        
+        if let profileData  = UserDefaults.standard.object(forKey: .Login.profile) as? Data,
+           let user = try? JSONDecoder().decode(Profile.self, from: profileData) {
+            api.getPlaylists(for: user.id, limit: limit, offset: offset)
+                .decode(type: PlaylistsResponse.self, decoder: JSONDecoder())
+                .sink(
+                    receiveCompletion: NetworkingManager.handleCompletion,
+                    receiveValue: { result in
+                        playlists.send(result)
+                    })
+                .store(in: &cancellables)
+        }
+        
+        return playlists
+    }
+    
     func getPlaylistTracks(for playlistId: String, limit: Int, offset: Int) -> PassthroughSubject<TrackObjectsResponse, Never> {
         let tracks = PassthroughSubject<TrackObjectsResponse, Never>()
         
@@ -172,6 +190,41 @@ extension MusicDetailsService {
             .store(in: &cancellables)
         
         return tracks
+    }
+    
+    func addTracksToPlaylist(_ playlistId: String, tracks: String) -> PassthroughSubject<Void, Never> {
+        let tracksAdded = PassthroughSubject<Void, Never>()
+
+        api.addTracksToPlaylist(playlistId, tracks: tracks)
+            .decode(type: SpotifyError.self, decoder: JSONDecoder())
+            .sink(
+                receiveCompletion: { completion in
+                    tracksAdded.send()
+                },
+                receiveValue: { error in
+                    print(error)
+                })
+            .store(in: &cancellables)
+        
+        return tracksAdded
+    }
+    
+    func createNewPlaylist(_ name: String) -> PassthroughSubject<Playlist, Never> {
+        let playlistCreated = PassthroughSubject<Playlist, Never>()
+
+        if let profileData  = UserDefaults.standard.object(forKey: .Login.profile) as? Data,
+           let user = try? JSONDecoder().decode(Profile.self, from: profileData) {
+            api.createNewPlaylist(userId: user.id, name: name)
+                .decode(type: Playlist.self, decoder: JSONDecoder())
+                .sink(
+                    receiveCompletion: NetworkingManager.handleCompletion,
+                    receiveValue: { result in
+                        playlistCreated.send(result)
+                    })
+                .store(in: &cancellables)
+        }
+        
+        return playlistCreated
     }
     
     func getAlbum(with albumId: String) -> PassthroughSubject<Album, Never> {

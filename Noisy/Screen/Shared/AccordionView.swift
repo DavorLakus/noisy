@@ -29,11 +29,8 @@ struct SimpleAccordionView<AccordionData: Hashable, Content: View>: View {
                     
                     Spacer()
                     
-                    if isExpanded {
-                        Image.Shared.chevronDown
-                    } else {
-                        Image.Shared.chevronRight
-                    }
+                    Image.Shared.chevronRight
+                        .rotationEffect(isExpanded ? .degrees(90) : .degrees(0))
                 }
                 .background { Color.white }
             }
@@ -78,11 +75,8 @@ struct ParameterizedAccordionView<AccordionData: Hashable, Content: View>: View 
                     
                     Spacer()
                     
-                    if isExpanded {
-                        Image.Shared.chevronDown
-                    } else {
-                        Image.Shared.chevronRight
-                    }
+                    Image.Shared.chevronRight
+                        .rotationEffect(isExpanded ? .degrees(90) : .degrees(0))
                 }
                 .background { Color.white }
             }

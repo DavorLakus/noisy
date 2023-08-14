@@ -12,7 +12,7 @@ enum SearchPath: Hashable {
     case artist(Artist)
     case album(Album)
     case playlist(Playlist)
-    case playlists([Playlist])
+    case playlists([Track])
 }
 
 final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
@@ -26,10 +26,10 @@ final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
     internal var artistViewModelStack = Stack<ArtistViewModel>()
     internal var albumViewModelStack = Stack<AlbumViewModel>()
     internal var playlistViewModelStack = Stack<PlaylistViewModel>()
-    internal var playlistsViewModelStack = Stack<PlaylistsViewModel>()
+    internal var playlistsViewModel: PlaylistsViewModel?
     
-    internal var onDidTapPlayAllButton = PassthroughSubject<[Track], Never>()
-    internal var onDidTapTrackRow = PassthroughSubject<Track, Never>()
+    internal var onDidTapPlayAllButton = PassthroughSubject<Void, Never>()
+    internal var onDidTapTrackRow = PassthroughSubject<Void, Never>()
     internal var musicDetailsService: MusicDetailsService
     internal var queueManager: QueueManager
     internal var cancellables = Set<AnyCancellable>()
@@ -68,8 +68,8 @@ final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
             bindAlbumViewModel(for: album)
         case .playlist(let playlist):
             bindPlaylistViewModel(for: playlist)
-        case .playlists(let playlists):
-            bindPlaylistsViewModel(for: playlists)
+        case .playlists(let tracks):
+            bindPlaylistsViewModel(with: tracks)
         }
         
         navigationPath.append(path)
@@ -108,15 +108,15 @@ extension SearchCoordinator {
         push(.playlist(playlist))
     }
     
-    func pushPlaylistsViewModel(for playlists: [Playlist]) {
-        push(.playlists(playlists))
+    func pushPlaylistsViewModel(with tracks: [Track]) {
+        push(.playlists(tracks))
     }
 }
 
 // MARK: - Private extensions
 private extension SearchCoordinator {
     func bindSearchViewModel() {
-        searchViewModel = SearchViewModel(searchService: searchService)
+        searchViewModel = SearchViewModel(searchService: searchService, queueManager: queueManager)
         
         searchViewModel?.onDidTapProfileButton
             .sink { [weak self] in

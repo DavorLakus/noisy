@@ -68,7 +68,7 @@ extension HomeService {
         
         if let profileData  = UserDefaults.standard.object(forKey: .Login.profile) as? Data,
            let user = try? JSONDecoder().decode(Profile.self, from: profileData) {
-            api.getPlaylists(for: user.id, count: count)
+            api.getPlaylists(for: user.id, limit: count, offset: .zero)
                 .decode(type: PlaylistsResponse.self, decoder: JSONDecoder())
                 .sink(receiveCompletion: NetworkingManager.handleCompletion) { response in
                     playlists.send(response)

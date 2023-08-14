@@ -10,12 +10,14 @@ import SwiftUI
 struct LargeButton: View {
     let foregroundColor: Color
     let backgroundColor: Color
+    let padding: CGFloat
     let title: String
     let action: () -> Void
     
-    init(foregroundColor: Color, backgroundColor: Color, title: String, action: @escaping () -> Void) {
+    init(foregroundColor: Color, backgroundColor: Color, padding: CGFloat = 16, title: String, action: @escaping () -> Void) {
         self.foregroundColor = foregroundColor
         self.backgroundColor = backgroundColor
+        self.padding = padding
         self.title = title
         self.action = action
     }
@@ -27,7 +29,7 @@ struct LargeButton: View {
                 .font(.nunitoBold(size: 17))
                 .frame(maxWidth: .infinity)
         }
-        .padding(16)
+        .padding(padding)
         .cardBackground(backgroundColor: backgroundColor, borderColor: .gray400, hasShadow: false)
     }
 }

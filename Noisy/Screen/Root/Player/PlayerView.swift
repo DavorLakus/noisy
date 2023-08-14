@@ -10,7 +10,6 @@ import SwiftUI
 struct PlayerView: View {
     @ObservedObject var viewModel: PlayerViewModel
     @State var albumWidth: CGFloat = 0
-    @State var detents = Set<PresentationDetent>()
     
     var body: some View {
         ZStack {
@@ -21,10 +20,8 @@ struct PlayerView: View {
             
             bodyView()
                 .toolbar(content: toolbarContent)
-                .sheet(isPresented: $viewModel.isOptionsSheetPresented) {
+                .dynamicSheet(isPresented: $viewModel.isOptionsSheetPresented) {
                     OptionsView(isPresented: $viewModel.isOptionsSheetPresented, options: viewModel.options)
-                        .readSize { detents = [.height($0.height)] }
-                        .presentationDetents(detents)
                         .toast(isPresented: $viewModel.isToastPresented, message: viewModel.toastMessage)
                 }
         }

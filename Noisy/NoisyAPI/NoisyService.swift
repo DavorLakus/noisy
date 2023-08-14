@@ -21,9 +21,11 @@ protocol NoisyAPIProtocol {
     func getMyTopTracks(count: Int, timeRange: String) -> AnyPublisher<Data, Error>
     func getTopTracks(for artistId: String) -> AnyPublisher<Data, Error>
     func getTopArtists(count: Int, timeRange: String) -> AnyPublisher<Data, Error>
-    func getPlaylists(for userId: String, count: Int) -> AnyPublisher<Data, Error>
+    func getPlaylists(for userId: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error>
     func getPlaylist(with playlistId: String) -> AnyPublisher<Data, Error>
     func getPlaylistTracks(for playlistId: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error>
+    func createNewPlaylist(userId: String, name: String) -> AnyPublisher<Data, Error>
+    func addTracksToPlaylist(_ playlistId: String, tracks: String) -> AnyPublisher<Data, Error>
     func getAlbum(with albumId: String) -> AnyPublisher<Data, Error>
     func getAlbumTracks(for albumId: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error>
     func getArtistsAlbums(for artistId: String) -> AnyPublisher<Data, Error>
@@ -96,8 +98,8 @@ extension NoisyService {
         NetworkingManager.performRequest(.myTop(type: "artists", count: count, timeRange: timeRange))
     }
     
-    func getPlaylists(for userId: String, count: Int) -> AnyPublisher<Data, Error> {
-        NetworkingManager.performRequest(.playlists(userId: userId, count: count))
+    func getPlaylists(for userId: String, limit: Int, offset: Int = .zero) -> AnyPublisher<Data, Error> {
+        NetworkingManager.performRequest(.playlists(userId: userId, limit: limit, offset: offset))
     }
     
     func getPlaylist(with playlistId: String) -> AnyPublisher<Data, Error> {
@@ -106,6 +108,15 @@ extension NoisyService {
     
     func getPlaylistTracks(for playlistId: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error> {
         NetworkingManager.performRequest(.playlistTracks(playlistId: playlistId, limit: limit, offset: offset))
+    }
+    
+    func createNewPlaylist(userId: String, name: String) -> AnyPublisher<Data, Error> {
+        NetworkingManager.performRequest(.createPlaylist(userId: userId, name: name))
+    }
+
+    
+    func addTracksToPlaylist(_ playlistId: String, tracks: String) -> AnyPublisher<Data, Error> {
+        NetworkingManager.performRequest(.addToPlaylist(playlistId: playlistId, uris: tracks))
     }
     
     func getAlbum(with albumId: String) -> AnyPublisher<Data, Error> {

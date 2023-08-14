@@ -61,7 +61,7 @@ final class HomeViewModel: ObservableObject {
     // MARK: - Coordinator actions
     var tokenDidRefresh: PassthroughSubject<Void, Never>?
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
-    var onDidSelectTrackRow: PassthroughSubject<Track, Never>?
+    var onDidSelectTrackRow: PassthroughSubject<Void, Never>?
     let onDidTapArtistRow = PassthroughSubject<Artist, Never>()
     let onDidTapAlbumButton = PassthroughSubject<Album, Never>()
     let onDidTapPlaylistRow = PassthroughSubject<Playlist, Never>()
@@ -111,7 +111,8 @@ extension HomeViewModel {
     }
     
     func trackRowSelected(for track: Track) {
-        onDidSelectTrackRow?.send(track)
+        queueManager.setState(with: topTracks, currentTrackIndex: topTracks.firstIndex(of: track))
+        onDidSelectTrackRow?.send()
     }
     
     func artistRowSelected(for artist: Artist) {

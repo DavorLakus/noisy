@@ -57,6 +57,9 @@ extension QueueView {
                             }
                         }
                         .cardBackground(backgroundColor: .appBackground, borderColor: .gray300, hasShadow: false)
+                        .onTapGesture {
+                            viewModel.trackRowTapped(enumeratedTrack.element)
+                        }
                         .offset(x: trackRowOffsets[enumeratedTrack.offset])
                         .swipeAction(title: String.Shared.remove, gradient: [.red400, .red300], height: trackRowSize.height, offset: $trackRowOffsets[enumeratedTrack.offset]) {
                             withAnimation(.linear(duration: 1)) {

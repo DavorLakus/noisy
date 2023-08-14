@@ -12,10 +12,11 @@ enum DiscoverPath: Hashable {
     case artist(Artist)
     case album(Album)
     case playlist(Playlist)
-    case playlists([Playlist])
+    case playlists([Track])
 }
 
 final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
+    
     // MARK: - Published properties
     @Published var navigationPath = NavigationPath()
     
@@ -26,16 +27,17 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     internal var artistViewModelStack = Stack<ArtistViewModel>()
     internal var albumViewModelStack = Stack<AlbumViewModel>()
     internal var playlistViewModelStack = Stack<PlaylistViewModel>()
-    internal var playlistsViewModelStack = Stack<PlaylistsViewModel>()
+    internal var playlistsViewModel: PlaylistsViewModel?
     
-    internal var onDidTapPlayAllButton = PassthroughSubject<[Track], Never>()
-    internal var onDidTapTrackRow = PassthroughSubject<Track, Never>()
+    internal var onDidTapPlayAllButton = PassthroughSubject<Void, Never>()
+    internal var onDidTapTrackRow = PassthroughSubject<Void, Never>()
     internal var musicDetailsService: MusicDetailsService
     internal var queueManager: QueueManager
+
     internal var cancellables = Set<AnyCancellable>()
     
     // MARK: - Private properties
-    private var discoverViewModel: DiscoverViewModel?
+    private lazy var discoverViewModel = DiscoverViewModel(discoverService: discoverService, searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
     private var discoverService: DiscoverService
     private var searchService: SearchService
     
@@ -50,27 +52,31 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     }
     
     func bindDiscoverViewModel() {
-        discoverViewModel = DiscoverViewModel(discoverService: discoverService, searchService: searchService,  musicDetailsService: musicDetailsService, queueManager: queueManager)
-        
-        discoverViewModel?.onDidTapProfileButton
+        discoverViewModel.onDidTapProfileButton
             .sink { [weak self] in
                 self?.onDidTapProfileButton.send()
             }
             .store(in: &cancellables)
         
-        discoverViewModel?.onDidTapArtistButton
+        discoverViewModel.onDidTapArtistButton
             .sink { [weak self] artist in
                 self?.push(.artist(artist))
             }
             .store(in: &cancellables)
         
-        discoverViewModel?.onDidTapAlbumButton
+        discoverViewModel.onDidTapAlbumButton
             .sink { [weak self] album in
                 self?.push(.album(album))
             }
             .store(in: &cancellables)
         
-        discoverViewModel?.onDidTapRecommendedTrackRow = onDidTapTrackRow
+        discoverViewModel.onDidTapAddToPlaylist
+            .sink { [weak self] tracks in
+                self?.push(.playlists(tracks))
+            }
+            .store(in: &cancellables)
+        
+        discoverViewModel.onDidTapRecommendedTrackRow = onDidTapTrackRow
     }
     
     func start() -> some CoordinatorViewProtocol {
@@ -79,10 +85,8 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     
     @ViewBuilder
     func rootView() -> some View {
-        if let discoverViewModel {
-            DiscoverView(viewModel: discoverViewModel)
-                .navigationDestination(for: DiscoverPath.self, destination: navigationDestination)
-        }
+        DiscoverView(viewModel: discoverViewModel)
+            .navigationDestination(for: DiscoverPath.self, destination: navigationDestination)
     }
     
     @ViewBuilder
@@ -107,8 +111,8 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
             bindAlbumViewModel(for: album)
         case .playlist(let playlist):
             bindPlaylistViewModel(for: playlist)
-        case .playlists(let playlists):
-            bindPlaylistsViewModel(for: playlists)
+        case .playlists(let tracks):
+            bindPlaylistsViewModel(with: tracks)
         }
         
         navigationPath.append(path)
@@ -133,12 +137,13 @@ extension DiscoverCoordinator {
         push(.playlist(playlist))
     }
     
-    func pushPlaylistsViewModel(for playlists: [Playlist]) {
-        push(.playlists(playlists))
+    func pushPlaylistsViewModel(with tracks: [Track]) {
+        push(.playlists(tracks))
     }
 }
 
-struct DiscoverCoordinatorView<Coordinator: DiscoverCoordinator>: CoordinatorViewProtocol {
+// MARK: - CoordinatorViewCoordinator
+struct DiscoverCoordinatorView<Coordinator: MusicDetailsCoordinatorProtocol>: CoordinatorViewProtocol {
     @ObservedObject var coordinator: Coordinator
     
     var body: some View {

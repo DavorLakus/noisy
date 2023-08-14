@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 extension View {
     func tab(name: String, icon: Image) -> some View {
@@ -108,6 +109,16 @@ extension View {
         .onPreferenceChange(SizePreferenceKey.self, perform: onChange)
     }
     
+    func readEdgeInsets(onChange: @escaping (EdgeInsets) -> Void) -> some View {
+        background(
+            GeometryReader { geometry in
+                Color.clear
+                    .preference(key: EdgeInsetsPreferenceKey.self, value: geometry.safeAreaInsets)
+            }
+        )
+        .onPreferenceChange(EdgeInsetsPreferenceKey.self, perform: onChange)
+    }
+    
     @ViewBuilder
     func cardBackground(backgroundColor: Color = .cardBackground, borderColor: Color = .gray50, cornerRadius: CGFloat = Constants.cornerRadius, hasShadow: Bool = true, isHidden: Bool = false) -> some View {
         if isHidden {
@@ -164,13 +175,12 @@ extension View {
     }
     
     @ViewBuilder
-    func modalSheet<Content: View>(isPresented: Binding<Bool>, content: () -> Content) -> some View {
-        ZStack {
-            self
-            if isPresented.wrappedValue {
-                content()
-            }
-        }
+    func dynamicSheet<SheetContent: View>(isPresented: Binding<Bool>, content: @escaping () -> SheetContent) -> some View {
+        self.modifier(ModalSheetModifier(isPresented: isPresented, sheetContent: content))
+    }
+    
+    func dynamicModalSheet<SheetContent: View>(isPresented: Binding<Bool>, content: @escaping () -> SheetContent) -> some View {
+        self.modifier(SheetModifier(isPresented: isPresented, sheetContent: content))
     }
     
     func highlightedText(_ text: String, query: String) -> some View {
@@ -229,6 +239,11 @@ struct LoadImage: View {
 private struct SizePreferenceKey: PreferenceKey {
     static var defaultValue: CGSize = .zero
     static func reduce(value: inout CGSize, nextValue: () -> CGSize) {}
+}
+
+private struct EdgeInsetsPreferenceKey: PreferenceKey {
+    static var defaultValue = EdgeInsets(top: .zero, leading: .zero, bottom: .zero, trailing: .zero)
+    static func reduce(value: inout EdgeInsets, nextValue: () -> EdgeInsets) {}
 }
 
 extension View {
@@ -293,5 +308,127 @@ extension View {
                     }
                 }
             }
+    }
+}
+
+struct ModalSheetModifier<SheetContent: View>: ViewModifier {
+    @Binding var isPresented: Bool
+    @State var isShadowPresented = false
+    @State var height: CGFloat = .zero
+    let sheetContent: () -> SheetContent
+    
+    func body(content: Content) -> some View {
+        ZStack(alignment: .bottom) {
+            content
+                .onChange(of: isPresented) { isSheetPresented in
+                    if isSheetPresented {
+                        withAnimation {
+                            isShadowPresented = true
+                        }
+                    } else {
+                        isShadowPresented = false
+                    }
+                }
+            
+            if isShadowPresented {
+                Color.alertShadow
+                    .opacity(0.7)
+                    .ignoresSafeArea()
+                    .zStackTransition(.opacity)
+                    .onTapGesture {
+                        withAnimation(.easeInOut) {
+                            isPresented = false
+                        }
+                    }
+            }
+            
+            if isPresented {
+                sheetContent()
+                    .offset(y: isPresented ? height : .zero)
+                    .zStackTransition(.asymmetric(insertion: .move(edge: .bottom), removal: .offset(y: 500)))
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                withAnimation(.easeInOut) {
+                                    height = min(150, max(-150, value.translation.height))
+                                }
+                            }
+                            .onEnded {
+                                if $0.translation.height > 100 {
+                                    withAnimation(.easeInOut) {
+                                        isPresented = false
+                                    }
+                                } else {
+                                    withAnimation(.easeInOut) {
+                                        height = .zero
+                                    }
+                                }
+                            }
+                    )
+                    .padding(.top, Constants.cornerRadius)
+                    .background {
+                        Color.appBackground.cornerRadius(Constants.cornerRadius)
+                            .offset(y: height > 0 ? height : .zero)
+                    }
+                    .padding(.top, -Constants.cornerRadius)
+                    .cornerRadius(Constants.cornerRadius)
+                    .padding(.top, Constants.cornerRadius)
+                    .onDisappear { height = .zero }
+            }
+        }
+//        .adaptsToKeyboard()
+        .ignoresSafeArea(edges: .bottom)
+    }
+}
+
+struct SheetModifier<SheetContent: View>: ViewModifier {
+    @Binding var isPresented: Bool
+    @State var detents = Set<PresentationDetent>()
+    let sheetContent: () -> SheetContent
+    
+    func body(content: Content) -> some View {
+        content
+            .sheet(isPresented: $isPresented) {
+                sheetContent()
+                    .readSize { detents = [.height($0.height)] }
+                    .presentationDetents(detents)
+            }
+    }
+}
+
+struct AdaptsToKeyboard: ViewModifier {
+    @State var currentHeight: CGFloat = 0
+    @State var edgeInsets: EdgeInsets = .init()
+    
+    func body(content: Content) -> some View {
+        content
+            .readEdgeInsets { edgeInsets = $0 }
+            .padding(.bottom, self.currentHeight)
+            .onAppear(perform: {
+                NotificationCenter.Publisher(center: NotificationCenter.default, name: UIResponder.keyboardWillShowNotification)
+                    .merge(with: NotificationCenter.Publisher(center: NotificationCenter.default, name: UIResponder.keyboardWillChangeFrameNotification))
+                    .compactMap { notification in
+                        withAnimation(.easeOut(duration: 0.16)) {
+                            notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
+                        }
+                    }
+                    .map { rect in
+                        print(rect.height)
+                        return rect.height - 200
+                    }
+                    .subscribe(Subscribers.Assign(object: self, keyPath: \.currentHeight))
+                
+                NotificationCenter.Publisher(center: NotificationCenter.default, name: UIResponder.keyboardWillHideNotification)
+                    .compactMap { notification in
+                        CGFloat.zero
+                    }
+                    .subscribe(Subscribers.Assign(object: self, keyPath: \.currentHeight))
+            })
+    }
+}
+
+extension View {
+    func adaptsToKeyboard() -> some View {
+        return modifier(AdaptsToKeyboard())
     }
 }

@@ -10,7 +10,6 @@ import WebKit
 
 struct HomeView: View {
     @ObservedObject var viewModel: HomeViewModel
-    @State var detents = Set<PresentationDetent>()
     
     var body: some View {
         ZStack(alignment: .top) {
@@ -24,10 +23,8 @@ struct HomeView: View {
         .ignoresSafeArea(edges: .top)
         .toolbar(.hidden, for: .navigationBar)
         .onAppear(perform: viewModel.viewDidAppear)
-        .sheet(isPresented: $viewModel.isOptionsSheetPresented) {
+        .dynamicModalSheet(isPresented: $viewModel.isOptionsSheetPresented) {
             OptionsView(isPresented: $viewModel.isOptionsSheetPresented, options: viewModel.options)
-                .readSize { detents = [.height($0.height)] }
-                .presentationDetents(detents)
                 .toast(isPresented: $viewModel.isToastPresented, message: viewModel.toastMessage)
         }
     }

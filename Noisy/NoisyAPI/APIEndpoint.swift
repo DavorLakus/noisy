@@ -15,6 +15,8 @@ public protocol APIEndpoint {
     var headers: [String: Any]? { get }
     var parameters: [URLQueryItem]? { get }
     var authToken: [String : Any]? { get }
+    
+    func body() throws -> Data?
 }
 
 extension APIEndpoint {
@@ -36,6 +38,7 @@ extension APIEndpoint {
         var request = URLRequest(url: url)
 
         request.httpMethod = method.description
+        request.httpBody = try? body()
 
         headers?.forEach { (key, value) in
             request.addValue(value as! String, forHTTPHeaderField: key)

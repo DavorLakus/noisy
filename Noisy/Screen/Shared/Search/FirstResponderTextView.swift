@@ -26,12 +26,12 @@ struct FirstResponderTextView: UIViewRepresentable {
 
     @Binding var text: String
     var isFirstResponder: Binding<Bool>
-    var placeholder = String.Dictionary.searchBarPlaceholder
+    var placeholder = String.Search.searchBarPlaceholder
     
     func makeUIView(context: UIViewRepresentableContext<FirstResponderTextView>) -> UITextField {
         let textField = UITextField(frame: .zero)
         textField.delegate = context.coordinator
-        textField.font = UIFont(name: "Poppins-Regular", size: 16)
+        textField.font = UIFont(name: "Nunito-SemiBold", size: 16)
         textField.textColor = UIColor(Color.gray700)
         textField.placeholder = placeholder
         textField.backgroundColor = .clear

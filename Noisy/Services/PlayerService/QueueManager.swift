@@ -34,20 +34,36 @@ final class QueueManager: ObservableObject {
         bindSliderState()
     }
     
-    func setState(with tracks: [Track], currentTrack: Track? = nil) {
+    func setState(with tracks: [Track], currentTrackIndex: Int? = nil, playNow: Bool = true) {
+        if isPlaying.value {
+            pause()
+        }
         state.tracks = tracks
-        if let currentTrack {
-            state.currentTrack = currentTrack
+        if let currentTrackIndex {
+            state.currentTrackIndex = currentTrackIndex
+            state.currentTrack = tracks[currentTrackIndex]
         } else {
             state.currentTrack = tracks[.zero]
         }
         state.currentTime = .zero
         self.currentTrack.send(state.currentTrack)
+        state.persist()
+        if playNow {
+            play()
+        }
     }
     
-    func setState(with state: QueueState) {
+    func setState(with state: QueueState, playNow: Bool = true) {
+        if isPlaying.value {
+            pause()
+        }
         self.state = state
         currentTrack.send(state.currentTrack)
+        state.persist()
+        
+        if playNow {
+            play()
+        }
     }
     
     func bindSliderState() {
@@ -76,10 +92,12 @@ final class QueueManager: ObservableObject {
         if let track,
            let urlString = track.previewUrl,
            let url = URL(string: urlString) {
+            print("replacing current item")
             player.replaceCurrentItem(with: AVPlayerItem(url: url))
         } else if let urlString = state.currentTrack?.previewUrl,
                   let url = URL(string: urlString) {
             player.replaceCurrentItem(with: AVPlayerItem(url: url))
+            print("replacing current item")
         }
         player.seek(to: CMTime(seconds: state.currentTime, preferredTimescale: 1000))
         player.play()
@@ -140,7 +158,8 @@ final class QueueManager: ObservableObject {
     
     func setPlayback() {
         do {
-            try AVAudioSession.sharedInstance().setCategory(.playback)
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers, .allowAirPlay])
+            try AVAudioSession.sharedInstance().setActive(true)
         } catch let error {
             print(error.localizedDescription)
         }
