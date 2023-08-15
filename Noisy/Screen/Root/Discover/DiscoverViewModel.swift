@@ -68,6 +68,7 @@ final class DiscoverViewModel: ObservableObject {
     let onDidTapArtistButton = PassthroughSubject<Artist, Never>()
     let onDidTapAlbumButton = PassthroughSubject<Album, Never>()
     let onDidTapAddToPlaylist = PassthroughSubject<[Track], Never>()
+    let onDidTapVisualizeButton = PassthroughSubject<[Track], Never>()
     
     // MARK: - Public properties
     var hasAnySeeds: Bool { !seedArtists.isEmpty || !seedTracks.isEmpty || !seedGenres.isEmpty }
@@ -105,6 +106,7 @@ final class DiscoverViewModel: ObservableObject {
     }
 }
 
+// MARK: - Public extension
 extension DiscoverViewModel {
     func profileButtonTapped() {
         onDidTapProfileButton.send()
@@ -232,6 +234,10 @@ extension DiscoverViewModel {
         withAnimation {
             isOptionsSheetPresented = true
         }
+    }
+    
+    func visualizeButtonTapped() {
+        onDidTapVisualizeButton.send(recommendedTracks)
     }
 }
 

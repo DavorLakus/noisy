@@ -92,12 +92,12 @@ final class QueueManager: ObservableObject {
         if let track,
            let urlString = track.previewUrl,
            let url = URL(string: urlString) {
-            print("replacing current item")
             player.replaceCurrentItem(with: AVPlayerItem(url: url))
+            print("playing: \(state.currentTrack!.name)")
         } else if let urlString = state.currentTrack?.previewUrl,
                   let url = URL(string: urlString) {
+            print("playing: \(state.currentTrack!.name)")
             player.replaceCurrentItem(with: AVPlayerItem(url: url))
-            print("replacing current item")
         }
         player.seek(to: CMTime(seconds: state.currentTime, preferredTimescale: 1000))
         player.play()

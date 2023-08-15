@@ -224,7 +224,7 @@ private extension PlayerViewModel {
     func addToSaved() {
         guard let currentTrack else { return }
         musicDetailsService.saveTracks(with: currentTrack.id)
-            .sink { [weak self] isSaved in
+            .sink { [weak self] _ in
                 self?.checkIfTrackSaved(id: currentTrack.id)
                 self?.toastMessage = "\(currentTrack.name) \(String.Shared.addedToFavorites)"
                 withAnimation {

@@ -18,6 +18,7 @@ enum NoisyHTTPRouter {
     case profile
     case myTop(type: String, count: Int, timeRange: String)
     case track(id: String)
+    case trackAudioFeatures(ids: String)
     case savedTracks(limit: Int, offset: Int)
     case checkSavedTracks(ids: String)
     case saveTracks(ids: String)
@@ -43,7 +44,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize, .token, .refreshToken:
             return "accounts.spotify.com"
-        case .profile, .myTop, .track, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .createPlaylist,.addToPlaylist, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
+        case .profile, .myTop, .track, .trackAudioFeatures, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .createPlaylist,.addToPlaylist, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
             return "api.spotify.com"
         }
     }
@@ -54,7 +55,7 @@ extension NoisyHTTPRouter: APIEndpoint {
             return .empty
         case .token, .refreshToken:
             return "/api"
-        case .profile, .myTop, .track, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .createPlaylist, .addToPlaylist, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
+        case .profile, .myTop, .track, .trackAudioFeatures, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .createPlaylist, .addToPlaylist, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
             return "/v1"
         }
     }
@@ -69,6 +70,8 @@ extension NoisyHTTPRouter: APIEndpoint {
             return "/search"
         case .track(let id):
             return "/tracks/\(id)"
+        case .trackAudioFeatures:
+            return "/audio-features"
         case .checkSavedTracks:
             return "/me/tracks/contains"
         case .saveTracks, .savedTracks:
@@ -110,7 +113,7 @@ extension NoisyHTTPRouter: APIEndpoint {
     
     public var method: HTTPMethod {
         switch self {
-        case .profile, .search, .recommendation, .recommendationGenres, .authorize, .myTop, .track, .savedTracks, .checkSavedTracks, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .search, .recommendation, .recommendationGenres, .authorize, .myTop, .track, .trackAudioFeatures, .savedTracks, .checkSavedTracks, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return .get
         case .token, .refreshToken, .createPlaylist, .addToPlaylist:
             return .post
@@ -125,7 +128,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize:
             return nil
-        case .profile, .search, .recommendation, .recommendationGenres, .myTop, .track, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .createPlaylist, .addToPlaylist, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .search, .recommendation, .recommendationGenres, .myTop, .track, .trackAudioFeatures, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .createPlaylist, .addToPlaylist, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return authToken
         case .token, .refreshToken:
             return ["Content-Type" : "application/x-www-form-urlencoded"]
@@ -169,6 +172,10 @@ extension NoisyHTTPRouter: APIEndpoint {
                 URLQueryItem(name:"grant_type", value: "refresh_token"),
                 URLQueryItem(name:"refresh_token", value: refreshToken),
                 URLQueryItem(name:"client_id", value: APIConstants.clientID)
+            ]
+        case .trackAudioFeatures(let ids):
+            return [
+                URLQueryItem(name: "ids", value: ids)
             ]
         case .savedTracks(let limit, let offset):
             return [

@@ -227,6 +227,21 @@ extension MusicDetailsService {
         return playlistCreated
     }
     
+    func getArtist(with artistId: String) -> PassthroughSubject<Artist, Never> {
+        let artist = PassthroughSubject<Artist, Never>()
+        
+        api.getArtist(with: artistId)
+            .decode(type: Artist.self, decoder: JSONDecoder())
+            .sink(
+                receiveCompletion: NetworkingManager.handleCompletion,
+                receiveValue: { result in
+                    artist.send(result)
+                })
+            .store(in: &cancellables)
+        
+        return artist
+    }
+    
     func getAlbum(with albumId: String) -> PassthroughSubject<Album, Never> {
         let album = PassthroughSubject<Album, Never>()
         

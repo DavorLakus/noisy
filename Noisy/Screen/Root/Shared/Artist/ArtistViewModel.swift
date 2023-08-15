@@ -14,6 +14,7 @@ final class ArtistViewModel: ObservableObject, Equatable {
     }
     
     // MARK: - Published properties
+    @Published var artist: Artist
     @Published var topTracks: [Track] = []
     @Published var albums: [Album] = []
     @Published var relatedArtists: [Artist] = []
@@ -29,7 +30,6 @@ final class ArtistViewModel: ObservableObject, Equatable {
     let onDidTapSimilarArtistButton = PassthroughSubject<Artist, Never>()
     
     // MARK: - Public properties
-    let artist: Artist
     var options: [OptionRow] = []
     var toastMessage: String = .empty
     
@@ -44,6 +44,7 @@ final class ArtistViewModel: ObservableObject, Equatable {
         self.musicDetailsService = musicDetailsService
         self.queueManager = queueManager
         
+        fetchArtistDetails()
         fetchTopTracks()
         fetchAlbums()
         fetchRelatedArtists()
@@ -99,6 +100,14 @@ extension ArtistViewModel {
 
 // MARK: - Private extension
 private extension ArtistViewModel {
+    func fetchArtistDetails() {
+        musicDetailsService.getArtist(with: artist.id)
+            .sink { [weak self] artist in
+                self?.artist = artist
+            }
+            .store(in: &cancellables)
+    }
+    
     func fetchTopTracks() {
         musicDetailsService.getArtistsTopTracks(for: artist.id)
             .sink { [weak self] tracks in

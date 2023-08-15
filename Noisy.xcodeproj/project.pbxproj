@@ -44,6 +44,10 @@
 		41D3A2A12A31E193000AC6FE /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D3A2A02A31E193000AC6FE /* SearchViewModel.swift */; };
 		41D696872A850B4C0071AEB1 /* PlaybackSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D696862A850B4C0071AEB1 /* PlaybackSlider.swift */; };
 		41D696892A8A66200071AEB1 /* SheetCoordinatorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D696882A8A66200071AEB1 /* SheetCoordinatorProtocol.swift */; };
+		41D6968C2A8B59170071AEB1 /* VisualizeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D6968B2A8B59170071AEB1 /* VisualizeView.swift */; };
+		41D6968E2A8B591C0071AEB1 /* VisualizeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D6968D2A8B591C0071AEB1 /* VisualizeViewModel.swift */; };
+		41D696902A8BB0B00071AEB1 /* AudioFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D6968F2A8BB0B00071AEB1 /* AudioFeatures.swift */; };
+		41D696B72A8CB1960071AEB1 /* LASwift in Frameworks */ = {isa = PBXBuildFile; productRef = 41D696B62A8CB1960071AEB1 /* LASwift */; };
 		41DE39CD2A63FCD50048CB51 /* CoordinatorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DE39CC2A63FCD50048CB51 /* CoordinatorProtocol.swift */; };
 		41DE39CF2A6431CC0048CB51 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DE39CE2A6431CC0048CB51 /* Image.swift */; };
 		41DE39D32A6436E20048CB51 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DE39D22A6436E20048CB51 /* ProfileView.swift */; };
@@ -200,6 +204,9 @@
 		41D3A2A02A31E193000AC6FE /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		41D696862A850B4C0071AEB1 /* PlaybackSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackSlider.swift; sourceTree = "<group>"; };
 		41D696882A8A66200071AEB1 /* SheetCoordinatorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetCoordinatorProtocol.swift; sourceTree = "<group>"; };
+		41D6968B2A8B59170071AEB1 /* VisualizeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualizeView.swift; sourceTree = "<group>"; };
+		41D6968D2A8B591C0071AEB1 /* VisualizeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualizeViewModel.swift; sourceTree = "<group>"; };
+		41D6968F2A8BB0B00071AEB1 /* AudioFeatures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFeatures.swift; sourceTree = "<group>"; };
 		41DE39CC2A63FCD50048CB51 /* CoordinatorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoordinatorProtocol.swift; sourceTree = "<group>"; };
 		41DE39CE2A6431CC0048CB51 /* Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 		41DE39D22A6436E20048CB51 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
@@ -327,6 +334,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				419DD1B82A5736E6005A6708 /* NoisyAPI.framework in Frameworks */,
+				41D696B72A8CB1960071AEB1 /* LASwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -348,6 +356,7 @@
 		413EEABB2A2F2D3400DC9727 /* Discover */ = {
 			isa = PBXGroup;
 			children = (
+				41D6968A2A8B590F0071AEB1 /* Visualize */,
 				41D3A29A2A31E141000AC6FE /* DiscoverView.swift */,
 				41B145CD2A76EEA200FAE0C0 /* SeedCard.swift */,
 				41D3A29C2A31E152000AC6FE /* DiscoverViewModel.swift */,
@@ -412,6 +421,15 @@
 				41DE39CE2A6431CC0048CB51 /* Image.swift */,
 			);
 			path = Home;
+			sourceTree = "<group>";
+		};
+		41D6968A2A8B590F0071AEB1 /* Visualize */ = {
+			isa = PBXGroup;
+			children = (
+				41D6968B2A8B59170071AEB1 /* VisualizeView.swift */,
+				41D6968D2A8B591C0071AEB1 /* VisualizeViewModel.swift */,
+			);
+			path = Visualize;
 			sourceTree = "<group>";
 		};
 		41DE39CB2A63FC8F0048CB51 /* Examples */ = {
@@ -672,6 +690,7 @@
 			isa = PBXGroup;
 			children = (
 				41E0FB922A69B40400991D31 /* Recommendation.swift */,
+				41D6968F2A8BB0B00071AEB1 /* AudioFeatures.swift */,
 				41B145C02A72509800FAE0C0 /* Genre.swift */,
 				41B145C22A76E9F600FAE0C0 /* Seed.swift */,
 			);
@@ -894,6 +913,9 @@
 				419DD1B72A5736E6005A6708 /* PBXTargetDependency */,
 			);
 			name = Noisy;
+			packageProductDependencies = (
+				41D696B62A8CB1960071AEB1 /* LASwift */,
+			);
 			productName = Noisy;
 			productReference = 41DFEBF32A26356000CC3420 /* Noisy.app */;
 			productType = "com.apple.product-type.application";
@@ -925,6 +947,9 @@
 				Base,
 			);
 			mainGroup = 41DFEBEA2A26356000CC3420;
+			packageReferences = (
+				41D696B52A8CB1960071AEB1 /* XCRemoteSwiftPackageReference "LASwift" */,
+			);
 			productRefGroup = 41DFEBF42A26356000CC3420 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1022,6 +1047,7 @@
 				41EA87812A61CC61005DD0C2 /* Examples2.swift in Sources */,
 				41E0FB882A6926C900991D31 /* MiniPlayerView.swift in Sources */,
 				41E0FB422A6656D700991D31 /* PlaylistsViewModel.swift in Sources */,
+				41D6968E2A8B591C0071AEB1 /* VisualizeViewModel.swift in Sources */,
 				41E0FB5B2A67229100991D31 /* UINavigationController+Extension.swift in Sources */,
 				41DFEBF72A26356000CC3420 /* NoisyApp.swift in Sources */,
 				41D3A29D2A31E152000AC6FE /* DiscoverViewModel.swift in Sources */,
@@ -1060,11 +1086,13 @@
 				41B145CA2A76EDF200FAE0C0 /* LargeButton.swift in Sources */,
 				41F8F5682A26501800F7A2B8 /* LoginViewModel.swift in Sources */,
 				41E0FB532A66A70600991D31 /* ArtistViewModel.swift in Sources */,
+				41D696902A8BB0B00071AEB1 /* AudioFeatures.swift in Sources */,
 				41B145D22A77A67F00FAE0C0 /* SliderView.swift in Sources */,
 				419DD1CC2A573862005A6708 /* State.swift in Sources */,
 				41E0FB512A66A6E200991D31 /* PlaylistViewModel.swift in Sources */,
 				41E0FB712A67AB4100991D31 /* AlbumViewModel.swift in Sources */,
 				41E0FB832A67ED2500991D31 /* VerticalCoordinatorProtocol.swift in Sources */,
+				41D6968C2A8B59170071AEB1 /* VisualizeView.swift in Sources */,
 				413EEAC22A2F2DE200DC9727 /* DiscoverService.swift in Sources */,
 				41F8F5552A2649C000F7A2B8 /* AnyPublisher+Extension.swift in Sources */,
 				41E0FB312A66509700991D31 /* PlayerService.swift in Sources */,
@@ -1414,6 +1442,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		41D696B52A8CB1960071AEB1 /* XCRemoteSwiftPackageReference "LASwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AlexanderTar/LASwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		41D696B62A8CB1960071AEB1 /* LASwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 41D696B52A8CB1960071AEB1 /* XCRemoteSwiftPackageReference "LASwift" */;
+			productName = LASwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 41DFEBEB2A26356000CC3420 /* Project object */;
 }

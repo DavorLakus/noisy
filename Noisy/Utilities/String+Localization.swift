@@ -79,6 +79,7 @@ extension String {
         static let album = "Album"
         static let viewArtist = "View artist"
         static let viewAlbum = "View album"
+        static let visualize = "Visualize"
     }
     
     struct Profile {
@@ -134,6 +135,10 @@ extension String {
         static let searchBarPlaceholder = "Search"
         static let emptyStateTitle = "Sorry, no results found"
     }
+    
+    struct Visualize {
+        static let visualize = "Visualize"
+    }
 
     struct Artist {
         static let mostPlayed = "'s most played"
@@ -149,6 +154,11 @@ extension String {
         static let defaultLocale = "en_US"
         static let backendDateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
         static let frontendDateFormat = "MMM yyyy"
+    }
+    
+    struct Neo4j {
+        static let trackName = "Track"
+        static let audioFeatureName = "AudioFeature"
     }
     
     struct Mock {

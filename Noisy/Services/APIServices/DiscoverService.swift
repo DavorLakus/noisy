@@ -48,4 +48,18 @@ extension DiscoverService {
         
         return genres
     }
+    
+    func getTrackAudioFeatures(for trackIds: String) -> PassthroughSubject<[AudioFeatures], Never> {
+        let features = PassthroughSubject<[AudioFeatures], Never>()
+        
+        api.getTrackAudioFeatures(with: trackIds)
+            .decode(type: AudioFeaturesResponse.self, decoder: JSONDecoder())
+            .sink(receiveCompletion: NetworkingManager.handleCompletion,
+                  receiveValue: { result in
+                features.send(result.audioFeatures)
+            })
+            .store(in: &cancellables)
+        
+        return features
+    }
 }
