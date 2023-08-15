@@ -13,6 +13,7 @@ enum DiscoverPath: Hashable {
     case album(Album)
     case playlist(Playlist)
     case playlists([Track])
+    case visualize([Track])
 }
 
 final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
@@ -38,6 +39,7 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     
     // MARK: - Private properties
     private lazy var discoverViewModel = DiscoverViewModel(discoverService: discoverService, searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
+    private var visualizeViewModel: VisualizeViewModel?
     private var discoverService: DiscoverService
     private var searchService: SearchService
     
@@ -51,6 +53,56 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
         bindDiscoverViewModel()
     }
     
+    func start() -> some CoordinatorViewProtocol {
+        DiscoverCoordinatorView(coordinator: self)
+    }
+    
+    @ViewBuilder
+    func rootView() -> some View {
+        DiscoverView(viewModel: discoverViewModel)
+            .navigationDestination(for: DiscoverPath.self, destination: navigationDestination)
+    }
+    
+    @ViewBuilder
+    func navigationDestination(_ path: DiscoverPath) -> some View {
+        switch path {
+        case .artist:
+            presentArtistView()
+        case .album:
+            presentAlbumView()
+        case .playlist:
+            presentPlaylistView()
+        case .playlists:
+            presentPlaylistsView()
+        case .visualize:
+            presentVisualizeView()
+        }
+    }
+    
+    func push(_ path: DiscoverPath) {
+        switch path {
+        case .artist(let artist):
+            bindArtistViewModel(for: artist)
+        case .album(let album):
+            bindAlbumViewModel(for: album)
+        case .playlist(let playlist):
+            bindPlaylistViewModel(for: playlist)
+        case .playlists(let tracks):
+            bindPlaylistsViewModel(with: tracks)
+        case .visualize(let tracks):
+            bindVisualizeViewModel(with: tracks)
+        }
+        
+        navigationPath.append(path)
+    }
+    
+    func pop() {
+        navigationPath.removeLast()
+    }
+}
+
+// MARK: - ViewModel binding
+private extension DiscoverCoordinator {
     func bindDiscoverViewModel() {
         discoverViewModel.onDidTapProfileButton
             .sink { [weak self] in
@@ -76,51 +128,37 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
             }
             .store(in: &cancellables)
         
+        discoverViewModel.onDidTapVisualizeButton
+            .sink { [weak self] tracks in
+                self?.push(.visualize(tracks))
+            }
+            .store(in: &cancellables)
+        
         discoverViewModel.onDidTapRecommendedTrackRow = onDidTapTrackRow
     }
     
-    func start() -> some CoordinatorViewProtocol {
-        DiscoverCoordinatorView(coordinator: self)
-    }
-    
-    @ViewBuilder
-    func rootView() -> some View {
-        DiscoverView(viewModel: discoverViewModel)
-            .navigationDestination(for: DiscoverPath.self, destination: navigationDestination)
-    }
-    
-    @ViewBuilder
-    func navigationDestination(_ path: DiscoverPath) -> some View {
-        switch path {
-        case .artist:
-            presentArtistView()
-        case .album:
-            presentAlbumView()
-        case .playlist:
-            presentPlaylistView()
-        case .playlists:
-            presentPlaylistsView()
-        }
-    }
-    
-    func push(_ path: DiscoverPath) {
-        switch path {
-        case .artist(let artist):
-            bindArtistViewModel(for: artist)
-        case .album(let album):
-            bindAlbumViewModel(for: album)
-        case .playlist(let playlist):
-            bindPlaylistViewModel(for: playlist)
-        case .playlists(let tracks):
-            bindPlaylistsViewModel(with: tracks)
-        }
+    func bindVisualizeViewModel(with tracks: [Track]) {
+        let viewModel = VisualizeViewModel(tracks: tracks, discoverService: discoverService, musicDetailsService: musicDetailsService, queueManager: queueManager)
         
-        navigationPath.append(path)
+        viewModel.onDidTapBackButton
+            .sink { [weak self] in
+                self?.pop()
+            }
+            .store(in: &cancellables)
+        
+        visualizeViewModel = viewModel
     }
-    
-    func pop() {
-        navigationPath.removeLast()
+}
+
+// MARK: - ViewBuilder
+extension DiscoverCoordinator {
+    @ViewBuilder
+    func presentVisualizeView() -> some View {
+        if let visualizeViewModel {
+            VisualizeView(viewModel: visualizeViewModel)
+        }
     }
+
 }
 
 // MARK: - MusicDetailsCoordinatorProtocol

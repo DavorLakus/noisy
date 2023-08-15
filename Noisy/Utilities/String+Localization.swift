@@ -79,6 +79,7 @@ extension String {
         static let album = "Album"
         static let viewArtist = "View artist"
         static let viewAlbum = "View album"
+        static let visualize = "Visualize"
     }
     
     struct Profile {
@@ -133,6 +134,10 @@ extension String {
         static let allGenres = "All genres"
         static let searchBarPlaceholder = "Search"
         static let emptyStateTitle = "Sorry, no results found"
+    }
+    
+    struct Visualize {
+        static let visualize = "Visualize"
     }
 
     struct Artist {

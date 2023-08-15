@@ -145,6 +145,8 @@ extension DiscoverView {
                         .onTapGesture { viewModel.recommendedTrackRowSelected(enumeratedTrack.element) }
                 }
             }
+            
+           visualizeButton()
         }
         .padding(Constants.margin)
         .padding(.bottom, 50)
@@ -153,6 +155,25 @@ extension DiscoverView {
                 .opacity(0.5)
                 .blur(radius: 15)
         }
+    }
+    
+    func visualizeButton() -> some View {
+        Button(action: viewModel.visualizeButtonTapped) {
+            Text(String.Visualize.visualize)
+                .font(.nunitoBold(size: 28))
+                .foregroundStyle(
+                    LinearGradient(colors: [.green200, .purple600, .green500, .mint600, .red200, .purple300, .mint600, .green300, .purple600], startPoint: .topLeading, endPoint: .bottomTrailing)
+                )
+                .frame(maxWidth: .infinity)
+        }
+        .padding(16)
+        .cardBackground(gradient: LinearGradient(colors: [.white], startPoint: .topLeading, endPoint: .bottomTrailing), borderColor: .red600, hasBorder: true, hasShadow: false)
+        .background {
+            Color.gray500
+                .shadow(radius: 4)
+                .blur(radius: 4)
+        }
+        .padding(.vertical, Constants.margin)
     }
 }
 
