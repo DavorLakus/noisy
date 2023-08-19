@@ -156,6 +156,11 @@ extension String {
         static let frontendDateFormat = "MMM yyyy"
     }
     
+    struct Neo4j {
+        static let trackName = "Track"
+        static let audioFeatureName = "AudioFeature"
+    }
+    
     struct Mock {
         static let mockDate = "2020-10-21T20:01:11Z"
     }

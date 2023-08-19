@@ -58,6 +58,7 @@ struct MiniPlayerView: View {
     
     var body: some View {
         bodyView()
+            .ignoresSafeArea()
     }
 }
 
