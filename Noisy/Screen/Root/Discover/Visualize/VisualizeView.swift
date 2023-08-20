@@ -190,7 +190,6 @@ private extension VisualizeView {
 //    }
 //}
 
-
 extension CGPoint {
     static func * (_ lhs: CGPoint, _ rhs: Double) -> CGPoint {
         return CGPoint(x: lhs.x * rhs, y: lhs.y * rhs)

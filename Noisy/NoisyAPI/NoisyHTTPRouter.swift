@@ -44,7 +44,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize, .token, .refreshToken:
             return "accounts.spotify.com"
-        case .profile, .myTop, .track, .trackAudioFeatures, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .createPlaylist,.addToPlaylist, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
+        case .profile, .myTop, .track, .trackAudioFeatures, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .createPlaylist, .addToPlaylist, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
             return "api.spotify.com"
         }
     }
@@ -195,11 +195,6 @@ extension NoisyHTTPRouter: APIEndpoint {
                 URLQueryItem(name: "offset", value: "\(offset)"),
                 URLQueryItem(name: "market", value: "HR")
             ]
-        case .myTop(_, let count, let timeRange):
-            return [
-                URLQueryItem(name: "limit", value: "\(count)"),
-                URLQueryItem(name: "time_range", value: "\(timeRange)")
-            ]
         case .playlists(_, let limit, let offset):
             return [
                 URLQueryItem(name: "limit", value: "\(limit)"),
@@ -210,20 +205,21 @@ extension NoisyHTTPRouter: APIEndpoint {
                 URLQueryItem(name: "limit", value: "\(limit)"),
                 URLQueryItem(name: "offset", value: "\(offset)")
             ]
-//        case .createPlaylist(_, let name):
-//            return [
-//                URLQueryItem(name: "name", value: "\(name)")
-//            ]
         case .addToPlaylist(_, let uris):
             return [
                 URLQueryItem(name: "uris", value: "\(uris)")
             ]
         case .artistsTopTracks:
             return [URLQueryItem(name: "market", value: "HR")]
-        case .profile, .track, .artist, .playlist, .playlistTracks, .createPlaylist, .album, .albumTracks, .artistsAlbums, .artistsRelatedArtists, .recommendationGenres:
+        case .profile, .track, .artist, .playlist, .createPlaylist, .album, .artistsAlbums, .artistsRelatedArtists, .recommendationGenres:
             return nil
         case .recommendation(let parameters):
             return parameters
+        case .myTop(_, let count, let timeRange):
+            return [
+                URLQueryItem(name: "limit", value: "\(count)"),
+                URLQueryItem(name: "time_range", value: "\(timeRange)")
+            ]
         }
     }
 }

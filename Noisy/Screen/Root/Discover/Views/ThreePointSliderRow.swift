@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ThreePointSliderRow: View {
     let seed: Seed
-    let infoAction: () -> Void
+    let infoAction: (Seed) -> Void
     
     var numberFormat: String { seed.isInt ? "%d" : "%.2f" }
     
@@ -38,7 +38,9 @@ struct ThreePointSliderRow: View {
                     .foregroundColor(.gray700)
                     .font(.nunitoBold(size: 20))
                 
-                Button(action: infoAction) {
+                Button {
+                    infoAction(seed)
+                } label: {
                     Image.Shared.info.foregroundColor(.green500)
                 }
                 
@@ -113,6 +115,11 @@ struct ThreePointSliderRow: View {
             return String(format: numberFormat, seed.isInt ? Int(value * seed.multiplier) : value)
         }
     }
+}
+
+// MARK: - Info alert
+private extension ThreePointSliderRow {
+  
 }
 
 struct ThreePointSlider: View {

@@ -237,7 +237,7 @@ private extension PlayerViewModel {
     func removeFromSaved() {
         guard let currentTrack else { return }
         musicDetailsService.removeTracks(with: currentTrack.id)
-            .sink { [weak self] isSaved in
+            .sink { [weak self] _ in
                 self?.checkIfTrackSaved(id: currentTrack.id)
                 self?.toastMessage = "\(currentTrack.name) \(String.Shared.removedFromFavorites)"
                 withAnimation {

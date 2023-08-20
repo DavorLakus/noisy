@@ -17,6 +17,7 @@ protocol MusicDetailsCoordinatorProtocol: VerticalCoordinatorProtocol {
     
     var onDidTapPlayAllButton: PassthroughSubject<Void, Never> { get set }
     var onDidTapTrackRow: PassthroughSubject<Void, Never> { get set }
+    var onDidTapDiscoverButton: PassthroughSubject<Artist, Never> {get set }
     var musicDetailsService: MusicDetailsService { get set }
     var queueManager: QueueManager { get set }
     var cancellables: Set<AnyCancellable> { get set }
@@ -55,6 +56,8 @@ extension MusicDetailsCoordinatorProtocol {
             .store(in: &cancellables)
         
         viewModel.onDidTapTrackRow = onDidTapTrackRow
+        
+        viewModel.onDidTapDiscoverButton = onDidTapDiscoverButton
         
         artistViewModelStack.push(viewModel)
     }

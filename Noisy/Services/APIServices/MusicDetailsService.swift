@@ -72,7 +72,7 @@ extension MusicDetailsService {
         api.saveTracks(with: ids)
             .decode(type: Dictionary<String, String>.self, decoder: JSONDecoder())
             .sink(
-                receiveCompletion: { completion in
+                receiveCompletion: { _ in
                     tracksSaved.send()
                 },
                 receiveValue: { _ in
@@ -198,7 +198,7 @@ extension MusicDetailsService {
         api.addTracksToPlaylist(playlistId, tracks: tracks)
             .decode(type: SpotifyError.self, decoder: JSONDecoder())
             .sink(
-                receiveCompletion: { completion in
+                receiveCompletion: { _ in
                     tracksAdded.send()
                 },
                 receiveValue: { error in

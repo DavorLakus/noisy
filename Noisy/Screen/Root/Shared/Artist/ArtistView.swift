@@ -37,8 +37,9 @@ extension ArtistView {
                     mostPlayed()
                     albums()
                     relatedArtists()
+                    discoverButton()
                 }
-                .padding(.bottom, Constants.margin)
+                .padding(.bottom, Constants.mediumIconSize)
             }
             .ignoresSafeArea(edges: .top)
         }
@@ -57,7 +58,7 @@ extension ArtistView {
     }
     
     func mostPlayed() -> some View {
-        SimpleAccordionView(isExpanded: $viewModel.isMostPlayedExpanded, title: "\(viewModel.artist.name) \(String.Artist.mostPlayed)", data: viewModel.topTracks.enumerated(), dataRowView: trackRow, action: viewModel.trackRowTapped, optionsAction: viewModel.trackOptionsTapped)
+        SimpleAccordionView(isExpanded: $viewModel.isMostPlayedExpanded, title: "\(String.Artist.mostPlayed)", data: viewModel.topTracks.enumerated(), dataRowView: trackRow, action: viewModel.trackRowTapped, optionsAction: viewModel.trackOptionsTapped)
     }
     
     func albums() -> some View {
@@ -100,6 +101,23 @@ extension ArtistView {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .onTapGesture { viewModel.artistButtonTapped(for: artist) }
+    }
+    
+    func discoverButton() -> some View {
+        Button(action: viewModel.discoverMoreButtonTapped) {
+            Text(String.Discover.discoverMore)
+                .font(.nunitoBold(size: 22))
+                .foregroundColor(.purple600)
+                .frame(maxWidth: .infinity)
+        }
+        .padding(16)
+        .cardBackground(gradient: LinearGradient(colors: [.yellow200, .yellow300], startPoint: .topLeading, endPoint: .bottomTrailing), borderColor: .mint600, hasBorder: true, hasShadow: false)
+        .background {
+            Color.gray500
+                .shadow(radius: 4)
+                .blur(radius: 4)
+        }
+        .padding(.horizontal, Constants.margin)
     }
 }
 

@@ -33,6 +33,9 @@ extension ProfileViewModel {
     }
     
     func signOutTapped() {
+        withAnimation {
+            onDidTapBackButton.send()
+        }
         onDidTapSignOut.send()
     }
 }

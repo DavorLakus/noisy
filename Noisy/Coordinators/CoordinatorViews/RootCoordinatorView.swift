@@ -7,11 +7,23 @@
 
 import SwiftUI
 
+private struct AlertKey: EnvironmentKey {
+    // 1
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    var isAlertPresented: Bool {
+        get { self[AlertKey.self] }
+        set { self[AlertKey.self] = newValue }
+    }
+}
+
 struct RootCoordinatorView: View {
     @StateObject var coordinator: RootCoordinator
-    @State var detents = Set<PresentationDetent>()
     @Namespace var namespace
-
+    @State var isAlertPresented = false
+    
     var body: some View {
         TabView(selection: $coordinator.tab) {
             coordinator.homeTab()
@@ -27,13 +39,7 @@ struct RootCoordinatorView: View {
                 .tabItem { tab(name: .Tabs.search, icon: .Tabs.search) }
                 .tag(RootTab.search)
         }
-        .sheet(isPresented: $coordinator.isProfileDrawerPresented) {
-            coordinator.presentProfileView()
-                .readSize {
-                    detents = [.height($0.height)]
-                }
-                .presentationDetents(detents)
-        }
+        .dynamicModalSheet(isPresented: $coordinator.isProfileDrawerPresented, content:  coordinator.presentProfileView)
         .alert(isPresented: $coordinator.isAlertPresented, alert: coordinator.presentAlertView)
         .tint(.purple900)
         .fullScreenCover(isPresented: $coordinator.isPlayerCoordinatorViewPresented, content: coordinator.presentPlayerCoordinatorView)

@@ -21,15 +21,16 @@ extension ProfileView {
     @ViewBuilder
     func bodyView() -> some View {
         ZStack(alignment: .topTrailing) {
-            Color.appBackground.ignoresSafeArea()
-                .randomCirclesOverlay(with: [.yellow300.opacity(0.9)])
-            
             VStack(spacing: .zero) {
                 closeButton()
                 profileView()
                 generalView()
             }
             .padding(Constants.margin)
+            .background {
+                Color.appBackground.ignoresSafeArea()
+                    .randomCirclesOverlay(with: [.yellow300.opacity(0.9)])
+            }
         }
     }
     

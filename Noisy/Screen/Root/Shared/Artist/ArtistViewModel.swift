@@ -25,6 +25,7 @@ final class ArtistViewModel: ObservableObject, Equatable {
 
     // MARK: - Coordinator actions
     var onDidTapTrackRow: PassthroughSubject<Void, Never>?
+    var onDidTapDiscoverButton: PassthroughSubject<Artist, Never>?
     let onDidTapBackButton = PassthroughSubject<Void, Never>()
     let onDidTapAlbumRow = PassthroughSubject<Album, Never>()
     let onDidTapSimilarArtistButton = PassthroughSubject<Artist, Never>()
@@ -95,6 +96,10 @@ extension ArtistViewModel {
             .store(in: &cancellables)
         
         return OptionRow.addToQueue(action: addToQueueSubject)
+    }
+    
+    func discoverMoreButtonTapped() {
+        onDidTapDiscoverButton?.send(artist)
     }
 }
 

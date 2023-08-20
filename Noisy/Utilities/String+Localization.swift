@@ -113,12 +113,15 @@ extension String {
         static let initialResultsMessage = "Your recommendation results will appear here"
         static let includeAllSeeds = "Include all parameter seeds"
         static let removeAllSeeds = "Remove all parameter seeds"
+        static let generateRandomSeedsInfoTitle = "Random seeds"
+        static let generateRandomSeedsInfoMessage = "Generate random seeds based on the saved tracks in your library. You can select to generate up to five random artist or track seeds."
         static let min = "min"
         static let max = "max"
         static let targetShort = "target"
         static let lowerBound = "Min: "
         static let target = "Target: "
         static let upperBound = "Max: "
+        static let discoverMore = "Discover more"
     }
     
     struct Search {
@@ -141,7 +144,7 @@ extension String {
     }
 
     struct Artist {
-        static let mostPlayed = "'s most played"
+        static let mostPlayed = "Top tracks"
         static let albums = "Albums"
         static let related = "Related"
     }

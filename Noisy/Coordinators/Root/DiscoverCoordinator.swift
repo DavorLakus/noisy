@@ -16,10 +16,17 @@ enum DiscoverPath: Hashable {
     case visualize([Track])
 }
 
-final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
+enum SheetPath: Hashable {
+    case playlists
+}
+
+final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol & SheetCoordinatorProtocol {
+    
+    var sheetPath: SheetPath = .playlists
     
     // MARK: - Published properties
     @Published var navigationPath = NavigationPath()
+    @Published var isSheetPresented: Bool = false
     
     // MARK: - Public properties
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
@@ -32,13 +39,14 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     
     internal var onDidTapPlayAllButton = PassthroughSubject<Void, Never>()
     internal var onDidTapTrackRow = PassthroughSubject<Void, Never>()
+    internal var onDidTapDiscoverButton = PassthroughSubject<Artist, Never>()
     internal var musicDetailsService: MusicDetailsService
     internal var queueManager: QueueManager
 
     internal var cancellables = Set<AnyCancellable>()
     
     // MARK: - Private properties
-    private lazy var discoverViewModel = DiscoverViewModel(discoverService: discoverService, searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
+    private var discoverViewModel: DiscoverViewModel?
     private var visualizeViewModel: VisualizeViewModel?
     private var discoverService: DiscoverService
     private var searchService: SearchService
@@ -59,8 +67,10 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     
     @ViewBuilder
     func rootView() -> some View {
-        DiscoverView(viewModel: discoverViewModel)
-            .navigationDestination(for: DiscoverPath.self, destination: navigationDestination)
+        if let discoverViewModel {
+            DiscoverView(viewModel: discoverViewModel)
+                .navigationDestination(for: DiscoverPath.self, destination: navigationDestination)
+        }
     }
     
     @ViewBuilder
@@ -99,11 +109,29 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol {
     func pop() {
         navigationPath.removeLast()
     }
+    
+    @ViewBuilder
+    func presentSheetView() -> some View {
+        if let playlistsViewModel {
+            presentPlaylistsView()
+        }
+    }
+}
+
+// MARK: - Public extension
+extension DiscoverCoordinator {
+    func discover(with artist: Artist) {
+        discoverViewModel?.seedArtists = [artist]
+        withAnimation {
+            discoverViewModel?.onDidTapDiscoverButton()
+        }
+    }
 }
 
 // MARK: - ViewModel binding
 private extension DiscoverCoordinator {
     func bindDiscoverViewModel() {
+        let discoverViewModel = DiscoverViewModel(discoverService: discoverService, searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
         discoverViewModel.onDidTapProfileButton
             .sink { [weak self] in
                 self?.onDidTapProfileButton.send()
@@ -124,7 +152,8 @@ private extension DiscoverCoordinator {
         
         discoverViewModel.onDidTapAddToPlaylist
             .sink { [weak self] tracks in
-                self?.push(.playlists(tracks))
+                self?.bindPlaylistsViewModel(with: tracks)
+                self?.isSheetPresented = true
             }
             .store(in: &cancellables)
         
@@ -135,6 +164,8 @@ private extension DiscoverCoordinator {
             .store(in: &cancellables)
         
         discoverViewModel.onDidTapRecommendedTrackRow = onDidTapTrackRow
+        
+        self.discoverViewModel = discoverViewModel
     }
     
     func bindVisualizeViewModel(with tracks: [Track]) {
@@ -181,10 +212,11 @@ extension DiscoverCoordinator {
 }
 
 // MARK: - CoordinatorViewCoordinator
-struct DiscoverCoordinatorView<Coordinator: MusicDetailsCoordinatorProtocol>: CoordinatorViewProtocol {
+struct DiscoverCoordinatorView<Coordinator: MusicDetailsCoordinatorProtocol & SheetCoordinatorProtocol>: SheetCoordinatorViewProtocol {
     @ObservedObject var coordinator: Coordinator
     
     var body: some View {
         NavigationStack(path: $coordinator.navigationPath, root: coordinator.rootView)
+            .dynamicModalSheet(isPresented: $coordinator.isSheetPresented, content: coordinator.presentSheetView)
     }
 }

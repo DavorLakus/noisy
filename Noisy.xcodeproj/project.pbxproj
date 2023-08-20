@@ -53,7 +53,6 @@
 		41DE39D32A6436E20048CB51 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DE39D22A6436E20048CB51 /* ProfileView.swift */; };
 		41DE39D52A6436E70048CB51 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DE39D42A6436E70048CB51 /* ProfileViewModel.swift */; };
 		41DE39D82A6438A50048CB51 /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DE39D72A6438A50048CB51 /* AlertView.swift */; };
-		41DE39DA2A6438A90048CB51 /* AlertViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DE39D92A6438A90048CB51 /* AlertViewModel.swift */; };
 		41DFEBF72A26356000CC3420 /* NoisyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DFEBF62A26356000CC3420 /* NoisyApp.swift */; };
 		41DFEBFB2A26356200CC3420 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 41DFEBFA2A26356200CC3420 /* Assets.xcassets */; };
 		41E0FB1C2A6442EB00991D31 /* Scope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E0FB1B2A6442EB00991D31 /* Scope.swift */; };
@@ -212,7 +211,6 @@
 		41DE39D22A6436E20048CB51 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		41DE39D42A6436E70048CB51 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		41DE39D72A6438A50048CB51 /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
-		41DE39D92A6438A90048CB51 /* AlertViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViewModel.swift; sourceTree = "<group>"; };
 		41DFEBF32A26356000CC3420 /* Noisy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Noisy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		41DFEBF62A26356000CC3420 /* NoisyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoisyApp.swift; sourceTree = "<group>"; };
 		41DFEBFA2A26356200CC3420 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -474,7 +472,6 @@
 			children = (
 				41DE39D72A6438A50048CB51 /* AlertView.swift */,
 				41BBFD662A81918100F4A7D3 /* SpotifyErrorAlert.swift */,
-				41DE39D92A6438A90048CB51 /* AlertViewModel.swift */,
 			);
 			path = Alert;
 			sourceTree = "<group>";
@@ -1147,7 +1144,6 @@
 				419DD1C92A573862005A6708 /* NetworkError.swift in Sources */,
 				41B647832A389FC300C1485C /* Profile.swift in Sources */,
 				41E0FB7C2A67D0A300991D31 /* AlbumRow.swift in Sources */,
-				41DE39DA2A6438A90048CB51 /* AlertViewModel.swift in Sources */,
 				41F8F59A2A27534500F7A2B8 /* View+Extension.swift in Sources */,
 				41E0FB272A65834F00991D31 /* FilterSheetView.swift in Sources */,
 				41F8F54F2A2649AC00F7A2B8 /* String+Localization.swift in Sources */,

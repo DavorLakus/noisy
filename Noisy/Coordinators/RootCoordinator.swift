@@ -47,7 +47,6 @@ final class RootCoordinator: CoordinatorProtocol {
     private lazy var queueManager = QueueManager()
     private var miniPlayerViewModel: MiniPlayerViewModel?
     private var profileViewModel: ProfileViewModel?
-    private lazy var alertViewModel = AlertViewModel(isPresented: _isAlertPresented)
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Class lifecycle
@@ -91,8 +90,6 @@ extension RootCoordinator {
             searchCoordinator.start()
         }
     }
-    
-    // možda music map
 }
 
 // MARK: - Private extension
@@ -131,6 +128,12 @@ private extension RootCoordinator {
             }
             .store(in: &cancellables)
         
+        homeCoordinator.onDidTapDiscoverButton
+            .sink { [weak self] artist in
+                self?.switchToDiscoverTab(for: artist, from: homeCoordinator)
+            }
+            .store(in: &cancellables)
+        
         self.homeCoordinator = homeCoordinator
     }
     
@@ -153,6 +156,13 @@ private extension RootCoordinator {
                 self?.bindPlayerCoordinator()
             }
             .store(in: &cancellables)
+        
+        searchCoordinator.onDidTapDiscoverButton
+            .sink { [weak self] artist in
+                self?.switchToDiscoverTab(for: artist, from: searchCoordinator)
+            }
+            .store(in: &cancellables)
+        
         self.searchCoordinator = searchCoordinator
     }
     
@@ -175,7 +185,31 @@ private extension RootCoordinator {
                 self?.bindPlayerCoordinator()
             }
             .store(in: &cancellables)
+        
+        discoverCoordinator.onDidTapDiscoverButton
+            .sink { [weak self] artist in
+                self?.switchToDiscoverTab(for: artist, from: discoverCoordinator)
+            }
+            .store(in: &cancellables)
+        
         self.discoverCoordinator = discoverCoordinator
+    }
+    
+    func switchToDiscoverTab<Coordinator: MusicDetailsCoordinatorProtocol>(for artist: Artist, from coordinator: Coordinator) {
+        withAnimation {
+            coordinator.navigationPath.removeLast(coordinator.navigationPath.count)
+        }
+        if isPlayerCoordinatorViewPresented {
+            withAnimation {
+                isPlayerCoordinatorViewPresented = false
+            }
+        }
+        
+        withAnimation {
+            tab = .discover
+        }
+        
+        discoverCoordinator?.discover(with: artist)
     }
 }
 
@@ -208,9 +242,9 @@ extension RootCoordinator {
     
     func bindPlayerCoordinator() {
         
-        playerCoordinator = PlayerCoordinator(playerService: playerService, musicDetailsService: musicDetailsService, queueManager: queueManager)
+        let playerCoordinator = PlayerCoordinator(playerService: playerService, musicDetailsService: musicDetailsService, queueManager: queueManager)
         
-        playerCoordinator?.onShoudEnd
+        playerCoordinator.onShoudEnd
             .sink { [weak self] in
                 withAnimation {
                     self?.isPlayerCoordinatorViewPresented = false
@@ -218,6 +252,14 @@ extension RootCoordinator {
                 self?.persistQueueManagerState()
             }
             .store(in: &cancellables)
+        
+        playerCoordinator.onDidTapDiscoverButton
+            .sink { [weak self] artist in
+                self?.switchToDiscoverTab(for: artist, from: playerCoordinator)
+            }
+            .store(in: &cancellables)
+        
+        self.playerCoordinator = playerCoordinator
         
         withAnimation {
             isPlayerCoordinatorViewPresented = true
@@ -256,7 +298,7 @@ extension RootCoordinator {
             .sink { [weak self] in
                 self?.alert = .signout
                 withAnimation {
-                    self?.bindAlertViewModel()
+                    self?.isAlertPresented = true
                 }
             }
             .store(in: &cancellables)
@@ -270,23 +312,12 @@ extension RootCoordinator {
 // MARK: - Alert
 extension RootCoordinator {
     @ViewBuilder
-    func presentAlertView() -> some View {
-        AlertView(viewModel: alertViewModel)
-    }
-    
-    func bindAlertViewModel() {
-        alertViewModel = AlertViewModel(isPresented: _isAlertPresented)
-        
-        switch self.alert {
+    func presentAlertView(isPresented: Binding<Bool>) -> some View {
+        switch alert {
         case .signout:
-            alertViewModel.title = .Profile.signoutTitle
-            alertViewModel.message = .Profile.signoutMessage
-            alertViewModel.primaryActionText = .Profile.signoutTitle
-            alertViewModel.onDidTapPrimaryAction = onDidEnd
-        }
-        
-        withAnimation {
-            self.isAlertPresented = true
+            AlertView(isPresented: isPresented, title: .Profile.signoutTitle, message: .Profile.signoutMessage, primaryActionText: .Profile.signoutTitle) { [weak self] in
+                self?.onDidEnd.send()
+            }
         }
     }
 }

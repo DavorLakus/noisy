@@ -30,6 +30,7 @@ final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
     
     internal var onDidTapPlayAllButton = PassthroughSubject<Void, Never>()
     internal var onDidTapTrackRow = PassthroughSubject<Void, Never>()
+    internal var onDidTapDiscoverButton = PassthroughSubject<Artist, Never>()
     internal var musicDetailsService: MusicDetailsService
     internal var queueManager: QueueManager
     internal var cancellables = Set<AnyCancellable>()

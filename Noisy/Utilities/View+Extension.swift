@@ -54,15 +54,9 @@ extension View {
         }
     }
     
-    func alert<Alert: View>(isPresented: Binding<Bool>, alert: @escaping  () -> Alert) -> some View {
-        ZStack {
-            self
-            if isPresented.wrappedValue {
-                alert()
-                    .ignoresSafeArea()
-            }
-        }
-        .animation(.easeInOut, value: isPresented.wrappedValue)
+    func alert<AlertContent: View>(isPresented: Binding<Bool>, alert: @escaping (Binding<Bool>) -> AlertContent) -> some View {
+        self
+            .modifier(AlertModifier(isPresented: isPresented, alertContent: alert))
     }
     
     func tabBarHidden(_ visibility: Binding<Visibility?>) -> some View {
@@ -381,6 +375,45 @@ struct ModalSheetModifier<SheetContent: View>: ViewModifier {
     }
 }
 
+struct AlertModifier<AlertContent: View>: ViewModifier {
+    @Binding var isPresented: Bool
+    @State var isShadowPresented = false
+    let alertContent: (Binding<Bool>) -> AlertContent
+    
+    func body(content: Content) -> some View {
+        ZStack(alignment: .center) {
+            content
+                .onChange(of: isPresented) { isAlertPresented in
+                    if isAlertPresented {
+                        withAnimation {
+                            isShadowPresented = true
+                        }
+                    } else {
+                        isShadowPresented = false
+                    }
+                }
+            
+            if isShadowPresented {
+                Color.alertShadow
+                    .opacity(0.7)
+                    .ignoresSafeArea()
+                    .zStackTransition(.opacity)
+                    .onTapGesture {
+                        withAnimation(.easeInOut) {
+                            isPresented = false
+                        }
+                    }
+            }
+            
+            if isPresented {
+                alertContent($isPresented)
+                    .zStackTransition(.slide)
+            }
+        }
+        .ignoresSafeArea(edges: .all)
+    }
+}
+
 struct SheetModifier<SheetContent: View>: ViewModifier {
     @Binding var isPresented: Bool
     @State var detents = Set<PresentationDetent>()
@@ -419,7 +452,7 @@ struct AdaptsToKeyboard: ViewModifier {
                     .subscribe(Subscribers.Assign(object: self, keyPath: \.currentHeight))
                 
                 NotificationCenter.Publisher(center: NotificationCenter.default, name: UIResponder.keyboardWillHideNotification)
-                    .compactMap { notification in
+                    .compactMap { _ in
                         CGFloat.zero
                     }
                     .subscribe(Subscribers.Assign(object: self, keyPath: \.currentHeight))

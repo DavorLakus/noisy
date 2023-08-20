@@ -17,7 +17,6 @@ protocol SheetCoordinatorProtocol: CoordinatorProtocol where CoordinatorView: Co
     func presentSheetView() -> SheetView
 }
 
-protocol SheetCoordinatorViewProtocol: CoordinatorViewProtocol {
-    associatedtype Coordinator: SheetCoordinatorProtocol
+protocol SheetCoordinatorViewProtocol: CoordinatorViewProtocol where Coordinator: SheetCoordinatorProtocol {
     var coordinator: Coordinator { get set }
 }

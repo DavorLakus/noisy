@@ -44,13 +44,16 @@ struct SeedParametersSheetView: View {
                     .animation(nil, value: viewModel.notAllSeedParametersSelected)
                     LazyVStack {
                         ForEach(Seed.allCases, id: \.id) { seed in
-                            ThreePointSliderRow(seed: seed, infoAction: {}, minValue: 0, maxValue: 1, lowerBound: $viewModel.lowerBounds[seed.id], target: $viewModel.targets[seed.id], upperBound: $viewModel.upperBounds[seed.id], isToggled: $viewModel.seedToggles[seed.id])
+                            ThreePointSliderRow(seed: seed, infoAction: viewModel.seedInfoTapped, minValue: 0, maxValue: 1, lowerBound: $viewModel.lowerBounds[seed.id], target: $viewModel.targets[seed.id], upperBound: $viewModel.upperBounds[seed.id], isToggled: $viewModel.seedToggles[seed.id])
                                 .padding(.horizontal, Constants.margin)
                         }
                     }
                 }
                 .padding(.vertical, Constants.margin)
             }
+        }
+        .alert(isPresented: $viewModel.isInfoAlertPresented) { isPresented in
+            AlertView(isPresented: isPresented, title: viewModel.infoSeed?.name, message: viewModel.infoSeed?.description, secondaryActionText: .Shared.ok)
         }
     }
 }

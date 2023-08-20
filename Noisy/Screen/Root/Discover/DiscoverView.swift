@@ -25,10 +25,10 @@ struct DiscoverView: View {
             OptionsView(isPresented: $viewModel.isOptionsSheetPresented, options: viewModel.options)
                 .toast(isPresented: $viewModel.isToastPresented, message: viewModel.toastMessage)
         }
-        .sheet(isPresented: $viewModel.isSeedParametersSheetPresented) {
+        .dynamicModalSheet(isPresented: $viewModel.isSeedParametersSheetPresented) {
             SeedParametersSheetView(viewModel: viewModel)
         }
-        .sheet(isPresented: $viewModel.isSeedsSheetPresented) {
+        .dynamicModalSheet(isPresented: $viewModel.isSeedsSheetPresented) {
             SeedsSheetView(viewModel: viewModel)
         }
     }

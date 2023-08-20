@@ -21,6 +21,9 @@ struct SeedsSheetView: View {
             headerView()
             searchSection()
         }
+        .alert(isPresented: $viewModel.isInfoAlertPresented) { isPresented in
+            AlertView(isPresented: isPresented, title: .Discover.generateRandomSeedsInfoTitle, message: .Discover.generateRandomSeedsInfoMessage, secondaryActionText: .Shared.ok)
+        }
     }
 }
 
@@ -55,7 +58,9 @@ extension SeedsSheetView {
                         .font(.nunitoBold(size: 17))
                 }
                 Button {
-                    
+                    withAnimation {
+                        viewModel.isInfoAlertPresented = true
+                    }
                 } label: {
                     Image.Shared.info
                         .foregroundColor(.green600)

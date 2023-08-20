@@ -37,6 +37,7 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol, SheetCoordinator
     
     internal var onDidTapPlayAllButton = PassthroughSubject<Void, Never>()
     internal var onDidTapTrackRow = PassthroughSubject<Void, Never>()
+    internal var onDidTapDiscoverButton = PassthroughSubject<Artist, Never>()
     internal var musicDetailsService: MusicDetailsService
     internal var queueManager: QueueManager
     internal var sheetPath: PlayerSheet = .playlists

@@ -41,6 +41,7 @@ final class DiscoverViewModel: ObservableObject {
     @Published var isSeedsSheetPresented = false
     @Published var isSeedParametersSheetPresented = false
     @Published var isOptionsSheetPresented = false
+    @Published var isInfoAlertPresented = false
     @Published var isToastPresented = false
     @Published var limit: Double = 10
     @Published var lowerBounds = [Double](repeating: 0.0, count: 14)
@@ -59,12 +60,14 @@ final class DiscoverViewModel: ObservableObject {
     @Published var isRandomSeedsSelectionExpanded = false
     @Published var randomSeedCategory: SeedCategory = .artists
     @Published var seedCategory: SeedCategory = .artists
+    @Published var infoSeed: Seed?
     @Published var isSearchActive = false
     @Published var query: String = .empty
     
     // MARK: - Coordinator actions
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
     var onDidTapRecommendedTrackRow: PassthroughSubject<Void, Never>?
+    var onDidTapSeedInfoButton: PassthroughSubject<Seed, Never>?
     let onDidTapArtistButton = PassthroughSubject<Artist, Never>()
     let onDidTapAlbumButton = PassthroughSubject<Album, Never>()
     let onDidTapAddToPlaylist = PassthroughSubject<[Track], Never>()
@@ -203,7 +206,14 @@ extension DiscoverViewModel {
         }
     }
     
-    func discoverButtonTapped() {
+    func seedInfoTapped(for seed: Seed) {
+        infoSeed = seed
+        withAnimation {
+            isInfoAlertPresented = true
+        }
+    }
+    
+    func onDidTapDiscoverButton() {
         discover()
     }
     
