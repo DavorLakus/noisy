@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct SpotifyErrorView: View {
-    let error: SpotifyError?
     @Binding var isPresented: Bool
+    let error: SpotifyError?
     
     var body: some View {
         if let error {

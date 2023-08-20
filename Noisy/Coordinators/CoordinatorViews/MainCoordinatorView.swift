@@ -24,9 +24,7 @@ struct MainCoordinatorView: View {
             }
         }
         .loadingIndicator(isPresented: $coordinator.isLoading)
-        .alert(isPresented: $coordinator.isSpotifyAlertPresented) { _ in
-            SpotifyErrorView(error: coordinator.spotifyError, isPresented: $coordinator.isSpotifyAlertPresented)
-        }
+        .alert(isPresented: $coordinator.isAlertPresented, alert: coordinator.presentAlert)
         .animation(.easeInOut, value: coordinator.flow)
     }
 }

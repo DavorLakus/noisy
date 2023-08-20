@@ -192,6 +192,23 @@ extension MusicDetailsService {
         return tracks
     }
     
+    func addTracksToQueue(_ trackUri: String) -> PassthroughSubject<Void, Never> {
+        let trackAdded = PassthroughSubject<Void, Never>()
+
+        api.addTrackToQueue(trackUri)
+            .decode(type: SpotifyError.self, decoder: JSONDecoder())
+            .sink(
+                receiveCompletion: { _ in
+                    trackAdded.send()
+                },
+                receiveValue: { error in
+                    print(error)
+                })
+            .store(in: &cancellables)
+        
+        return trackAdded
+    }
+    
     func addTracksToPlaylist(_ playlistId: String, tracks: String) -> PassthroughSubject<Void, Never> {
         let tracksAdded = PassthroughSubject<Void, Never>()
 

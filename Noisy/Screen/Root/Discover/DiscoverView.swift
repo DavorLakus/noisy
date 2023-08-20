@@ -25,10 +25,10 @@ struct DiscoverView: View {
             OptionsView(isPresented: $viewModel.isOptionsSheetPresented, options: viewModel.options)
                 .toast(isPresented: $viewModel.isToastPresented, message: viewModel.toastMessage)
         }
-        .dynamicModalSheet(isPresented: $viewModel.isSeedParametersSheetPresented) {
+        .sheet(isPresented: $viewModel.isSeedParametersSheetPresented) {
             SeedParametersSheetView(viewModel: viewModel)
         }
-        .dynamicModalSheet(isPresented: $viewModel.isSeedsSheetPresented) {
+        .sheet(isPresented: $viewModel.isSeedsSheetPresented) {
             SeedsSheetView(viewModel: viewModel)
         }
     }
@@ -129,13 +129,17 @@ extension DiscoverView {
 extension DiscoverView {
     func recommendedTracks() -> some View {
         VStack {
-            HStack {
+            HStack(spacing: Constants.margin) {
                 Text(String.Discover.recommendations)
                     .font(.nunitoBold(size: 24))
                     .foregroundColor(.gray700)
 
                 Button(action: viewModel.recommendationsOptionsTapped) {
                     Image.Shared.threeDots
+                }
+                
+                Button(action: viewModel.onDidTapDiscoverButton) {
+                    Image.Shared.refresh
                 }
                 Spacer()
             }
@@ -152,7 +156,7 @@ extension DiscoverView {
         .padding(.bottom, 50)
         .background {
             Color.appBackground
-                .opacity(0.5)
+                .opacity(0.6)
                 .blur(radius: 15)
         }
     }

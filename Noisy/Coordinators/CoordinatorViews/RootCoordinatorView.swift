@@ -27,15 +27,15 @@ struct RootCoordinatorView: View {
     var body: some View {
         TabView(selection: $coordinator.tab) {
             coordinator.homeTab()
-                .miniPlayerView(coordinator.presentMiniPlayer)
+                .miniPlayerView(isPresented: $coordinator.isMiniPlayerPresented, miniPlayer: coordinator.presentMiniPlayer)
                 .tabItem { tab(name: .Tabs.home, icon: .Tabs.home) }
                 .tag(RootTab.home)
             coordinator.discoverTab()
-                .miniPlayerView(coordinator.presentMiniPlayer)
+                .miniPlayerView(isPresented: $coordinator.isMiniPlayerPresented, miniPlayer: coordinator.presentMiniPlayer)
                 .tabItem { tab(name: .Tabs.discover, icon: .Tabs.discover) }
                 .tag(RootTab.discover)
             coordinator.searchTab()
-                .miniPlayerView(coordinator.presentMiniPlayer)
+                .miniPlayerView(isPresented: $coordinator.isMiniPlayerPresented, miniPlayer: coordinator.presentMiniPlayer)
                 .tabItem { tab(name: .Tabs.search, icon: .Tabs.search) }
                 .tag(RootTab.search)
         }
@@ -47,10 +47,13 @@ struct RootCoordinatorView: View {
 }
 
 extension View {
-    func miniPlayerView<Content: View>(_ miniPlayer: () -> Content) -> some View {
+    func miniPlayerView<Content: View>(isPresented: Binding<Bool>, miniPlayer: () -> Content) -> some View {
         ZStack(alignment: .bottom) {
             self
-            miniPlayer()
+            if isPresented.wrappedValue {
+                miniPlayer()
+                    .zStackTransition(.move(edge: .bottom))
+            }
         }
     }
 }

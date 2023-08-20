@@ -10,6 +10,7 @@ import Combine
 
 enum OptionRow: Identifiable {
     case addToQueue(action: PassthroughSubject<Void, Never>)
+    case addToSpotifyQueue(action: PassthroughSubject<Void, Never>)
     case viewArtist(action: PassthroughSubject<Void, Never>)
     case viewAlbum(action: PassthroughSubject<Void, Never>)
     case addToPlaylist(action: PassthroughSubject<Void, Never>)
@@ -17,13 +18,15 @@ enum OptionRow: Identifiable {
     var icon: Image {
         switch self {
         case .addToQueue:
-            return Image.Shared.addToQueue
+            return .Shared.addToQueue
+        case .addToSpotifyQueue:
+            return .Shared.addToSpotifyQueue
         case .viewArtist:
-            return Image.Shared.artist
+            return .Shared.artist
         case .viewAlbum:
-            return Image.Shared.album
+            return .Shared.album
         case .addToPlaylist:
-            return Image.Shared.playlist
+            return .Shared.playlist
         }
     }
     
@@ -31,6 +34,8 @@ enum OptionRow: Identifiable {
         switch self {
         case .addToQueue:
             return .Shared.addToQueue
+        case .addToSpotifyQueue:
+            return .Shared.addToSpotifyQueue
         case .viewArtist:
             return .Shared.viewArtist
         case .viewAlbum:
@@ -40,8 +45,19 @@ enum OptionRow: Identifiable {
         }
     }
     
-            var id: String {
-        String(describing: self)
+    var id: String {
+        switch self {
+        case .addToQueue:
+            return "addToQueue"
+        case .addToSpotifyQueue:
+            return "addToSpotifyQueue"
+        case .viewArtist:
+            return "viewArtist"
+        case .viewAlbum:
+            return "viewAlbum"
+        case .addToPlaylist:
+            return "addToPlaylist"
+        }
     }
 }
 
@@ -87,7 +103,7 @@ extension OptionsView {
     func optionRow(for optionRow: OptionRow) -> some View {
         Button {
             switch optionRow {
-            case .addToQueue(let action), .viewAlbum(let action), .viewArtist(let action), .addToPlaylist(let action):
+            case .addToQueue(let action), .addToSpotifyQueue(let action), .viewAlbum(let action), .viewArtist(let action), .addToPlaylist(let action):
                 action.send()
             }
         } label: {

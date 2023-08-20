@@ -9,7 +9,7 @@ import AVKit
 import Combine
 import SwiftUI
 
-final class QueueManager: ObservableObject {
+final class QueueManager {
     var state = QueueState(tracks: [])
     var player = AVPlayer()
     let time = CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(1000))

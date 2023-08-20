@@ -178,4 +178,50 @@ enum Seed: CaseIterable, Hashable, Identifiable {
             return "A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry)."
         }
     }
+    
+    static func musicKeyFromValue(_ value: Double) -> String {
+        precondition((-1.0...11.0).contains(value))
+        
+        switch Int(value) {
+        case 0:
+            return "C"
+        case 1:
+            return "C♯/D♭"
+        case 2:
+            return "D"
+        case 3:
+            return "D♯/E♭"
+        case 4:
+            return "E"
+        case 5:
+            return "F"
+        case 6:
+            return "F♯/G♭"
+        case 7:
+            return "G"
+        case 8:
+            return "G♯/A♭"
+        case 9:
+            return "A"
+        case 10:
+            return "A♯/B"
+        case 11:
+            return "H"
+        default:
+            return "N/A"
+        }
+    }
+    
+    static func modeFromValue(_ value: Double) -> String {
+        precondition((0.0...1.0).contains(value))
+
+        switch Int(value) {
+        case 0:
+            return "minor"
+        case 1:
+            return "major"
+        default:
+            return "N/A"
+        }
+    }
 }

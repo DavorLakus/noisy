@@ -37,6 +37,8 @@ extension Image {
         static let info: Image = Image(systemName: "info.circle")
         static let threeDots = Image(systemName: "ellipsis")
         static let addToQueue = Image(systemName: "text.badge.plus")
+        static let addToSpotifyQueue = Image(systemName: "text.insert")
+        static let refresh = Image(systemName: "arrow.triangle.2.circlepath.circle")
         static let artist = Image(systemName: "person.crop.circle.dashed")
         static let album = Image(systemName: "play.square.stack")
         static let playlist = Image(systemName: "square.grid.3x1.folder.fill.badge.plus")

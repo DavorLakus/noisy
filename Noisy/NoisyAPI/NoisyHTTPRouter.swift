@@ -16,6 +16,7 @@ enum NoisyHTTPRouter {
     case token(verifier: String, code: String)
     case refreshToken(refreshToken: String)
     case profile
+    case getDevices
     case myTop(type: String, count: Int, timeRange: String)
     case track(id: String)
     case trackAudioFeatures(ids: String)
@@ -29,6 +30,7 @@ enum NoisyHTTPRouter {
     case playlist(playlistId: String)
     case playlistTracks(playlistId: String, limit: Int, offset: Int)
     case playlists(userId: String, limit: Int, offset: Int)
+    case addToQueue(trackUri: String)
     case createPlaylist(userId: String, name: String)
     case addToPlaylist(playlistId: String, uris: String)
     case artistsTopTracks(artistId: String)
@@ -44,7 +46,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize, .token, .refreshToken:
             return "accounts.spotify.com"
-        case .profile, .myTop, .track, .trackAudioFeatures, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .createPlaylist, .addToPlaylist, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
+        case .profile, .getDevices, .myTop, .track, .trackAudioFeatures, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .addToQueue, .createPlaylist, .addToPlaylist, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
             return "api.spotify.com"
         }
     }
@@ -55,7 +57,7 @@ extension NoisyHTTPRouter: APIEndpoint {
             return .empty
         case .token, .refreshToken:
             return "/api"
-        case .profile, .myTop, .track, .trackAudioFeatures, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .createPlaylist, .addToPlaylist, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
+        case .profile, .getDevices, .myTop, .track, .trackAudioFeatures, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .addToQueue, .createPlaylist, .addToPlaylist, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists, .search, .recommendation, .recommendationGenres:
             return "/v1"
         }
     }
@@ -66,6 +68,8 @@ extension NoisyHTTPRouter: APIEndpoint {
             return "/authorize"
         case .profile:
             return "/me"
+        case .getDevices:
+            return "/me/player/devices"
         case .search:
             return "/search"
         case .track(let id):
@@ -96,6 +100,8 @@ extension NoisyHTTPRouter: APIEndpoint {
             return "/playlists/\(id)"
         case .playlistTracks(let id, _, _):
             return "/playlists/\(id)/tracks"
+        case .addToQueue:
+            return "/me/player/queue"
         case .createPlaylist(let id, _):
             return "/users/\(id)/playlists"
         case .addToPlaylist(let id, _):
@@ -113,9 +119,9 @@ extension NoisyHTTPRouter: APIEndpoint {
     
     public var method: HTTPMethod {
         switch self {
-        case .profile, .search, .recommendation, .recommendationGenres, .authorize, .myTop, .track, .trackAudioFeatures, .savedTracks, .checkSavedTracks, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .getDevices, .search, .recommendation, .recommendationGenres, .authorize, .myTop, .track, .trackAudioFeatures, .savedTracks, .checkSavedTracks, .playlists, .artist, .playlist, .playlistTracks, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return .get
-        case .token, .refreshToken, .createPlaylist, .addToPlaylist:
+        case .token, .refreshToken, .addToQueue, .createPlaylist, .addToPlaylist:
             return .post
         case .saveTracks:
             return .put
@@ -128,7 +134,7 @@ extension NoisyHTTPRouter: APIEndpoint {
         switch self {
         case .authorize:
             return nil
-        case .profile, .search, .recommendation, .recommendationGenres, .myTop, .track, .trackAudioFeatures, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .createPlaylist, .addToPlaylist, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
+        case .profile, .getDevices, .search, .recommendation, .recommendationGenres, .myTop, .track, .trackAudioFeatures, .savedTracks, .checkSavedTracks, .saveTracks, .removeTracks, .playlists, .artist, .playlist, .playlistTracks, .createPlaylist, .addToQueue, .addToPlaylist, .album, .albumTracks, .artistsTopTracks, .artistsAlbums, .artistsRelatedArtists:
             return authToken
         case .token, .refreshToken:
             return ["Content-Type" : "application/x-www-form-urlencoded"]
@@ -205,14 +211,16 @@ extension NoisyHTTPRouter: APIEndpoint {
                 URLQueryItem(name: "limit", value: "\(limit)"),
                 URLQueryItem(name: "offset", value: "\(offset)")
             ]
+        case .addToQueue(let trackUri):
+            return [
+                URLQueryItem(name: "uri", value: "\(trackUri)")
+            ]
         case .addToPlaylist(_, let uris):
             return [
                 URLQueryItem(name: "uris", value: "\(uris)")
             ]
         case .artistsTopTracks:
             return [URLQueryItem(name: "market", value: "HR")]
-        case .profile, .track, .artist, .playlist, .createPlaylist, .album, .artistsAlbums, .artistsRelatedArtists, .recommendationGenres:
-            return nil
         case .recommendation(let parameters):
             return parameters
         case .myTop(_, let count, let timeRange):
@@ -220,6 +228,8 @@ extension NoisyHTTPRouter: APIEndpoint {
                 URLQueryItem(name: "limit", value: "\(count)"),
                 URLQueryItem(name: "time_range", value: "\(timeRange)")
             ]
+        case .profile, .getDevices, .track, .artist, .playlist, .createPlaylist, .album, .artistsAlbums, .artistsRelatedArtists, .recommendationGenres:
+            return nil
         }
     }
 }

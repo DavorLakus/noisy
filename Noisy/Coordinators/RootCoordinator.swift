@@ -24,6 +24,7 @@ final class RootCoordinator: CoordinatorProtocol {
     @Published var isAlertPresented = false
     @Published var isProfileDrawerPresented = false
     @Published var isPlayerCoordinatorViewPresented = false
+    @Published var isMiniPlayerPresented = false
     @Published var alert: Alert = .signout
     
     // MARK: - Public properties
@@ -167,7 +168,8 @@ private extension RootCoordinator {
     }
     
     func bindDiscoverCoordinator() {
-        let discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce, searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
+        let discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce, searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager, isMiniPlayerPresented: _isMiniPlayerPresented)
+        
         discoverCoordinator.onDidTapProfileButton
             .sink { [weak self] in
                 self?.bindProfileViewModel()
@@ -230,6 +232,18 @@ extension RootCoordinator {
                 self?.bindPlayerCoordinator()
             }
             .store(in: &cancellables)
+        
+        $isMiniPlayerPresented
+            .sink { _ in
+                withAnimation {
+                    self.objectWillChange.send()
+                }
+            }
+            .store(in: &cancellables)
+        
+        withAnimation {
+            isMiniPlayerPresented = true
+        }
     }
 }
 
@@ -241,7 +255,6 @@ extension RootCoordinator {
     }
     
     func bindPlayerCoordinator() {
-        
         let playerCoordinator = PlayerCoordinator(playerService: playerService, musicDetailsService: musicDetailsService, queueManager: queueManager)
         
         playerCoordinator.onShoudEnd
@@ -260,6 +273,16 @@ extension RootCoordinator {
             .store(in: &cancellables)
         
         self.playerCoordinator = playerCoordinator
+        
+        queueManager.isPlaying
+            .sink { [weak self] _ in
+                if let self {
+                    if !self.isMiniPlayerPresented {
+                        self.getQueueManager()
+                    }
+                }
+            }
+            .store(in: &cancellables)
         
         withAnimation {
             isPlayerCoordinatorViewPresented = true

@@ -56,6 +56,7 @@ extension SeedsSheetView {
                 Button(action: viewModel.generateRandomSeedsTapped) {
                     Text(String.Discover.generateRandomSeeds)
                         .font(.nunitoBold(size: 17))
+                        .foregroundColor(.appBackground)
                 }
                 Button {
                     withAnimation {
@@ -63,7 +64,7 @@ extension SeedsSheetView {
                     }
                 } label: {
                     Image.Shared.info
-                        .foregroundColor(.green600)
+                        .foregroundColor(.appBackground)
                 }
                 
                 Spacer()
@@ -74,21 +75,23 @@ extension SeedsSheetView {
                 } label: {
                     Image.Shared.chevronRight
                         .rotationEffect(.degrees(isGenerateRandomSeedsExpanded ? 90 : .zero ))
+                        .foregroundColor(.appBackground)
                 }
             }
+            .padding(.horizontal, Constants.margin)
             if isGenerateRandomSeedsExpanded {
                 HStack {
                     Text("For:")
                         .font(.nunitoSemiBold(size: 14))
-                        .foregroundColor(.gray600)
+                        .foregroundColor(.appBackground)
                     
                     Button { viewModel.randomSeedCategorySelected(.artists) } label: {
                         HStack {
                             (viewModel.randomSeedCategory == .artists ? Image.Shared.checkboxFill : Image.Shared.checkbox)
                             Text(String.Search.artists)
                                 .font(.nunitoBold(size: 14))
-                                .foregroundColor(.gray600)
                         }
+                        .foregroundColor(.appBackground)
                     }
                     
                     Button { viewModel.randomSeedCategorySelected(.tracks) } label: {
@@ -96,15 +99,14 @@ extension SeedsSheetView {
                             (viewModel.randomSeedCategory == .tracks ? Image.Shared.checkboxFill : Image.Shared.checkbox)
                             Text(String.Search.tracks)
                                 .font(.nunitoBold(size: 14))
-                                .foregroundColor(.gray600)
-
                         }
+                        .foregroundColor(.appBackground)
                     }
                 }
             }
         }
         .padding(12)
-        .cardBackground(backgroundColor: .yellow300, borderColor: .gray600, hasShadow: false)
+        .cardBackground(backgroundColor: .purple900.opacity(0.7), borderColor: .gray600, hasShadow: false)
         .padding(.vertical, 3)
     }
     

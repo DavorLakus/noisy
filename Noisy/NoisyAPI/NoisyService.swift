@@ -26,6 +26,7 @@ protocol NoisyAPIProtocol {
     func getPlaylist(with playlistId: String) -> AnyPublisher<Data, Error>
     func getPlaylistTracks(for playlistId: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error>
     func createNewPlaylist(userId: String, name: String) -> AnyPublisher<Data, Error>
+    func addTrackToQueue(_ trackUri: String) -> AnyPublisher<Data, Error>
     func addTracksToPlaylist(_ playlistId: String, tracks: String) -> AnyPublisher<Data, Error>
     func getArtist(with id: String) -> AnyPublisher<Data, Error>
     func getAlbum(with albumId: String) -> AnyPublisher<Data, Error>
@@ -118,6 +119,10 @@ extension NoisyService {
     
     func createNewPlaylist(userId: String, name: String) -> AnyPublisher<Data, Error> {
         NetworkingManager.performRequest(.createPlaylist(userId: userId, name: name))
+    }
+    
+    func addTrackToQueue(_ trackUri: String) -> AnyPublisher<Data, Error> {
+        NetworkingManager.performRequest(.addToQueue(trackUri: trackUri))
     }
     
     func addTracksToPlaylist(_ playlistId: String, tracks: String) -> AnyPublisher<Data, Error> {

@@ -27,6 +27,7 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol & SheetCoordina
     // MARK: - Published properties
     @Published var navigationPath = NavigationPath()
     @Published var isSheetPresented: Bool = false
+    @Published var isMiniPlayerPresented: Bool
     
     // MARK: - Public properties
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
@@ -52,11 +53,12 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol & SheetCoordina
     private var searchService: SearchService
     
     // MARK: - Class lifecycle
-    init(discoverService: DiscoverService, searchService: SearchService, musicDetailsService: MusicDetailsService, queueManager: QueueManager) {
+    init(discoverService: DiscoverService, searchService: SearchService, musicDetailsService: MusicDetailsService, queueManager: QueueManager, isMiniPlayerPresented: Published<Bool>) {
         self.discoverService = discoverService
         self.searchService = searchService
         self.musicDetailsService = musicDetailsService
         self.queueManager = queueManager
+        self._isMiniPlayerPresented = isMiniPlayerPresented
         
         bindDiscoverViewModel()
     }
@@ -112,7 +114,7 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol & SheetCoordina
     
     @ViewBuilder
     func presentSheetView() -> some View {
-        if let playlistsViewModel {
+        if playlistsViewModel != nil {
             presentPlaylistsView()
         }
     }
@@ -152,14 +154,16 @@ private extension DiscoverCoordinator {
         
         discoverViewModel.onDidTapAddToPlaylist
             .sink { [weak self] tracks in
-                self?.bindPlaylistsViewModel(with: tracks)
-                self?.isSheetPresented = true
+                self?.push(.playlists(tracks))
             }
             .store(in: &cancellables)
         
         discoverViewModel.onDidTapVisualizeButton
             .sink { [weak self] tracks in
                 self?.push(.visualize(tracks))
+                withAnimation {
+                    self?.isMiniPlayerPresented = false
+                }
             }
             .store(in: &cancellables)
         
@@ -174,6 +178,9 @@ private extension DiscoverCoordinator {
         viewModel.onDidTapBackButton
             .sink { [weak self] in
                 self?.pop()
+                withAnimation {
+                    self?.isMiniPlayerPresented = true
+                }
             }
             .store(in: &cancellables)
         
@@ -217,6 +224,5 @@ struct DiscoverCoordinatorView<Coordinator: MusicDetailsCoordinatorProtocol & Sh
     
     var body: some View {
         NavigationStack(path: $coordinator.navigationPath, root: coordinator.rootView)
-            .dynamicModalSheet(isPresented: $coordinator.isSheetPresented, content: coordinator.presentSheetView)
     }
 }

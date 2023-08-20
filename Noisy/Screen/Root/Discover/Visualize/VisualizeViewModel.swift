@@ -17,10 +17,10 @@ final class VisualizeViewModel: ObservableObject {
     @Published var recommendedTracks: [Track]
     @Published var tracksFeatures: [AudioFeatures] = []
     @Published var trackPositions: [CGPoint] = []
-    @Published var xMultiplier: Double = 0.0
-    @Published var yMultiplier: Double = 0.0
-    
-    @Published var audioFeaturePoints: [CGPoint] = []
+    @Published var isTrackInfoPresented = false
+    @Published var isSeedInfoAlertPresented = false
+    @Published var infoSeed: Seed?
+
     @Published var tabBarVisibility: Visibility?
     
     // MARK: - Coordinator actions
@@ -32,6 +32,7 @@ final class VisualizeViewModel: ObservableObject {
     // MARK: - Public properties
     var options: [OptionRow] = []
     var toastMessage: String = .empty
+    var selectedTrack: EnumeratedSequence<[Track]>.Element?
     var profile: Profile? {
         guard let profile  = UserDefaults.standard.object(forKey: .Login.profile) as? Data
         else { return nil }
@@ -70,6 +71,19 @@ extension VisualizeViewModel {
             .store(in: &cancellables)
     }
     
+    func trackIconTapped(track: EnumeratedSequence<[Track]>.Element) {
+        selectedTrack = track
+        withAnimation {
+            isTrackInfoPresented = true
+        }
+    }
+    
+    func seedInfoTapped(for seed: Seed) {
+        infoSeed = seed
+        withAnimation {
+            isSeedInfoAlertPresented = true
+        }
+    }
 }
 
 // MARK: - Private extension
@@ -84,48 +98,20 @@ private extension VisualizeViewModel {
     }
     
     func calculateTrackDistances() {
-        trackPositions = pcaProjection(tracksFeatures.map(\.normalizedArray))
+        let trackPositions = pcaProjection(tracksFeatures.map(\.normalizedValues))
         
-        // MARK: - WIP
         let minX = trackPositions.map(\.x).min() ?? 0.0
-        let minY = trackPositions.map(\.y).min() ?? 0.0
         let maxX = trackPositions.map(\.x).max() ?? 1.0
+        let minY = trackPositions.map(\.y).min() ?? 0.0
         let maxY = trackPositions.map(\.y).max() ?? 1.0
         
-        xMultiplier = maxX - minX
-        yMultiplier = maxY - minY
-        
-        tracksFeatures.enumerated().forEach { enumeratedFeature in
-            print("\(enumeratedFeature.offset) values are \(enumeratedFeature.element.normalizedArray.map { $0.roundToPlaces(2)})")
+        self.trackPositions = trackPositions.map { point in
+            mapValuesToScreenSize(point: point, minX: minX, maxX: maxX, minY: minY, maxY: maxY)
         }
-        
-        trackPositions.enumerated().forEach { enumeratedPosition in
-            print("\(enumeratedPosition.offset) position is \(enumeratedPosition.element)")
-        }
-        print()
-        print("minX \(minX)")
-        print("minY \(minY)")
-        print("maxX \(maxX)")
-        print("maxY \(maxY)")
-        print("xMultiplier \(xMultiplier)")
-        print("yMultiplier \(yMultiplier)")
-        print()
-        
-//        var audioFeaturesArray: [[Double]] = [[Double]](repeating: [Double](repeating: 0, count: 12), count: trackPositions.count )
-//        (0..<trackPositions.count).forEach { index in
-//            audioFeaturesArray[index][11] = 1
-//        }
-//
-//        var audioFeaturesArray2: [[Double]] = [[Double]](repeating: [Double](repeating: 0, count: 12), count: trackPositions.count )
-//        audioFeaturesArray2[1] = [Double](repeating: 1, count: trackPositions.count)
-//
-////        var audioFeaturesArray2 = [Double](repeating: 0, count: trackPositions.count)
-////        audioFeaturesArray[1] = 1.0
-//        audioFeaturePoints = pcaProjection(audioFeaturesArray)
-//        audioFeaturesArray.enumerated().forEach { enumeratedPoint in
-//            print("\(enumeratedPoint.offset) feature is \(enumeratedPoint.element)")
-//        }
-        
+    }
+    
+    func mapValuesToScreenSize(point: CGPoint, minX: CGFloat, maxX: CGFloat, minY: CGFloat, maxY: CGFloat) -> CGPoint {
+        CGPoint(x: ((point.x - minX) * (1 - -1) / (maxX - minX)) - 1, y: ((point.y - minY) * (1 - -1) / (maxY - minY)) - 1)
     }
     
     func euclideanDistance(_ featuresA: [Double], _ featuresB: [Double]) -> Double {
@@ -142,7 +128,6 @@ private extension VisualizeViewModel {
     
     func pcaProjection(_ data: [[Double]]) -> [CGPoint] {
         let matrix = Matrix(data)
-//        let normalizedMatrix = matrix.normalizedColumns()
         let covarianceMatrix = calculateCovarianceMatrix(normalizedMatrix: data)
         let eigensystem = eig(Matrix(covarianceMatrix))
         let eigenVectorsMatrix = eigensystem.V.map { $0.map { $0 } }
@@ -204,86 +189,3 @@ private extension VisualizeViewModel {
         return Array(topEigenvectors)
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
-//
-//
-//final class Neo4JService {
-//    // MARK: - Private properties
-//    private var connection: BoltClient?
-//
-//    private let relevantTrackProperties: [String] = ["id", "name"]
-//
-//    // MARK: - Class lifecycle
-//    init() {
-//        initializeDatabase()
-//    }
-//}
-//
-//// MARK: - Public extension
-//extension Neo4JService {
-//    func insertTrack(_ track: Track, with features: AudioFeatures) {
-//        // Example: Creating a track node
-//        let trackProperties = track.dictionary
-//            .filter { element in
-//            relevantTrackProperties.contains(element.key)
-//            }.compactMapValues { String(describing: $0) }
-//
-//        let trackNode = Node(label: .Neo4j.trackName, properties: trackProperties)
-//
-//        try? connection?.createNode(node: trackNode) { [weak self] result in
-//            switch result {
-//            case .success(let node):
-//                print(node)
-//                self?.insertAudioFeatures(for: track, features: features)
-//            case .failure(let error):
-//                print(error)
-//            }
-//        }
-//    }
-//
-//    func insertAudioFeatures(for track: Track, features: AudioFeatures) {
-//
-//    }
-//}
-//
-//// MARK: - Private extension
-//private extension Neo4JService {
-//    func initializeDatabase() {
-//        let configuration = [
-//            "hostname" : "localhost",
-//            "port" : "6787",
-//            "username": "neo4j",
-//            "password": "12345678"
-//        ]
-//        connection = try? BoltClient(JSONClientConfiguration(json: configuration))
-//    }
-//}
-//
-//struct JSON {
-//    static let encoder = JSONEncoder()
-//}
-//
-//extension Encodable {
-//    subscript(key: String) -> Any? {
-//        return dictionary[key]
-//    }
-//    var dictionary: [String: Any] {
-//        return (try? JSONSerialization.jsonObject(with: JSON.encoder.encode(self))) as? [String: Any] ?? [:]
-//    }
-//}

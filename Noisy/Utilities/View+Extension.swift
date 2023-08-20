@@ -16,9 +16,8 @@ extension View {
     func loadingIndicator(isPresented: Binding<Bool>) -> some View {
         ZStack {
             self
-            if isPresented.wrappedValue {
-                SpinnerView()
-            }
+            SpinnerView()
+                .zIndex(isPresented.wrappedValue ? 1 : -1)
         }
     }
     

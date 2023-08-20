@@ -37,7 +37,24 @@ struct AudioFeatures: Codable {
         case id, acousticness, danceability, energy, instrumentalness, key, liveness, loudness, mode, speechiness, tempo, valence
     }
     
-    var normalizedArray: [Double] {
+    var normalizedValues: [Double] {
         [acousticness, danceability, energy, instrumentalness, liveness, Double(key) / Seed.key.multiplier, loudness / -Seed.loudness.multiplier, Double(mode) / Seed.mode.multiplier, speechiness, tempo / Seed.tempo.multiplier, Double(timeSignature) / Seed.timeSignature.multiplier, valence]
+    }
+    
+    var associatedSeeds: [Seed] {
+        [
+            .acousticness,
+            .danceability,
+            .energy,
+            .instrumentalness,
+            .key,
+            .liveness,
+            .loudness,
+            .mode,
+            .speechiness,
+            .tempo,
+            .timeSignature,
+            .valence
+        ]
     }
 }

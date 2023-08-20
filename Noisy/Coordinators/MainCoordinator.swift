@@ -31,7 +31,7 @@ final class MainCoordinator: CoordinatorProtocol {
     // MARK: - Published properties
     @Published var flow: Flow = .splash
     @Published var isLoading = false
-    @Published var isSpotifyAlertPresented = false
+    @Published var isAlertPresented = false
     @Published var spotifyError: SpotifyError?
     @Published var state: AppState = .loaded
     
@@ -76,6 +76,14 @@ final class MainCoordinator: CoordinatorProtocol {
     }
 }
 
+// MARK: - Alert
+extension MainCoordinator {
+    @ViewBuilder
+    func presentAlert(isPresented: Binding<Bool>) -> some View {
+        SpotifyErrorView(isPresented: isPresented, error: spotifyError)
+    }
+}
+ 
 // MARK: - App state
 extension MainCoordinator {
     func bindAppState() {
@@ -109,9 +117,9 @@ extension MainCoordinator {
         
         NetworkingManager.showSpotifyError
             .sink { [weak self] error in
+                self?.spotifyError = error
                 withAnimation {
-                    self?.spotifyError = error
-                    self?.isSpotifyAlertPresented = true
+                    self?.isAlertPresented = true
                 }
             }
             .store(in: &cancellables)

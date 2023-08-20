@@ -47,7 +47,7 @@ final class HomeViewModel: ObservableObject {
     @Published var topTracks: [Track] = []
     @Published var topArtists: [Artist] = []
     @Published var playlists: [Playlist] = []
-    @Published var isTopTracksExpanded = false
+    @Published var isTopTracksExpanded = true
     @Published var isTopArtistsExpanded = false
     @Published var isPlaylistsExpanded =  false
     @Published var topTracksTimeRange: TimeRange = .shortTerm

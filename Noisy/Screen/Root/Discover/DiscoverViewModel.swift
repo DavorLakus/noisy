@@ -88,6 +88,7 @@ final class DiscoverViewModel: ObservableObject {
     private var savedTracksLimit: Int = 10
     private var savedTracksOffset: Int = .zero
     private var savedTracksCount: Int = .zero
+    private var recommendedTracksBuffer: [Track] = []
     private let discoverService: DiscoverService
     private let searchService: SearchService
     private let musicDetailsService: MusicDetailsService
@@ -228,7 +229,7 @@ extension DiscoverViewModel {
     }
     
     func recommendationsOptionsTapped() {
-        options = [addRecommendationsToQueueOption(), addRecommendationsToPlaylistOption()]
+        options = [addRecommendationsToQueueOption(), addRecommendationsToSpotifyQueueOption(), addRecommendationsToPlaylistOption()]
         withAnimation {
             isOptionsSheetPresented = true
         }
@@ -240,7 +241,7 @@ extension DiscoverViewModel {
     }
     
     func trackOptionsTapped(for track: Track) {
-        options = [addToQueueOption(track), viewAlbumOption(track), viewArtistOption(track), addToPlaylistOption(track)]
+        options = [addToQueueOption(track), addTrackToSpotifyQueueOption(track), viewAlbumOption(track), viewArtistOption(track), addToPlaylistOption(track)]
         withAnimation {
             isOptionsSheetPresented = true
         }
@@ -268,6 +269,19 @@ private extension DiscoverViewModel {
             .store(in: &cancellables)
         
         return OptionRow.addToQueue(action: addToQueueSubject)
+    }
+    
+    func addRecommendationsToSpotifyQueueOption() -> OptionRow {
+        let addToQueueSubject = PassthroughSubject<Void, Never>()
+        
+        addToQueueSubject
+            .sink { [weak self] in
+                guard let self else { return }
+                self.addTracksToSpotifyQueue()
+            }
+            .store(in: &cancellables)
+        
+        return OptionRow.addToSpotifyQueue(action: addToQueueSubject)
     }
     
     func addRecommendationsToPlaylistOption() -> OptionRow {
@@ -300,6 +314,19 @@ private extension DiscoverViewModel {
             .store(in: &cancellables)
         
         return OptionRow.addToQueue(action: addToQueueSubject)
+    }
+    
+    func addTrackToSpotifyQueueOption(_ track: Track) -> OptionRow {
+        let addToQueueSubject = PassthroughSubject<Void, Never>()
+        
+        addToQueueSubject
+            .sink { [weak self] in
+                guard let self else { return }
+                self.addTracksToSpotifyQueue(track)
+            }
+            .store(in: &cancellables)
+        
+        return OptionRow.addToSpotifyQueue(action: addToQueueSubject)
     }
     
     func viewArtistOption(_ track: Track) -> OptionRow {
@@ -405,34 +432,36 @@ private extension DiscoverViewModel {
     
     func generateRandomSeeds() {
         resetSeeds()
-        switch randomSeedCategory {
-        case .artists:
-            (0..<5).forEach { _ in
-                musicDetailsService.getSavedTracks(limit: 1, offset: Int.random(in: (1...savedTracksCount)))
-                    .sink { [weak self] response in
-                        guard let self else { return }
-                        if let artist = response.items.map(\.track).first?.artists.first,
-                           !self.seedArtists.contains(artist) {
-                            withAnimation {
-                                self.seedArtists.append(artist)
+        if savedTracksCount > 1 {
+            switch randomSeedCategory {
+            case .artists:
+                (0..<5).forEach { _ in
+                    musicDetailsService.getSavedTracks(limit: 1, offset: Int.random(in: (1...savedTracksCount)))
+                        .sink { [weak self] response in
+                            guard let self else { return }
+                            if let artist = response.items.map(\.track).first?.artists.first,
+                               !self.seedArtists.contains(artist) {
+                                withAnimation {
+                                    self.seedArtists.append(artist)
+                                }
                             }
                         }
-                    }
-                    .store(in: &cancellables)
-            }
-        case .tracks:
-            (0..<5).forEach { _ in
-                musicDetailsService.getSavedTracks(limit: 1, offset: Int.random(in: (1...savedTracksCount)))
-                    .sink { [weak self] response in
-                        if let track = response.items.map(\.track).first {
-                            withAnimation {
-                                self?.seedTracks.append(track)
+                        .store(in: &cancellables)
+                }
+            case .tracks:
+                (0..<5).forEach { _ in
+                    musicDetailsService.getSavedTracks(limit: 1, offset: Int.random(in: (1...savedTracksCount)))
+                        .sink { [weak self] response in
+                            if let track = response.items.map(\.track).first {
+                                withAnimation {
+                                    self?.seedTracks.append(track)
+                                }
                             }
                         }
-                    }
-                    .store(in: &cancellables)
+                        .store(in: &cancellables)
+                }
+            default: break
             }
-        default: break
         }
     }
     
@@ -449,16 +478,18 @@ private extension DiscoverViewModel {
         musicDetailsService.checkSavedTracks(with: tracks.map(\.id).joined(separator: ","))
             .sink { [weak self] alreadySavedArray in
                 guard let self else { return }
-                withAnimation {
-                    self.recommendedTracks += alreadySavedArray.enumerated()
-                        .compactMap { $0.element ? nil : tracks[$0.offset] }
-                }
+                self.recommendedTracksBuffer += alreadySavedArray.enumerated()
+                    .compactMap { $0.element ? nil : tracks[$0.offset] }
                 if alreadySavedArray.contains(true) {
                     let limit = alreadySavedArray.reduce(0, { initialResult, alreadySavedValue in
                         let value = alreadySavedValue ? 1 : 0
                         return initialResult + value
                     })
                     self.discover(limit: limit)
+                } else {
+                    withAnimation {
+                        self.recommendedTracks = self.recommendedTracksBuffer
+                    }
                 }
             }
             .store(in: &cancellables)
@@ -527,5 +558,25 @@ private extension DiscoverViewModel {
                 self?.availableGenres = genres
             }
             .store(in: &cancellables)
+    }
+    
+    func addTracksToSpotifyQueue(_ track: Track? = nil) {
+        if let track {
+            musicDetailsService.addTracksToQueue(track.uri)
+                .sink { [weak self] in
+                    self?.toastMessage = "\(track.name) \(String.Shared.addedToSpotifyQueue)"
+                    withAnimation {
+                        self?.isToastPresented = true
+                    }
+                }
+                .store(in: &cancellables)
+        } else {
+            Publishers.MergeMany(recommendedTracks.map(\.uri).map(musicDetailsService.addTracksToQueue))
+                .sink {_ in
+                    print("All tracks to queue.")
+                }
+                .store(in: &cancellables)
+        }
+        
     }
 }

@@ -5,8 +5,6 @@
 //  Created by Davor Lakus on 14.08.2023..
 //
 
-import Foundation
-
 import SwiftUI
 
 protocol SheetCoordinatorProtocol: CoordinatorProtocol where CoordinatorView: CoordinatorViewProtocol {
