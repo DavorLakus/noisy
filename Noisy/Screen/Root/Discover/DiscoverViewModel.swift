@@ -76,7 +76,7 @@ final class DiscoverViewModel: ObservableObject {
     // MARK: - Public properties
     var hasAnySeeds: Bool { !seedArtists.isEmpty || !seedTracks.isEmpty || !seedGenres.isEmpty }
     var notAllSeedParametersSelected: Bool { seedToggles.contains(false) }
-    var options: [OptionRow] = []
+    var options: [Option] = []
     var toastMessage: String = .empty
     var profile: Profile? {
         guard let profile  = UserDefaults.standard.object(forKey: .Login.profile) as? Data
@@ -254,7 +254,7 @@ extension DiscoverViewModel {
 
 // MARK: - Track options
 private extension DiscoverViewModel {
-    func addRecommendationsToQueueOption() -> OptionRow {
+    func addRecommendationsToQueueOption() -> Option {
         let addToQueueSubject = PassthroughSubject<Void, Never>()
         
         addToQueueSubject
@@ -268,10 +268,10 @@ private extension DiscoverViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.addToQueue(action: addToQueueSubject)
+        return Option.addToQueue(action: addToQueueSubject)
     }
     
-    func addRecommendationsToSpotifyQueueOption() -> OptionRow {
+    func addRecommendationsToSpotifyQueueOption() -> Option {
         let addToQueueSubject = PassthroughSubject<Void, Never>()
         
         addToQueueSubject
@@ -281,10 +281,10 @@ private extension DiscoverViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.addToSpotifyQueue(action: addToQueueSubject)
+        return Option.addToSpotifyQueue(action: addToQueueSubject)
     }
     
-    func addRecommendationsToPlaylistOption() -> OptionRow {
+    func addRecommendationsToPlaylistOption() -> Option {
         let addToPlaylistSubject = PassthroughSubject<Void, Never>()
         
         addToPlaylistSubject
@@ -297,10 +297,10 @@ private extension DiscoverViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.addToPlaylist(action: addToPlaylistSubject)
+        return Option.addToPlaylist(action: addToPlaylistSubject)
     }
     
-    func addToQueueOption(_ track: Track) -> OptionRow {
+    func addToQueueOption(_ track: Track) -> Option {
         let addToQueueSubject = PassthroughSubject<Void, Never>()
         
         addToQueueSubject
@@ -313,10 +313,10 @@ private extension DiscoverViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.addToQueue(action: addToQueueSubject)
+        return Option.addToQueue(action: addToQueueSubject)
     }
     
-    func addTrackToSpotifyQueueOption(_ track: Track) -> OptionRow {
+    func addTrackToSpotifyQueueOption(_ track: Track) -> Option {
         let addToQueueSubject = PassthroughSubject<Void, Never>()
         
         addToQueueSubject
@@ -326,10 +326,10 @@ private extension DiscoverViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.addToSpotifyQueue(action: addToQueueSubject)
+        return Option.addToSpotifyQueue(action: addToQueueSubject)
     }
     
-    func viewArtistOption(_ track: Track) -> OptionRow {
+    func viewArtistOption(_ track: Track) -> Option {
         let viewArtistSubject = PassthroughSubject<Void, Never>()
         
         viewArtistSubject
@@ -341,10 +341,10 @@ private extension DiscoverViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.viewArtist(action: viewArtistSubject)
+        return Option.viewArtist(action: viewArtistSubject)
     }
     
-    func viewAlbumOption(_ track: Track) -> OptionRow {
+    func viewAlbumOption(_ track: Track) -> Option {
         let viewAlbumSubject = PassthroughSubject<Void, Never>()
         
         viewAlbumSubject
@@ -358,10 +358,10 @@ private extension DiscoverViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.viewAlbum(action: viewAlbumSubject)
+        return Option.viewAlbum(action: viewAlbumSubject)
     }
     
-    func addToPlaylistOption(_ track: Track) -> OptionRow {
+    func addToPlaylistOption(_ track: Track) -> Option {
         let addToPlaylistSubject = PassthroughSubject<Void, Never>()
         
         addToPlaylistSubject
@@ -373,7 +373,7 @@ private extension DiscoverViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.addToPlaylist(action: addToPlaylistSubject)
+        return Option.addToPlaylist(action: addToPlaylistSubject)
     }
 }
 
@@ -466,7 +466,10 @@ private extension DiscoverViewModel {
     }
     
     func discover(limit: Int? = nil) {
-        if limit == nil { recommendedTracks.removeAll() }
+        if limit == nil {
+            recommendedTracks.removeAll()
+            recommendedTracksBuffer.removeAll()
+        }
         discoverService.discover(seedParameters: createDiscoverQueryParameters(limit: limit))
             .sink { [weak self] result in
                 self?.checkIfNotAlreadySaved(tracks: result.tracks)

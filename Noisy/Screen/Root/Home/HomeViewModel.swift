@@ -67,7 +67,7 @@ final class HomeViewModel: ObservableObject {
     let onDidTapPlaylistRow = PassthroughSubject<Playlist, Never>()
     
     // MARK: - Public properties
-    var options: [OptionRow] = []
+    var options: [Option] = []
     var toastMessage: String = .empty
 
     // MARK: - Private properties
@@ -133,7 +133,7 @@ extension HomeViewModel {
 
 // MARK: - Track options
 private extension HomeViewModel {
-    func addToQueueOption(_ track: Track) -> OptionRow {
+    func addToQueueOption(_ track: Track) -> Option {
         let addToQueueSubject = PassthroughSubject<Void, Never>()
         
         addToQueueSubject
@@ -146,10 +146,10 @@ private extension HomeViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.addToQueue(action: addToQueueSubject)
+        return Option.addToQueue(action: addToQueueSubject)
     }
     
-    func viewArtistOption(_ track: Track) -> OptionRow {
+    func viewArtistOption(_ track: Track) -> Option {
         let viewArtistSubject = PassthroughSubject<Void, Never>()
         
         viewArtistSubject
@@ -161,10 +161,10 @@ private extension HomeViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.viewArtist(action: viewArtistSubject)
+        return Option.viewArtist(action: viewArtistSubject)
     }
     
-    func viewAlbumOption(_ track: Track) -> OptionRow {
+    func viewAlbumOption(_ track: Track) -> Option {
         let viewAlbumSubject = PassthroughSubject<Void, Never>()
         
         viewAlbumSubject
@@ -178,7 +178,7 @@ private extension HomeViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.viewAlbum(action: viewAlbumSubject)
+        return Option.viewAlbum(action: viewAlbumSubject)
     }
 }
 

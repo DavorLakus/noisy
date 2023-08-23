@@ -22,7 +22,6 @@ struct PlaybackSlider: View {
                 .readSize { width = $0.width }
                 .onTapGesture {
                     isSliding(true)
-
                     value = ($0.x - 10) / width * range.upperBound
                     isSliding(false)
                 }
@@ -30,10 +29,9 @@ struct PlaybackSlider: View {
             RoundedRectangle(cornerRadius: 5)
                 .fill(Color.green400)
                 .frame(height: 5)
-                .frame(width: width * value / range.upperBound + 10, height: 5)
+                .frame(width: width * value / range.upperBound, height: 5)
                 .onTapGesture {
                     isSliding(true)
-
                     value = ($0.x - 10) / width * range.upperBound
                     isSliding(false)
 

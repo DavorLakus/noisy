@@ -6,7 +6,6 @@ enum ExamplePath: Hashable {
     case secondLevelDetail
 }
 
-
 final class ExampleCoordinator: VerticalCoordinatorProtocol {
     @Published var navigationPath = NavigationPath()
     @Published var isAlertPresented: Bool = false

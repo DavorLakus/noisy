@@ -33,12 +33,12 @@ final class PlayerViewModel: ObservableObject {
     let onDidTapOptionsButton = PassthroughSubject<Void, Never>()
     let onDidTapQueueButton = PassthroughSubject<Void, Never>()
     let onDidTapShareButton = PassthroughSubject<Void, Never>()
-    let onDidTapArtistButton = PassthroughSubject<Artist, Never>()
-    let onDidTapAlbumButton = PassthroughSubject<Album, Never>()
+    var onDidTapArtistButton: PassthroughSubject<Artist, Never>?
+    var onDidTapAlbumButton: PassthroughSubject<Album, Never>?
     let onDidTapAddToPlaylist = PassthroughSubject<[Track], Never>()
     
     // MARK: - Public properties
-    var options: [OptionRow] = []
+    var options: [Option] = []
     var toastMessage: String = .empty
     let musicDetailsService: MusicDetailsService
     var queueManager: QueueManager
@@ -104,7 +104,7 @@ extension PlayerViewModel {
 
 // MARK: - Track options
 private extension PlayerViewModel {
-    func addToQueueOption(_ track: Track) -> OptionRow {
+    func addToQueueOption(_ track: Track) -> Option {
         let addToQueueSubject = PassthroughSubject<Void, Never>()
         
         addToQueueSubject
@@ -117,10 +117,10 @@ private extension PlayerViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.addToQueue(action: addToQueueSubject)
+        return Option.addToQueue(action: addToQueueSubject)
     }
     
-    func viewArtistOption(_ track: Track) -> OptionRow {
+    func viewArtistOption(_ track: Track) -> Option {
         let viewArtistSubject = PassthroughSubject<Void, Never>()
         
         viewArtistSubject
@@ -128,14 +128,14 @@ private extension PlayerViewModel {
                 withAnimation {
                     self?.isOptionsSheetPresented = false
                 }
-                self?.onDidTapArtistButton.send(track.artists[.zero])
+                self?.onDidTapArtistButton?.send(track.artists[.zero])
             }
             .store(in: &cancellables)
         
-        return OptionRow.viewArtist(action: viewArtistSubject)
+        return Option.viewArtist(action: viewArtistSubject)
     }
     
-    func viewAlbumOption(_ track: Track) -> OptionRow {
+    func viewAlbumOption(_ track: Track) -> Option {
         let viewAlbumSubject = PassthroughSubject<Void, Never>()
         
         viewAlbumSubject
@@ -144,15 +144,15 @@ private extension PlayerViewModel {
                     self?.isOptionsSheetPresented = false
                 }
                 if let album = track.album {
-                    self?.onDidTapAlbumButton.send(album)
+                    self?.onDidTapAlbumButton?.send(album)
                 }
             }
             .store(in: &cancellables)
         
-        return OptionRow.viewAlbum(action: viewAlbumSubject)
+        return Option.viewAlbum(action: viewAlbumSubject)
     }
     
-    func addToPlaylistOption(_ track: Track) -> OptionRow {
+    func addToPlaylistOption(_ track: Track) -> Option {
         let addToPlaylistSubject = PassthroughSubject<Void, Never>()
         
         addToPlaylistSubject
@@ -164,7 +164,7 @@ private extension PlayerViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.addToPlaylist(action: addToPlaylistSubject)
+        return Option.addToPlaylist(action: addToPlaylistSubject)
     }
 }
 

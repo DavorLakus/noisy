@@ -9,6 +9,9 @@ import SwiftUI
 
 struct SeedParametersSheetView: View {
     @ObservedObject var viewModel: DiscoverViewModel
+    @State var width: CGFloat = .zero
+    @State var isScrollDisabled = false
+    let colors: [Color] = [.purple300, .blue400, .orange500, .yellow400, .green200, .green300, .green400, .green500, .green600, .red400, .red500, .red600, .orange400, .purple900 ]
     
     var body: some View {
         VStack {
@@ -21,14 +24,14 @@ struct SeedParametersSheetView: View {
                 }
             }
             .padding([.horizontal, .top], Constants.margin)
+            VStack(alignment: .leading) {
+                Text(String.Discover.seedsTitle)
+                    .font(.nunitoBold(size: 18))
+                    .foregroundColor(.gray800)
+            }
+            .padding(.horizontal, Constants.margin)
+            
             ScrollView {
-                VStack(alignment: .leading) {
-                    Text(String.Discover.seedsTitle)
-                        .font(.nunitoBold(size: 18))
-                        .foregroundColor(.gray800)
-                }
-                .padding(.horizontal, Constants.margin)
-                
                 VStack {
                     Button(action: viewModel.selectAllSeedsTapped) {
                         HStack {
@@ -42,16 +45,21 @@ struct SeedParametersSheetView: View {
                     }
                     .padding(.horizontal, Constants.margin)
                     .animation(nil, value: viewModel.notAllSeedParametersSelected)
+                    
+                    PieGraph(seedToggles: $viewModel.seedToggles, lowerBounds: $viewModel.lowerBounds, targets: $viewModel.targets, upperBounds: $viewModel.upperBounds, width: width - Constants.margin, isScrollDisabled: $isScrollDisabled, colors: colors)
+                    
                     LazyVStack {
                         ForEach(Seed.allCases, id: \.id) { seed in
-                            ThreePointSliderRow(seed: seed, infoAction: viewModel.seedInfoTapped, minValue: 0, maxValue: 1, lowerBound: $viewModel.lowerBounds[seed.id], target: $viewModel.targets[seed.id], upperBound: $viewModel.upperBounds[seed.id], isToggled: $viewModel.seedToggles[seed.id])
+                            ThreePointSliderRow(seed: seed, infoAction: viewModel.seedInfoTapped, minValue: 0, maxValue: 1, lowerBound: $viewModel.lowerBounds[seed.id], target: $viewModel.targets[seed.id], upperBound: $viewModel.upperBounds[seed.id], isToggled: $viewModel.seedToggles[seed.id], background: colors[seed.rawValue])
                                 .padding(.horizontal, Constants.margin)
                         }
                     }
+                    .readSize { width = $0.width }
+                    .padding(.vertical, Constants.margin)
                 }
-                .padding(.vertical, Constants.margin)
-            }
+            }.scrollDisabled(isScrollDisabled)
         }
+        
         .alert(isPresented: $viewModel.isInfoAlertPresented) { isPresented in
             AlertView(isPresented: isPresented, title: viewModel.infoSeed?.name, message: viewModel.infoSeed?.description, secondaryActionText: .Shared.ok)
         }

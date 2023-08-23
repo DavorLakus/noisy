@@ -29,7 +29,7 @@ final class PlaylistViewModel: ObservableObject, Equatable {
     
     // MARK: - Public properties
     let playlist: Playlist
-    var options: [OptionRow] = []
+    var options: [Option] = []
     var toastMessage: String = .empty
     
     // MARK: - Private properties
@@ -69,7 +69,7 @@ extension PlaylistViewModel {
             }
             .store(in: &cancellables)
         
-        let addToQueueOption = OptionRow.addToQueue(action: addToQueueSubject)
+        let addToQueueOption = Option.addToQueue(action: addToQueueSubject)
         options = [addToQueueOption]
         withAnimation {
             isOptionsSheetPresented = true
@@ -103,7 +103,7 @@ extension PlaylistViewModel {
             }
             .store(in: &cancellables)
         
-        let addToQueueOption = OptionRow.addToQueue(action: addToQueueSubject)
+        let addToQueueOption = Option.addToQueue(action: addToQueueSubject)
         options = [addToQueueOption]
         withAnimation {
             isOptionsSheetPresented = true

@@ -131,7 +131,7 @@ extension MusicDetailsCoordinatorProtocol {
             }
             .store(in: &cancellables)
         
-        self.playlistsViewModel = viewModel
+        playlistsViewModel = viewModel
     }
     
     @ViewBuilder

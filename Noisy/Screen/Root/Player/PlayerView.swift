@@ -41,6 +41,7 @@ extension PlayerView {
                         .cornerRadius(Constants.smallCornerRadius)
                         .shadow(radius: 8)
                 }
+                .animation(nil, value: true)
             trackTitleView()
             controlsView()
             footerView()

@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-enum OptionRow: Identifiable {
+enum Option: Identifiable {
     case addToQueue(action: PassthroughSubject<Void, Never>)
     case addToSpotifyQueue(action: PassthroughSubject<Void, Never>)
     case viewArtist(action: PassthroughSubject<Void, Never>)
@@ -63,7 +63,7 @@ enum OptionRow: Identifiable {
 
 struct OptionsView: View {
     @Binding var isPresented: Bool
-    let options: [OptionRow]
+    let options: [Option]
     
     var body: some View {
         bodyView()
@@ -95,12 +95,11 @@ extension OptionsView {
                 }
             }
             .padding(Constants.margin)
-            .padding(.bottom, 30)
         }
-        
+        .padding(.bottom, 40)
     }
     
-    func optionRow(for optionRow: OptionRow) -> some View {
+    func optionRow(for optionRow: Option) -> some View {
         Button {
             switch optionRow {
             case .addToQueue(let action), .addToSpotifyQueue(let action), .viewAlbum(let action), .viewArtist(let action), .addToPlaylist(let action):

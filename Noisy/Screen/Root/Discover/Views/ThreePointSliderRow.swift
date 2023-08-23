@@ -19,6 +19,7 @@ struct ThreePointSliderRow: View {
     @Binding var target: Double
     @Binding var upperBound: Double
     @Binding var isToggled: Bool
+    let background: Color
     
     var lowerBoundString: String { valueToString(lowerBound) }
     var targetString: String { valueToString(target) }
@@ -41,7 +42,7 @@ struct ThreePointSliderRow: View {
                 Button {
                     infoAction(seed)
                 } label: {
-                    Image.Shared.info.foregroundColor(.green500)
+                    Image.Shared.info.foregroundColor(.gray700)
                 }
                 
                 (isToggled ? Image.Shared.checkboxFill : Image.Shared.checkbox)
@@ -50,15 +51,25 @@ struct ThreePointSliderRow: View {
                             isToggled.toggle()
                         }
                     }
-                    .foregroundColor(.green500)
+                    .foregroundColor(.gray700)
                 
                 Spacer()
                 
                 Image.Shared.chevronDown
                     .rotationEffect(Angle(degrees: isExpanded ? 0 : -90))
             }
-            .padding(.bottom, isExpanded ? 12 : .zero)
-            .background(isToggled ? Color.green200 : Color.white)
+            .padding(4)
+            .padding(.horizontal, 12)
+            .background {
+                if isToggled {
+                    background
+                        .opacity(0.3)
+                        .blur(radius: 2)
+                        .cornerRadius(4)
+                } else {
+                    Color.white
+                }
+            }
             .onTapGesture {
                 withAnimation {
                     isExpanded.toggle()
@@ -66,54 +77,59 @@ struct ThreePointSliderRow: View {
             }
             
             if isExpanded {
-                HStack {
-                    HStack(spacing: .zero) {
-                        Text(String.Discover.lowerBound)
-                            .foregroundColor(.appBackground)
-                            .font(.nunitoBold(size: 12))
-                        Text(lowerBoundString)
-                            .foregroundColor(lowerBoundColor)
-                            .font(.nunitoBold(size: 14))
+                VStack(spacing: .zero) {
+                    HStack {
+                        HStack(spacing: .zero) {
+                            Text(String.Discover.lowerBound)
+                                .foregroundColor(.appBackground)
+                                .font(.nunitoBold(size: 12))
+                            Text(lowerBoundString)
+                                .foregroundColor(lowerBoundColor)
+                                .font(.nunitoBold(size: 14))
+                        }
+                        Spacer()
+                        HStack(spacing: .zero) {
+                            Text(String.Discover.target)
+                                .foregroundColor(.appBackground)
+                                .font(.nunitoBold(size: 12))
+                            Text(targetString)
+                                .foregroundColor(targetColor)
+                                .font(.nunitoBold(size: 14))
+                        }
+                        Spacer()
+                        HStack(spacing: .zero) {
+                            Text(String.Discover.upperBound)
+                                .foregroundColor(.appBackground)
+                                .font(.nunitoBold(size: 12))
+                            Text(upperBoundString)
+                                .foregroundColor(upperBoundColor)
+                                .font(.nunitoBold(size: 14))
+                        }
                     }
-                    Spacer()
-                    HStack(spacing: .zero) {
-                        Text(String.Discover.target)
-                            .foregroundColor(.appBackground)
-                            .font(.nunitoBold(size: 12))
-                        Text(targetString)
-                            .foregroundColor(targetColor)
-                            .font(.nunitoBold(size: 14))
-                    }
-                    Spacer()
-                    HStack(spacing: .zero) {
-                        Text(String.Discover.upperBound)
-                            .foregroundColor(.appBackground)
-                            .font(.nunitoBold(size: 12))
-                        Text(upperBoundString)
-                            .foregroundColor(upperBoundColor)
-                            .font(.nunitoBold(size: 14))
-                    }
+                    .animation(.none, value: lowerBound)
+                    .animation(.none, value: target)
+                    .animation(.none, value: upperBound)
+                    .padding(markRadius)
+                    .cardBackground(backgroundColor: .purple900, cornerRadius: markRadius * 2, hasShadow: false)
+                    .padding(.bottom, 40)
+                    
+                    ThreePointSlider(minValue: minValue, maxValue: maxValue, lowerBound: $lowerBound, target: $target, upperBound: $upperBound, minColor: lowerBoundColor, targetColor: targetColor, maxColor: upperBoundColor)
                 }
-                .animation(.none, value: lowerBound)
-                .animation(.none, value: target)
-                .animation(.none, value: upperBound)
-                .padding(markRadius)
-                .cardBackground(backgroundColor: .green500, cornerRadius: markRadius * 2)
-                .padding(.bottom, 40)
-                
-                ThreePointSlider(minValue: minValue, maxValue: maxValue, lowerBound: $lowerBound, target: $target, upperBound: $upperBound, minColor: lowerBoundColor, targetColor: targetColor, maxColor: upperBoundColor)
+                .padding(.top, 12)
             }
+                
         }
         .padding(Constants.margin)
-        .cardBackground(backgroundColor: isToggled ? Color.green200 : Color.white)
+        .cardBackground(backgroundColor: isToggled ? background.opacity(0.5) : Color.white)
     }
     
     func valueToString(_ value: Double) -> String {
-        if case .duration = seed {
-            return TimeInterval(value * seed.multiplier).positionalTime
-        } else {
-            return String(format: numberFormat, seed.isInt ? Int(value * seed.multiplier) : value)
-        }
+        seed.presentationalValue(value)
+//        if case .duration = seed {
+//            return TimeInterval(value * seed.multiplier).positionalTime
+//        } else {
+//            return String(format: numberFormat, seed.isInt ? Int(value * seed.multiplier) : value)
+//        }
     }
 }
 

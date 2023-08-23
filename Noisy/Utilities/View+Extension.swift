@@ -276,6 +276,7 @@ extension View {
                             }
                         }
                     }
+                    .padding(.bottom, 30)
             }
         }
     }

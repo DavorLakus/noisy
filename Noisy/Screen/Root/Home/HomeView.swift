@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import WebKit
 
 struct HomeView: View {
     @ObservedObject var viewModel: HomeViewModel
@@ -36,6 +35,7 @@ private extension HomeView {
         ScrollView {
             VStack(alignment: .leading, spacing: Constants.margin) {
                 Spacer(minLength: 100)
+                
                 topTracksAccordion()
                 topArtistsAccordion()
                 playlistsAccordion()

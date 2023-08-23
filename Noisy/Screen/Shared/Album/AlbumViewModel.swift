@@ -29,7 +29,7 @@ final class AlbumViewModel: ObservableObject, Equatable {
     
     // MARK: - Public properties
     let album: Album
-    var options: [OptionRow] = []
+    var options: [Option] = []
     var toastMessage: String = .empty
     
     // MARK: - Private properties
@@ -64,7 +64,7 @@ extension AlbumViewModel {
         }
     }
     
-    func addAlbumToQueueOption() -> OptionRow {
+    func addAlbumToQueueOption() -> Option {
         let addToQueueSubject = PassthroughSubject<Void, Never>()
         
         addToQueueSubject
@@ -73,7 +73,7 @@ extension AlbumViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.addToQueue(action: addToQueueSubject)
+        return Option.addToQueue(action: addToQueueSubject)
     }
     
     func playAllButtonTapped() {
@@ -97,7 +97,7 @@ extension AlbumViewModel {
         }
     }
     
-    func addTrackToQueueOption(_ track: Track) -> OptionRow {
+    func addTrackToQueueOption(_ track: Track) -> Option {
         let addToQueueSubject = PassthroughSubject<Void, Never>()
         
         addToQueueSubject
@@ -110,7 +110,7 @@ extension AlbumViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.addToQueue(action: addToQueueSubject)
+        return Option.addToQueue(action: addToQueueSubject)
     }
 }
 

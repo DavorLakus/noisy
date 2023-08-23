@@ -272,6 +272,48 @@ extension RootCoordinator {
             }
             .store(in: &cancellables)
         
+        playerCoordinator.onDidTapArtistButton
+            .flatMap { [weak self] artist in
+                withAnimation {
+                    self?.isPlayerCoordinatorViewPresented = false
+                }
+                return Just(artist)
+            }
+            .debounce(for: .milliseconds(150), scheduler: RunLoop.main)
+            .sink { [weak self] artist in
+                guard let self else { return }
+                switch self.tab {
+                case .home:
+                    self.homeCoordinator?.push(.artist(artist))
+                case .discover:
+                    self.homeCoordinator?.push(.artist(artist))
+                case .search:
+                    self.homeCoordinator?.push(.artist(artist))
+                }
+            }
+            .store(in: &cancellables)
+        
+        playerCoordinator.onDidTapAlbumButton
+            .flatMap { [weak self] album in
+                withAnimation {
+                    self?.isPlayerCoordinatorViewPresented = false
+                }
+                return Just(album)
+            }
+            .debounce(for: .milliseconds(150), scheduler: RunLoop.main)
+            .sink { [weak self] album in
+                guard let self else { return }
+                switch self.tab {
+                case .home:
+                    self.homeCoordinator?.push(.album(album))
+                case .discover:
+                    self.homeCoordinator?.push(.album(album))
+                case .search:
+                    self.homeCoordinator?.push(.album(album))
+                }
+            }
+            .store(in: &cancellables)
+        
         self.playerCoordinator = playerCoordinator
         
         queueManager.isPlaying

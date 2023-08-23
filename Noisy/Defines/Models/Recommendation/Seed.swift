@@ -7,21 +7,21 @@
 
 import Foundation
 
-enum Seed: CaseIterable, Hashable, Identifiable {
-    case acousticness
-    case danceability
-    case duration
-    case energy
-    case instrumentalness
-    case key
-    case liveness
-    case loudness
-    case mode
-    case popularity
-    case speechiness
-    case tempo
-    case timeSignature
-    case valence
+enum Seed: Int, CaseIterable, Hashable, Identifiable {
+    case acousticness = 0
+    case danceability = 1
+    case duration = 2
+    case instrumentalness = 3
+    case energy = 4
+    case key = 5
+    case liveness = 6
+    case loudness = 7
+    case mode = 8
+    case popularity = 9
+    case speechiness = 10
+    case tempo = 11
+    case timeSignature = 12
+    case valence = 13
     
     var id: Int {
         return Self.allCases.firstIndex(of: self) ?? .zero
@@ -82,7 +82,7 @@ enum Seed: CaseIterable, Hashable, Identifiable {
     func valueToString(value: Double) -> String {
         switch self {
         case .acousticness, .danceability, .energy, .instrumentalness, .liveness, .speechiness, .valence:
-            return String(value)
+            return String(value.roundToPlaces(2))
         case .mode:
             return String(Int(value.rounded()))
         case .loudness:
@@ -90,13 +90,34 @@ enum Seed: CaseIterable, Hashable, Identifiable {
         case .duration:
             return String(Int(value * 1000.0 * 1000.0))
         case .key:
-            return String(Int(value * 11.0))
+            return String(Int(value))
         case .popularity:
             return String(Int(value * 100.0))
         case .tempo:
             return  String(Int(value * 200.0))
         case .timeSignature:
             return  String(Int(value * 11.0))
+        }
+    }
+    
+    func presentationalValue(_ value: Double) -> String {
+        switch self {
+        case .acousticness, .danceability, .energy, .instrumentalness, .liveness, .speechiness, .valence:
+            return String(value.roundToPlaces(2))
+        case .mode:
+            return Seed.modeFromValue(value)
+        case .loudness:
+            return String(Int(value * -60.0))
+        case .duration:
+            return TimeInterval(value * multiplier).positionalTime
+        case .key:
+            return Seed.musicKeyFromValue(value)
+        case .popularity:
+            return String(Int(value * 100.0))
+        case .tempo:
+            return  String(Int(value * 200.0))
+        case .timeSignature:
+            return  "\(Int(value * 11.0))/4" 
         }
     }
     
@@ -215,13 +236,6 @@ enum Seed: CaseIterable, Hashable, Identifiable {
     static func modeFromValue(_ value: Double) -> String {
         precondition((0.0...1.0).contains(value))
 
-        switch Int(value) {
-        case 0:
-            return "minor"
-        case 1:
-            return "major"
-        default:
-            return "N/A"
-        }
+        return value < 0.5 ? "minor" : "major"
     }
 }

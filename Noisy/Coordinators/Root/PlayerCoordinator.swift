@@ -37,6 +37,8 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol, SheetCoordinator
     
     internal var onDidTapPlayAllButton = PassthroughSubject<Void, Never>()
     internal var onDidTapTrackRow = PassthroughSubject<Void, Never>()
+    internal var onDidTapArtistButton = PassthroughSubject<Artist, Never>()
+    internal var onDidTapAlbumButton = PassthroughSubject<Album, Never>()
     internal var onDidTapDiscoverButton = PassthroughSubject<Artist, Never>()
     internal var musicDetailsService: MusicDetailsService
     internal var queueManager: QueueManager
@@ -175,18 +177,10 @@ extension PlayerCoordinator {
             }
             .store(in: &cancellables)
         
-        playerViewModel.onDidTapArtistButton
-            .sink { [weak self] artist in
-                self?.push(.artist(artist))
-            }
-            .store(in: &cancellables)
+        playerViewModel.onDidTapArtistButton = self.onDidTapArtistButton
         
-        playerViewModel.onDidTapAlbumButton
-            .sink { [weak self] album in
-                self?.push(.album(album))
-            }
-            .store(in: &cancellables)
-        
+        playerViewModel.onDidTapAlbumButton = self.onDidTapAlbumButton
+
         playerViewModel.onDidTapAddToPlaylist
             .sink { [weak self] tracks in
                 self?.bindPlaylistsViewModel(with: tracks)

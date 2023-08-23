@@ -11,6 +11,7 @@
 		413EEAC02A2F2DDC00DC9727 /* HomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413EEABF2A2F2DDC00DC9727 /* HomeService.swift */; };
 		413EEAC22A2F2DE200DC9727 /* DiscoverService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413EEAC12A2F2DE200DC9727 /* DiscoverService.swift */; };
 		413EEAC42A2F2DE900DC9727 /* SearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413EEAC32A2F2DE900DC9727 /* SearchService.swift */; };
+		414F47FA2A9628A9009CC2D0 /* PieGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414F47F92A9628A9009CC2D0 /* PieGraph.swift */; };
 		419DD1B82A5736E6005A6708 /* NoisyAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 419DD1B22A5736E6005A6708 /* NoisyAPI.framework */; };
 		419DD1B92A5736E6005A6708 /* NoisyAPI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 419DD1B22A5736E6005A6708 /* NoisyAPI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		419DD1C72A573862005A6708 /* APIConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F54C2A26480100F7A2B8 /* APIConstants.swift */; };
@@ -182,6 +183,7 @@
 		413EEABF2A2F2DDC00DC9727 /* HomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeService.swift; sourceTree = "<group>"; };
 		413EEAC12A2F2DE200DC9727 /* DiscoverService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverService.swift; sourceTree = "<group>"; };
 		413EEAC32A2F2DE900DC9727 /* SearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchService.swift; sourceTree = "<group>"; };
+		414F47F92A9628A9009CC2D0 /* PieGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieGraph.swift; sourceTree = "<group>"; };
 		419DD1B22A5736E6005A6708 /* NoisyAPI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NoisyAPI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		41B145C02A72509800FAE0C0 /* Genre.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Genre.swift; sourceTree = "<group>"; };
 		41B145C22A76E9F600FAE0C0 /* Seed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Seed.swift; sourceTree = "<group>"; };
@@ -454,6 +456,7 @@
 				41DE39D12A6436DA0048CB51 /* Account */,
 				41E0FB1D2A6452B800991D31 /* LoadingIndicator.swift */,
 				41B145D12A77A67F00FAE0C0 /* SliderView.swift */,
+				414F47F92A9628A9009CC2D0 /* PieGraph.swift */,
 				41D696862A850B4C0071AEB1 /* PlaybackSlider.swift */,
 				41BBFD642A8182C300F4A7D3 /* CircleOverlay.swift */,
 				41E0FB582A66FB6000991D31 /* AccordionView.swift */,
@@ -1133,6 +1136,7 @@
 				419DD1CA2A573862005A6708 /* NoisyHTTPRouter.swift in Sources */,
 				41E0FB8E2A69688C00991D31 /* QueueState.swift in Sources */,
 				41F8F5322A2643B500F7A2B8 /* LoginCoordinatorView.swift in Sources */,
+				414F47FA2A9628A9009CC2D0 /* PieGraph.swift in Sources */,
 				41B145C32A76E9F600FAE0C0 /* Seed.swift in Sources */,
 				41E0FB3E2A66560A00991D31 /* QueueView.swift in Sources */,
 				41E0FB4A2A66A39400991D31 /* MusicDetailsCoordinatorProtocol.swift in Sources */,

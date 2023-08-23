@@ -31,7 +31,7 @@ final class ArtistViewModel: ObservableObject, Equatable {
     let onDidTapSimilarArtistButton = PassthroughSubject<Artist, Never>()
     
     // MARK: - Public properties
-    var options: [OptionRow] = []
+    var options: [Option] = []
     var toastMessage: String = .empty
     
     // MARK: - Private properties
@@ -82,7 +82,7 @@ extension ArtistViewModel {
         }
     }
     
-    func addTrackToQueueOption(_ track: Track) -> OptionRow {
+    func addTrackToQueueOption(_ track: Track) -> Option {
         let addToQueueSubject = PassthroughSubject<Void, Never>()
         
         addToQueueSubject
@@ -95,7 +95,7 @@ extension ArtistViewModel {
             }
             .store(in: &cancellables)
         
-        return OptionRow.addToQueue(action: addToQueueSubject)
+        return Option.addToQueue(action: addToQueueSubject)
     }
     
     func discoverMoreButtonTapped() {

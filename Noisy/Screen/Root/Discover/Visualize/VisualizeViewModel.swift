@@ -30,7 +30,7 @@ final class VisualizeViewModel: ObservableObject {
     let onDidTapBackButton = PassthroughSubject<Void, Never>()
     
     // MARK: - Public properties
-    var options: [OptionRow] = []
+    var options: [Option] = []
     var toastMessage: String = .empty
     var selectedTrack: EnumeratedSequence<[Track]>.Element?
     var profile: Profile? {

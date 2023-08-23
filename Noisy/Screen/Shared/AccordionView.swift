@@ -101,11 +101,21 @@ struct ParameterizedAccordionView<AccordionData: Hashable, Content: View>: View 
                     HStack(spacing: Constants.smallSpacing) {
                         Text("1")
                             .font(.nunitoRegular(size: 12))
-                            .foregroundColor(.gray500)
+                            .foregroundColor(.white)
+                            .padding(7)
+                            .background {
+                                Color.purple900
+                                    .mask(Circle())
+                            }
                         Slider(value: $count, in: 1...50)
                         Text("50")
                             .font(.nunitoRegular(size: 12))
-                            .foregroundColor(.gray500)
+                            .foregroundColor(.white)
+                            .padding(4)
+                            .background {
+                                Color.purple900
+                                    .mask(Circle())
+                            }
                     }
                 }
                 
