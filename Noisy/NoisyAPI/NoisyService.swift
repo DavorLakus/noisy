@@ -13,6 +13,7 @@ protocol NoisyAPIProtocol {
     func postToken(verifier: String, code: String) -> AnyPublisher<Data, Error>
     func postRefreshToken(with refreshToken: String) -> AnyPublisher<Data, Error>
     func getProfile() -> AnyPublisher<Data, Error>
+    func getRecentlyPlayed(limit: Int, offset: Int) -> AnyPublisher<Data, Error>
     func getTrack(with id: String) -> AnyPublisher<Data, Error>
     func getTrackAudioFeatures(with ids: String) -> AnyPublisher<Data, Error>
     func getSavedTracks(limit: Int, offset: Int) -> AnyPublisher<Data, Error>
@@ -67,6 +68,10 @@ extension NoisyService {
 
     func search(for query: String, type: String, limit: Int, offset: Int) -> AnyPublisher<Data, Error> {
         NetworkingManager.performRequest(.search(query: query, type: type, limit: limit, offset: offset))
+    }
+    
+    func getRecentlyPlayed(limit: Int, offset: Int) -> AnyPublisher<Data, Error> {
+        NetworkingManager.performRequest(.recentlyPlayed(limit: limit, offset: offset))
     }
     
     func getTrack(with id: String) -> AnyPublisher<Data, Error> {

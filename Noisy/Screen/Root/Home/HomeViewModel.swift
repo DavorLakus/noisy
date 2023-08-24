@@ -44,9 +44,11 @@ enum TimeRange: Hashable, CaseIterable {
 final class HomeViewModel: ObservableObject {
     // MARK: - Published properties
     @Published var profile: Profile?
+    @Published var recentlyPlayedTracks: [PlayHistoricObject] = []
     @Published var topTracks: [Track] = []
     @Published var topArtists: [Artist] = []
     @Published var playlists: [Playlist] = []
+    @Published var isRecentlyPlayedSectionExpanded = false
     @Published var isTopTracksExpanded = true
     @Published var isTopArtistsExpanded = false
     @Published var isPlaylistsExpanded =  false
@@ -71,6 +73,9 @@ final class HomeViewModel: ObservableObject {
     var toastMessage: String = .empty
 
     // MARK: - Private properties
+    private var recentlyPlayedLimit: Int = 10
+    private var recentlyPlayedOffset: Int = 0
+    
     private let homeService: HomeService
     private let queueManager: QueueManager
     private var cancellables = Set<AnyCancellable>()
@@ -89,6 +94,7 @@ extension HomeViewModel {
     func viewDidAppear() {
         cancellables.removeAll()
         bind()
+        getRecentlyPlayed()
         getProfile()
         getTopTracks()
         getTopArtists()
@@ -96,6 +102,10 @@ extension HomeViewModel {
     
     func profileButtonTapped() {
         onDidTapProfileButton.send()
+    }
+    
+    func loadMoreTapped() {
+        getRecentlyPlayed()
     }
     
     func topTracksTapped() {
@@ -182,6 +192,7 @@ private extension HomeViewModel {
     }
 }
 
+// MARK: - Private extension
 private extension HomeViewModel {
     func bind() {
         $topTracksTimeRange
@@ -225,6 +236,16 @@ private extension HomeViewModel {
         tokenDidRefresh?
             .sink { [weak self] in
                 self?.viewDidAppear()
+            }
+            .store(in: &cancellables)
+    }
+    
+    func getRecentlyPlayed() {
+        homeService.getRecentlyPlayed(limit: recentlyPlayedLimit, offset: recentlyPlayedOffset)
+            .sink { [weak self] response in
+                guard let self else { return }
+                self.recentlyPlayedOffset += self.recentlyPlayedLimit
+                self.recentlyPlayedTracks += response.items
             }
             .store(in: &cancellables)
     }

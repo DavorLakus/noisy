@@ -96,6 +96,8 @@ extension String {
         static let welcome = "Welcome"
         static let pickerTitle = "In:"
         static let sliderCount = "Limit:"
+        static let recentlyPlayed = "Recently played"
+        static let loadMore = "Load more"
         static let topTracks = "Your top tracks"
         static let topArtists = "Your top artists"
         static let playlists = "Your playlists"

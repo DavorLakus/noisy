@@ -35,7 +35,7 @@ private extension HomeView {
         ScrollView {
             VStack(alignment: .leading, spacing: Constants.margin) {
                 Spacer(minLength: 100)
-                
+                recentlyPlayedSection()
                 topTracksAccordion()
                 topArtistsAccordion()
                 playlistsAccordion()
@@ -44,6 +44,77 @@ private extension HomeView {
             .padding(.vertical, Constants.margin)
         }
         .refreshable(action: viewModel.viewDidAppear)
+    }
+}
+
+// MARK: - Recently played
+extension HomeView {
+    func recentlyPlayedSection() -> some View {
+        VStack {
+            Button {
+                withAnimation {
+                    viewModel.isRecentlyPlayedSectionExpanded.toggle()
+                }
+            } label: {
+                HStack {
+                    Text(String.Home.recentlyPlayed)
+                        .foregroundColor(.gray700)
+                        .font(.nunitoBold(size: 20))
+                    
+                    Spacer()
+                    
+                    Image.Shared.chevronRight
+                        .rotationEffect(viewModel.isRecentlyPlayedSectionExpanded ? .degrees(90) : .degrees(0))
+                }
+                .background { Color.white }
+            }
+            .buttonStyle(.plain)
+            
+            if viewModel.isRecentlyPlayedSectionExpanded {
+                ForEach(viewModel.recentlyPlayedTracks, id: \.track.id) { historicTrack in
+                    historicTrackRow(for: historicTrack)
+                        .onTapGesture {
+                            viewModel.trackRowSelected(for: historicTrack.track)
+                        }
+                }
+                Button(action: viewModel.loadMoreTapped) {
+                    Text(String.Home.loadMore)
+                        .font(.nunitoBold(size: 18))
+                        .foregroundColor(.purple600)
+                }
+            }
+        }
+        .padding(Constants.margin)
+        .cardBackground(borderColor: .gray400, hasShadow: false)
+        .padding(.horizontal, Constants.margin)
+    }
+    
+    func historicTrackRow(for historicTrack: PlayHistoricObject) -> some View {
+        HStack {
+            LoadImage(url: URL(string: historicTrack.track.album?.images.first?.url ?? .empty))
+                .scaledToFit()
+                .cornerRadius(18)
+                .frame(width: 36, height: 36)
+                .shadow(radius: 2)
+            
+            VStack(alignment: .leading, spacing: .zero) {
+                Text(historicTrack.track.name)
+                    .foregroundColor(.gray700)
+                    .lineLimit(1)
+                    .font(.nunitoBold(size: 16))
+                Text(historicTrack.track.artists.first?.name ?? .empty)
+                    .foregroundColor(.gray600)
+                    .font(.nunitoSemiBold(size: 14))
+            }
+            Spacer()
+            
+            Button {
+                viewModel.trackOptionsTapped(for: historicTrack.track)
+            } label: {
+                Image.Shared.threeDots
+                    .foregroundColor(.purple900)
+            }
+        }
     }
 }
 
