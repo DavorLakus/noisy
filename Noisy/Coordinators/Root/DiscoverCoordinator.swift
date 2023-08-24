@@ -27,7 +27,8 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol & SheetCoordina
     // MARK: - Published properties
     @Published var navigationPath = NavigationPath()
     @Published var isSheetPresented: Bool = false
-    @Published var isMiniPlayerPresented: Bool
+    @Published var isMiniPlayerPresented: Bool = false
+    @Published var isPlayerCoordinatorViewPresented: Bool = false
     
     // MARK: - Public properties
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
@@ -37,11 +38,14 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol & SheetCoordina
     internal var albumViewModelStack = Stack<AlbumViewModel>()
     internal var playlistViewModelStack = Stack<PlaylistViewModel>()
     internal var playlistsViewModel: PlaylistsViewModel?
+    internal var miniPlayerViewModel: MiniPlayerViewModel?
+    internal var playerCoordinator: PlayerCoordinator?
     
     internal var onDidTapPlayAllButton = PassthroughSubject<Void, Never>()
     internal var onDidTapTrackRow = PassthroughSubject<Void, Never>()
     internal var onDidTapDiscoverButton = PassthroughSubject<Artist, Never>()
     internal var musicDetailsService: MusicDetailsService
+    internal var playerService: PlayerService
     internal var queueManager: QueueManager
 
     internal var cancellables = Set<AnyCancellable>()
@@ -53,14 +57,16 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol & SheetCoordina
     private var searchService: SearchService
     
     // MARK: - Class lifecycle
-    init(discoverService: DiscoverService, searchService: SearchService, musicDetailsService: MusicDetailsService, queueManager: QueueManager, isMiniPlayerPresented: Published<Bool>) {
+    init(discoverService: DiscoverService, playerService: PlayerService, searchService: SearchService, musicDetailsService: MusicDetailsService, queueManager: QueueManager) {
         self.discoverService = discoverService
         self.searchService = searchService
+        self.playerService = playerService
         self.musicDetailsService = musicDetailsService
         self.queueManager = queueManager
-        self._isMiniPlayerPresented = isMiniPlayerPresented
         
+        bind()
         bindDiscoverViewModel()
+        bindMiniPlayerViewModel(with: queueManager)
     }
     
     func start() -> some CoordinatorViewProtocol {
@@ -132,6 +138,16 @@ extension DiscoverCoordinator {
 
 // MARK: - ViewModel binding
 private extension DiscoverCoordinator {
+    func bind() {
+        $isMiniPlayerPresented
+            .sink { _ in
+                withAnimation {
+                    self.objectWillChange.send()
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
     func bindDiscoverViewModel() {
         let discoverViewModel = DiscoverViewModel(discoverService: discoverService, searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
         discoverViewModel.onDidTapProfileButton
@@ -224,5 +240,7 @@ struct DiscoverCoordinatorView<Coordinator: MusicDetailsCoordinatorProtocol & Sh
     
     var body: some View {
         NavigationStack(path: $coordinator.navigationPath, root: coordinator.rootView)
+            .miniPlayerView(isPresented: $coordinator.isMiniPlayerPresented, miniPlayer: coordinator.presentMiniPlayer)
+            .fullScreenCover(isPresented: $coordinator.isPlayerCoordinatorViewPresented, content: coordinator.presentPlayerCoordinatorView)
     }
 }

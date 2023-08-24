@@ -27,22 +27,18 @@ struct RootCoordinatorView: View {
     var body: some View {
         TabView(selection: $coordinator.tab) {
             coordinator.homeTab()
-                .miniPlayerView(isPresented: $coordinator.isMiniPlayerPresented, miniPlayer: coordinator.presentMiniPlayer)
                 .tabItem { tab(name: .Tabs.home, icon: .Tabs.home) }
                 .tag(RootTab.home)
             coordinator.discoverTab()
-                .miniPlayerView(isPresented: $coordinator.isMiniPlayerPresented, miniPlayer: coordinator.presentMiniPlayer)
                 .tabItem { tab(name: .Tabs.discover, icon: .Tabs.discover) }
                 .tag(RootTab.discover)
             coordinator.searchTab()
-                .miniPlayerView(isPresented: $coordinator.isMiniPlayerPresented, miniPlayer: coordinator.presentMiniPlayer)
                 .tabItem { tab(name: .Tabs.search, icon: .Tabs.search) }
                 .tag(RootTab.search)
         }
         .dynamicModalSheet(isPresented: $coordinator.isProfileDrawerPresented, content:  coordinator.presentProfileView)
         .alert(isPresented: $coordinator.isAlertPresented, alert: coordinator.presentAlertView)
         .tint(.purple900)
-        .fullScreenCover(isPresented: $coordinator.isPlayerCoordinatorViewPresented, content: coordinator.presentPlayerCoordinatorView)
     }
 }
 

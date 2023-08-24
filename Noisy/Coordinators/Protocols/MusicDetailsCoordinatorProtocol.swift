@@ -14,11 +14,14 @@ protocol MusicDetailsCoordinatorProtocol: VerticalCoordinatorProtocol {
     var albumViewModelStack: Stack<AlbumViewModel> { get set }
     var playlistViewModelStack: Stack<PlaylistViewModel> { get set }
     var playlistsViewModel: PlaylistsViewModel? { get set }
+    var miniPlayerViewModel: MiniPlayerViewModel? { get set }
+    var playerCoordinator: PlayerCoordinator? { get set }
     
-    var onDidTapPlayAllButton: PassthroughSubject<Void, Never> { get set }
-    var onDidTapTrackRow: PassthroughSubject<Void, Never> { get set }
-    var onDidTapDiscoverButton: PassthroughSubject<Artist, Never> {get set }
+    var isPlayerCoordinatorViewPresented: Bool { get set }
+    var isMiniPlayerPresented: Bool { get set }
+    var onDidTapDiscoverButton: PassthroughSubject<Artist, Never> { get set }
     var musicDetailsService: MusicDetailsService { get set }
+    var playerService: PlayerService { get set }
     var queueManager: QueueManager { get set }
     var cancellables: Set<AnyCancellable> { get set }
 
@@ -31,6 +34,11 @@ protocol MusicDetailsCoordinatorProtocol: VerticalCoordinatorProtocol {
     func pushAlbumViewModel(for album: Album)
     func pushPlaylistViewModel(for playlist: Playlist)
     func pushPlaylistsViewModel(with tracks: [Track])
+
+    func bindMiniPlayerViewModel(with queueManager: QueueManager)
+    func bindPlayerCoordinator()
+    func getQueueManager() 
+    func persistQueueManagerState()
 }
 
 extension MusicDetailsCoordinatorProtocol {
@@ -55,7 +63,11 @@ extension MusicDetailsCoordinatorProtocol {
             }
             .store(in: &cancellables)
         
-        viewModel.onDidTapTrackRow = onDidTapTrackRow
+        viewModel.onDidTapTrackRow
+            .sink { [weak self] in
+                self?.bindPlayerCoordinator()
+            }
+            .store(in: &cancellables)
         
         viewModel.onDidTapDiscoverButton = onDidTapDiscoverButton
         
@@ -71,8 +83,17 @@ extension MusicDetailsCoordinatorProtocol {
             }
             .store(in: &cancellables)
         
-        viewModel.onDidTapPlayAllButton = onDidTapPlayAllButton
-        viewModel.onDidTapTrackRow = onDidTapTrackRow
+        viewModel.onDidTapPlayAllButton
+            .sink { [weak self] in
+                self?.bindPlayerCoordinator()
+            }
+            .store(in: &cancellables)
+        
+        viewModel.onDidTapTrackRow
+            .sink { [weak self] in
+                self?.bindPlayerCoordinator()
+            }
+            .store(in: &cancellables)
         
         viewModel.onDidTapArtistButton
             .sink {[weak self] artist in
@@ -101,8 +122,16 @@ extension MusicDetailsCoordinatorProtocol {
             }
             .store(in: &cancellables)
         
-        viewModel.onDidTapPlayAllButton = onDidTapPlayAllButton
-        viewModel.onDidTapTrackRow = onDidTapTrackRow
+        viewModel.onDidTapPlayAllButton
+            .sink { [weak self] in
+                self?.bindPlayerCoordinator()
+            }
+            .store(in: &cancellables)
+        viewModel.onDidTapTrackRow
+            .sink { [weak self] in
+                self?.bindPlayerCoordinator()
+            }
+            .store(in: &cancellables)
         
         viewModel.onDidTapArtistButton
             .sink {[weak self] artist in
@@ -159,6 +188,106 @@ extension MusicDetailsCoordinatorProtocol {
     func presentPlaylistsView() -> some View {
         if let playlistsViewModel = playlistsViewModel {
             PlaylistsView(viewModel: playlistsViewModel)
+        }
+    }
+    
+    func bindMiniPlayerViewModel(with queueManager: QueueManager) {
+        miniPlayerViewModel = MiniPlayerViewModel(queueManager: queueManager)
+        
+        miniPlayerViewModel?.onDidTapMiniPlayer
+            .sink { [weak self] in
+                self?.bindPlayerCoordinator()
+            }
+            .store(in: &cancellables)
+        
+        withAnimation {
+            isMiniPlayerPresented = true
+        }
+    }
+    
+    @ViewBuilder
+    func presentMiniPlayer() -> some View {
+        if let miniPlayerViewModel {
+            MiniPlayerView(viewModel: miniPlayerViewModel)
+        }
+    }
+    
+    @ViewBuilder
+    func presentPlayerCoordinatorView() -> some View {
+        playerCoordinator?.start()
+    }
+    
+    func bindPlayerCoordinator() {
+        let playerCoordinator = PlayerCoordinator(playerService: playerService, musicDetailsService: musicDetailsService, queueManager: queueManager)
+        
+        playerCoordinator.onShoudEnd
+            .sink { [weak self] in
+                withAnimation {
+                    self?.isPlayerCoordinatorViewPresented = false
+                }
+                self?.persistQueueManagerState()
+            }
+            .store(in: &cancellables)
+        
+        playerCoordinator.onDidTapDiscoverButton
+            .sink { [weak self] artist in
+                self?.onDidTapDiscoverButton.send(artist)
+            }
+            .store(in: &cancellables)
+        
+        playerCoordinator.onDidTapArtistButton
+            .flatMap { [weak self] artist in
+                withAnimation {
+                    self?.isPlayerCoordinatorViewPresented = false
+                }
+                return Just(artist)
+            }
+            .debounce(for: .milliseconds(150), scheduler: RunLoop.main)
+            .sink { [weak self] artist in
+                self?.pushArtistViewModel(for: artist)
+            }
+            .store(in: &cancellables)
+        
+        playerCoordinator.onDidTapAlbumButton
+            .flatMap { [weak self] album in
+                withAnimation {
+                    self?.isPlayerCoordinatorViewPresented = false
+                }
+                return Just(album)
+            }
+            .debounce(for: .milliseconds(150), scheduler: RunLoop.main)
+            .sink { [weak self] album in
+                self?.pushAlbumViewModel(for: album)
+            }
+            .store(in: &cancellables)
+        
+        self.playerCoordinator = playerCoordinator
+        
+        queueManager.isPlaying
+            .sink { [weak self] _ in
+                if let self {
+                    if !self.isMiniPlayerPresented {
+                        self.getQueueManager()
+                    }
+                }
+            }
+            .store(in: &cancellables)
+        
+        withAnimation {
+            isPlayerCoordinatorViewPresented = true
+        }
+    }
+    
+    func getQueueManager() {
+        if let queueStateData = UserDefaults.standard.object(forKey: .UserDefaults.queueState) as? Data,
+           let queueState = try? JSONDecoder().decode(QueueState.self, from: queueStateData) {
+            self.queueManager.setState(with: queueState, playNow: false)
+        }
+    }
+    
+    func persistQueueManagerState() {
+        if let queueManagerData = try? JSONEncoder().encode(queueManager.state) {
+            UserDefaults.standard.set(queueManagerData, forKey: .UserDefaults.queueState)
         }
     }
 }

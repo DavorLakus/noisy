@@ -22,10 +22,10 @@ final class AlbumViewModel: ObservableObject, Equatable {
     
     // MARK: - Coordinator actions
     let onDidTapBackButton = PassthroughSubject<Void, Never>()
-    var onDidTapTrackRow: PassthroughSubject<Void, Never>?
+    let onDidTapTrackRow = PassthroughSubject<Void, Never>()
     let onDidTapArtistButton = PassthroughSubject<Artist, Never>()
     let onDidTapAlbumButton = PassthroughSubject<Album, Never>()
-    var onDidTapPlayAllButton: PassthroughSubject<Void, Never>?
+    let onDidTapPlayAllButton = PassthroughSubject<Void, Never>()
     
     // MARK: - Public properties
     let album: Album
@@ -78,12 +78,12 @@ extension AlbumViewModel {
     
     func playAllButtonTapped() {
         queueManager.setState(with: tracks)
-        onDidTapPlayAllButton?.send()
+        onDidTapPlayAllButton.send()
     }
     
     func trackRowTapped(for track: Track) {
         queueManager.setState(with: tracks, currentTrackIndex: tracks.firstIndex(of: track))
-        onDidTapTrackRow?.send()
+        onDidTapTrackRow.send()
     }
     
     func artistButtonTapped(for artist: Artist) {

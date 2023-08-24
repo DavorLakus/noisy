@@ -18,6 +18,8 @@ enum SearchPath: Hashable {
 final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
     // MARK: - Published properties
     @Published var navigationPath = NavigationPath()
+    @Published var isPlayerCoordinatorViewPresented = false
+    @Published var isMiniPlayerPresented = false
     
     // MARK: - Public properties
     let onDidTapProfileButton = PassthroughSubject<Void, Never>()
@@ -27,26 +29,31 @@ final class SearchCoordinator: MusicDetailsCoordinatorProtocol {
     internal var albumViewModelStack = Stack<AlbumViewModel>()
     internal var playlistViewModelStack = Stack<PlaylistViewModel>()
     internal var playlistsViewModel: PlaylistsViewModel?
+    internal var miniPlayerViewModel: MiniPlayerViewModel?
+    internal var playerCoordinator: PlayerCoordinator?
     
     internal var onDidTapPlayAllButton = PassthroughSubject<Void, Never>()
     internal var onDidTapTrackRow = PassthroughSubject<Void, Never>()
     internal var onDidTapDiscoverButton = PassthroughSubject<Artist, Never>()
     internal var musicDetailsService: MusicDetailsService
+    internal var playerService: PlayerService
     internal var queueManager: QueueManager
     internal var cancellables = Set<AnyCancellable>()
     
     // MARK: - Private properties
     private var searchService: SearchService
-    
     private var searchViewModel: SearchViewModel?
     
     // MARK: - Class lifecycle
-    init(searchService: SearchService, musicDetailsService: MusicDetailsService, queueManager: QueueManager) {
+    init(searchService: SearchService, playerService: PlayerService, musicDetailsService: MusicDetailsService, queueManager: QueueManager) {
         self.searchService = searchService
+        self.playerService = playerService
         self.musicDetailsService = musicDetailsService
         self.queueManager = queueManager
         
+        bind()
         bindSearchViewModel()
+        bindMiniPlayerViewModel(with: queueManager)
     }
     
     func start() -> some CoordinatorViewProtocol {
@@ -116,6 +123,16 @@ extension SearchCoordinator {
 
 // MARK: - Private extensions
 private extension SearchCoordinator {
+    func bind() {
+        $isMiniPlayerPresented
+            .sink { _ in
+                withAnimation {
+                    self.objectWillChange.send()
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
     func bindSearchViewModel() {
         searchViewModel = SearchViewModel(searchService: searchService, queueManager: queueManager)
         
@@ -148,10 +165,12 @@ private extension SearchCoordinator {
 }
 
 // MARK: - CoordinatorView
-struct SearchCoordinatorView<Coordinator: VerticalCoordinatorProtocol>: CoordinatorViewProtocol {
+struct SearchCoordinatorView<Coordinator: MusicDetailsCoordinatorProtocol>: CoordinatorViewProtocol {
     @ObservedObject var coordinator: Coordinator
     
     var body: some View {
         NavigationStack(path: $coordinator.navigationPath, root: coordinator.rootView)
+            .miniPlayerView(isPresented: $coordinator.isMiniPlayerPresented, miniPlayer: coordinator.presentMiniPlayer)
+            .fullScreenCover(isPresented: $coordinator.isPlayerCoordinatorViewPresented, content: coordinator.presentPlayerCoordinatorView)
     }
 }

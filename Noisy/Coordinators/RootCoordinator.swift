@@ -23,8 +23,6 @@ final class RootCoordinator: CoordinatorProtocol {
     @Published var tab = RootTab.home
     @Published var isAlertPresented = false
     @Published var isProfileDrawerPresented = false
-    @Published var isPlayerCoordinatorViewPresented = false
-    @Published var isMiniPlayerPresented = false
     @Published var alert: Alert = .signout
     
     // MARK: - Public properties
@@ -42,13 +40,12 @@ final class RootCoordinator: CoordinatorProtocol {
     private var homeCoordinator: HomeCoordinator?
     private var searchCoordinator: SearchCoordinator?
     private var discoverCoordinator: DiscoverCoordinator?
-    private var playerCoordinator: PlayerCoordinator?
     
     // MARK: - Private properties
-    private lazy var queueManager = QueueManager()
-    private var miniPlayerViewModel: MiniPlayerViewModel?
     private var profileViewModel: ProfileViewModel?
     private var cancellables = Set<AnyCancellable>()
+    private lazy var queueManager = QueueManager()
+
     
     // MARK: - Class lifecycle
     init(homeService: HomeService, searchService: SearchService, discoverService: DiscoverService, playerService: PlayerService, musicDetailsService: MusicDetailsService) {
@@ -95,14 +92,6 @@ extension RootCoordinator {
 
 // MARK: - Private extension
 private extension RootCoordinator {
-    func getQueueManager() {
-        if let queueStateData = UserDefaults.standard.object(forKey: .UserDefaults.queueState) as? Data,
-           let queueState = try? JSONDecoder().decode(QueueState.self, from: queueStateData) {
-            self.queueManager.setState(with: queueState, playNow: false)
-            self.bindMiniPlayerViewModel(with: queueManager)
-        }
-    }
-    
     func bindCoordinators() {
         bindHomeCoordinator()
         bindSearchCoordinator()
@@ -110,22 +99,10 @@ private extension RootCoordinator {
     }
     
     func bindHomeCoordinator() {
-        let homeCoordinator = HomeCoordinator(homeService: homeService, musicDetailsService: musicDetailsService, queueManager: queueManager, tokenDidRefresh: tokenDidRefresh)
+        let homeCoordinator = HomeCoordinator(homeService: homeService, playerService: playerService, musicDetailsService: musicDetailsService, queueManager: queueManager, tokenDidRefresh: tokenDidRefresh)
         homeCoordinator.onDidTapProfileButton
             .sink { [weak self] in
                 self?.bindProfileViewModel()
-            }
-            .store(in: &cancellables)
-        
-        homeCoordinator.onDidTapPlayAllButton
-            .sink { [weak self] in
-                self?.bindPlayerCoordinator()
-            }
-            .store(in: &cancellables)
-        
-        homeCoordinator.onDidTapTrackRow
-            .sink { [weak self] in
-                self?.bindPlayerCoordinator()
             }
             .store(in: &cancellables)
         
@@ -139,22 +116,10 @@ private extension RootCoordinator {
     }
     
     func bindSearchCoordinator() {
-        let searchCoordinator = SearchCoordinator(searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
+        let searchCoordinator = SearchCoordinator(searchService: searchService, playerService: playerService, musicDetailsService: musicDetailsService, queueManager: queueManager)
         searchCoordinator.onDidTapProfileButton
             .sink { [weak self] in
                 self?.bindProfileViewModel()
-            }
-            .store(in: &cancellables)
-        
-        searchCoordinator.onDidTapPlayAllButton
-            .sink { [weak self] in
-                self?.bindPlayerCoordinator()
-            }
-            .store(in: &cancellables)
-        
-        searchCoordinator.onDidTapTrackRow
-            .sink { [weak self] in
-                self?.bindPlayerCoordinator()
             }
             .store(in: &cancellables)
         
@@ -168,23 +133,11 @@ private extension RootCoordinator {
     }
     
     func bindDiscoverCoordinator() {
-        let discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce, searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager, isMiniPlayerPresented: _isMiniPlayerPresented)
+        let discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce, playerService: playerService, searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
         
         discoverCoordinator.onDidTapProfileButton
             .sink { [weak self] in
                 self?.bindProfileViewModel()
-            }
-            .store(in: &cancellables)
-        
-        discoverCoordinator.onDidTapPlayAllButton
-            .sink { [weak self] in
-                self?.bindPlayerCoordinator()
-            }
-            .store(in: &cancellables)
-        
-        discoverCoordinator.onDidTapTrackRow
-            .sink { [weak self] in
-                self?.bindPlayerCoordinator()
             }
             .store(in: &cancellables)
         
@@ -197,14 +150,18 @@ private extension RootCoordinator {
         self.discoverCoordinator = discoverCoordinator
     }
     
+    func getQueueManager() {
+        if let queueStateData = UserDefaults.standard.object(forKey: .UserDefaults.queueState) as? Data,
+           let queueState = try? JSONDecoder().decode(QueueState.self, from: queueStateData) {
+            self.queueManager.setState(with: queueState, playNow: false)
+        }
+    }
+    
     func switchToDiscoverTab<Coordinator: MusicDetailsCoordinatorProtocol>(for artist: Artist, from coordinator: Coordinator) {
+        discoverCoordinator?.navigationPath.removeLast(coordinator.navigationPath.count)
+        
         withAnimation {
             coordinator.navigationPath.removeLast(coordinator.navigationPath.count)
-        }
-        if isPlayerCoordinatorViewPresented {
-            withAnimation {
-                isPlayerCoordinatorViewPresented = false
-            }
         }
         
         withAnimation {
@@ -212,129 +169,6 @@ private extension RootCoordinator {
         }
         
         discoverCoordinator?.discover(with: artist)
-    }
-}
-
-// MARK: - MiniPlayer
-extension RootCoordinator {
-    @ViewBuilder
-    func presentMiniPlayer() -> some View {
-        if let miniPlayerViewModel {
-            MiniPlayerView(viewModel: miniPlayerViewModel)
-        }
-    }
-    
-    func bindMiniPlayerViewModel(with queueManager: QueueManager) {
-        miniPlayerViewModel = MiniPlayerViewModel(queueManager: queueManager)
-        
-        miniPlayerViewModel?.onDidTapMiniPlayer
-            .sink { [weak self] in
-                self?.bindPlayerCoordinator()
-            }
-            .store(in: &cancellables)
-        
-        $isMiniPlayerPresented
-            .sink { _ in
-                withAnimation {
-                    self.objectWillChange.send()
-                }
-            }
-            .store(in: &cancellables)
-        
-        withAnimation {
-            isMiniPlayerPresented = true
-        }
-    }
-}
-
-// MARK: - Player
-extension RootCoordinator {
-    @ViewBuilder
-    func presentPlayerCoordinatorView() -> some View {
-        playerCoordinator?.start()
-    }
-    
-    func bindPlayerCoordinator() {
-        let playerCoordinator = PlayerCoordinator(playerService: playerService, musicDetailsService: musicDetailsService, queueManager: queueManager)
-        
-        playerCoordinator.onShoudEnd
-            .sink { [weak self] in
-                withAnimation {
-                    self?.isPlayerCoordinatorViewPresented = false
-                }
-                self?.persistQueueManagerState()
-            }
-            .store(in: &cancellables)
-        
-        playerCoordinator.onDidTapDiscoverButton
-            .sink { [weak self] artist in
-                self?.switchToDiscoverTab(for: artist, from: playerCoordinator)
-            }
-            .store(in: &cancellables)
-        
-        playerCoordinator.onDidTapArtistButton
-            .flatMap { [weak self] artist in
-                withAnimation {
-                    self?.isPlayerCoordinatorViewPresented = false
-                }
-                return Just(artist)
-            }
-            .debounce(for: .milliseconds(150), scheduler: RunLoop.main)
-            .sink { [weak self] artist in
-                guard let self else { return }
-                switch self.tab {
-                case .home:
-                    self.homeCoordinator?.push(.artist(artist))
-                case .discover:
-                    self.homeCoordinator?.push(.artist(artist))
-                case .search:
-                    self.homeCoordinator?.push(.artist(artist))
-                }
-            }
-            .store(in: &cancellables)
-        
-        playerCoordinator.onDidTapAlbumButton
-            .flatMap { [weak self] album in
-                withAnimation {
-                    self?.isPlayerCoordinatorViewPresented = false
-                }
-                return Just(album)
-            }
-            .debounce(for: .milliseconds(150), scheduler: RunLoop.main)
-            .sink { [weak self] album in
-                guard let self else { return }
-                switch self.tab {
-                case .home:
-                    self.homeCoordinator?.push(.album(album))
-                case .discover:
-                    self.homeCoordinator?.push(.album(album))
-                case .search:
-                    self.homeCoordinator?.push(.album(album))
-                }
-            }
-            .store(in: &cancellables)
-        
-        self.playerCoordinator = playerCoordinator
-        
-        queueManager.isPlaying
-            .sink { [weak self] _ in
-                if let self {
-                    if !self.isMiniPlayerPresented {
-                        self.getQueueManager()
-                    }
-                }
-            }
-            .store(in: &cancellables)
-        
-        withAnimation {
-            isPlayerCoordinatorViewPresented = true
-        }
-    }
-    
-    func persistQueueManagerState() {
-        if let queueManagerData = try? JSONEncoder().encode(queueManager.state) {
-            UserDefaults.standard.set(queueManagerData, forKey: .UserDefaults.queueState)
-        }
     }
 }
 

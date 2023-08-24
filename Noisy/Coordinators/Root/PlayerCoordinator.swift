@@ -9,19 +9,14 @@ import SwiftUI
 import Combine
 
 enum PlayerPath: Hashable {
-//    case options
     case queue
-    case artist(Artist)
-    case album(Album)
-    case playlist(Playlist)
-    case playlists([Track])
 }
 
 enum PlayerSheet: Hashable {
     case playlists
 }
 
-final class PlayerCoordinator: MusicDetailsCoordinatorProtocol, SheetCoordinatorProtocol {
+final class PlayerCoordinator: VerticalCoordinatorProtocol, SheetCoordinatorProtocol {
     // MARK: - Published properties
     @Published var navigationPath = NavigationPath()
     @Published var isSheetPresented: Bool = false
@@ -78,14 +73,6 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol, SheetCoordinator
         switch path {
         case .queue:
             presentQueueView()
-        case .artist:
-            presentArtistView()
-        case .album:
-            presentAlbumView()
-        case .playlist:
-            presentPlaylistView()
-        case .playlists:
-            presentPlaylistsView()
         }
     }
     
@@ -93,14 +80,6 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol, SheetCoordinator
         switch path {
         case .queue:
             bindQueueViewModel()
-        case .artist(let artist):
-            bindArtistViewModel(for: artist)
-        case .album(let album):
-            bindAlbumViewModel(for: album)
-        case .playlist(let playlist):
-            bindPlaylistViewModel(for: playlist)
-        case .playlists(let tracks):
-            bindPlaylistsViewModel(with: tracks)
         }
         
         navigationPath.append(path)
@@ -116,25 +95,6 @@ final class PlayerCoordinator: MusicDetailsCoordinatorProtocol, SheetCoordinator
         case .playlists:
             presentPlaylistsView()
         }
-    }
-}
-
-// MARK: - MusicDetailsCoordinatorProtocol
-extension PlayerCoordinator {
-    func pushArtistViewModel(for artist: Artist) {
-        push(.artist(artist))
-    }
-    
-    func pushAlbumViewModel(for album: Album) {
-        push(.album(album))
-    }
-    
-    func pushPlaylistViewModel(for playlist: Playlist) {
-        push(.playlist(playlist))
-    }
-    
-    func pushPlaylistsViewModel(with tracks: [Track]) {
-        push(.playlists(tracks))
     }
 }
 
@@ -162,6 +122,13 @@ extension PlayerCoordinator {
     func presentQueueView() -> some View {
         if let queueViewModel {
             QueueView(viewModel: queueViewModel)
+        }
+    }
+    
+    @ViewBuilder
+    func presentPlaylistsView() -> some View {
+        if let playlistsViewModel = playlistsViewModel {
+            PlaylistsView(viewModel: playlistsViewModel)
         }
     }
 }
