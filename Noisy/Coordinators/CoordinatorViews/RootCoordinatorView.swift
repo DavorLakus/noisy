@@ -36,7 +36,7 @@ struct RootCoordinatorView: View {
                 .tabItem { tab(name: .Tabs.search, icon: .Tabs.search) }
                 .tag(RootTab.search)
         }
-        .dynamicModalSheet(isPresented: $coordinator.isProfileDrawerPresented, content:  coordinator.presentProfileView)
+        .dynamicModalSheet(isPresented: $coordinator.isProfileSheetPresented, content:  coordinator.presentProfileView)
         .alert(isPresented: $coordinator.isAlertPresented, alert: coordinator.presentAlertView)
         .tint(.purple900)
     }

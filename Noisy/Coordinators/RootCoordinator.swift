@@ -22,7 +22,7 @@ final class RootCoordinator: CoordinatorProtocol {
     // MARK: - Published properties
     @Published var tab = RootTab.home
     @Published var isAlertPresented = false
-    @Published var isProfileDrawerPresented = false
+    @Published var isProfileSheetPresented = false
     @Published var alert: Alert = .signout
     
     // MARK: - Public properties
@@ -183,12 +183,12 @@ extension RootCoordinator {
     
     func bindProfileViewModel() {
         profileViewModel = ProfileViewModel()
-        isProfileDrawerPresented = false
+        isProfileSheetPresented = false
         
         profileViewModel?.onDidTapBackButton
             .sink { [weak self] in
                 withAnimation {
-                    self?.isProfileDrawerPresented = false
+                    self?.isProfileSheetPresented = false
                 }
             }
             .store(in: &cancellables)
@@ -203,7 +203,7 @@ extension RootCoordinator {
             .store(in: &cancellables)
         
         withAnimation {
-            isProfileDrawerPresented = true
+            isProfileSheetPresented = true
         }
     }
 }

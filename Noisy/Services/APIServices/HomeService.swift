@@ -37,6 +37,32 @@ extension HomeService {
         return user
     }
     
+    func getRecentlyPlayed(limit: Int) -> PassthroughSubject<RecentlyPlayedResponse, Never> {
+        let recentlyPlayed =  PassthroughSubject<RecentlyPlayedResponse, Never>()
+        
+        api.getRecentlyPlayed(limit: limit)
+            .decode(type: RecentlyPlayedResponse.self, decoder: JSONDecoder())
+            .sink(receiveCompletion: NetworkingManager.handleCompletion) { response in
+                recentlyPlayed.send(response)
+            }
+            .store(in: &cancellables)
+        
+        return recentlyPlayed
+    }
+    
+    func getNextRecentlyPlayed(url: String) -> PassthroughSubject<RecentlyPlayedResponse, Never> {
+        let recentlyPlayed =  PassthroughSubject<RecentlyPlayedResponse, Never>()
+        
+        api.getNextRecentlyPlayed(url: url)
+            .decode(type: RecentlyPlayedResponse.self, decoder: JSONDecoder())
+            .sink(receiveCompletion: NetworkingManager.handleCompletion) { response in
+                recentlyPlayed.send(response)
+            }
+            .store(in: &cancellables)
+        
+        return recentlyPlayed
+    }
+    
     func getTopTracks(count: Int, timeRange: TimeRange) -> PassthroughSubject<TracksResponse, Never> {
         let topTracks = PassthroughSubject<TracksResponse, Never>()
         

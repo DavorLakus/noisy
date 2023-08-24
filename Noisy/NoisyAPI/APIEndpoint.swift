@@ -16,37 +16,12 @@ public protocol APIEndpoint {
     var parameters: [URLQueryItem]? { get }
     var authToken: [String : Any]? { get }
     
+    var url: URL { get }
+    var request: URLRequest { get }
     func body() throws -> Data?
 }
 
 extension APIEndpoint {
-    var url: URL {
-        var components = URLComponents()
-        components.scheme = "https"
-        components.host = baseURL
-        components.path = basePath + path
-        components.queryItems = parameters
-        
-        guard let url = components.url else {
-            preconditionFailure("Invalid URL components: \(components)")
-        }
-        
-        return url
-    }
-
-    var request: URLRequest {
-        var request = URLRequest(url: url)
-
-        request.httpMethod = method.description
-        request.httpBody = try? body()
-
-        headers?.forEach { (key, value) in
-            request.addValue(value as! String, forHTTPHeaderField: key)
-        }
-        
-        return request
-    }
-    
     public var authToken: [String : Any]? {
         if let token = UserDefaults.standard.string(forKey: .UserDefaults.accessToken) {
             return ["Authorization" : "Bearer \(token)"]

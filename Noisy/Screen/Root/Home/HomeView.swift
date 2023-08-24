@@ -35,7 +35,7 @@ private extension HomeView {
         ScrollView {
             VStack(alignment: .leading, spacing: Constants.margin) {
                 Spacer(minLength: 100)
-                
+                recentlyPlayedSection()
                 topTracksAccordion()
                 topArtistsAccordion()
                 playlistsAccordion()
@@ -47,24 +47,108 @@ private extension HomeView {
     }
 }
 
+// MARK: - Recently played
+extension HomeView {
+    func recentlyPlayedSection() -> some View {
+        VStack {
+          recentlyPlayedHeader()
+            
+            if viewModel.isRecentlyPlayedSectionExpanded {
+                SimpleSliderView(limit: $viewModel.recentlyPlayedLimit, range: 1...50)
+                
+                ForEach(viewModel.recentlyPlayedTracks, id: \.playedAt) { historicTrack in
+                    historicTrackRow(for: historicTrack)
+                        .onTapGesture {
+                            viewModel.trackRowSelected(for: historicTrack.track)
+                        }
+                }
+                if viewModel.nextRecentlyPlayedUrl != nil {
+                    Button(action: viewModel.loadMoreTapped) {
+                        Text(String.Home.loadMore)
+                            .font(.nunitoBold(size: 18))
+                            .foregroundColor(.purple600)
+                            .padding(4)
+                    }
+                }
+            }
+        }
+        .padding(Constants.margin)
+        .cardBackground(borderColor: .gray400, hasShadow: false)
+        .padding(.horizontal, Constants.margin)
+    }
+    
+    func recentlyPlayedHeader() -> some View {
+        Button {
+            withAnimation {
+                viewModel.isRecentlyPlayedSectionExpanded.toggle()
+            }
+        } label: {
+            HStack {
+                Text(String.Home.recentlyPlayed)
+                    .foregroundColor(.gray700)
+                    .font(.nunitoBold(size: 20))
+                
+                Spacer()
+                
+                Image.Shared.chevronRight
+                    .rotationEffect(viewModel.isRecentlyPlayedSectionExpanded ? .degrees(90) : .degrees(0))
+            }
+            .background { Color.white }
+        }
+        .buttonStyle(.plain)
+    }
+    
+    func historicTrackRow(for historicTrack: PlayHistoricObject) -> some View {
+        HStack {
+            LoadImage(url: URL(string: historicTrack.track.album?.images.first?.url ?? .empty))
+                .scaledToFit()
+                .cornerRadius(18)
+                .frame(width: 36, height: 36)
+                .shadow(radius: 2)
+            
+            VStack(alignment: .leading, spacing: .zero) {
+                Text(historicTrack.track.name)
+                    .foregroundColor(.gray700)
+                    .lineLimit(1)
+                    .font(.nunitoBold(size: 16))
+                Text(historicTrack.track.artists.first?.name ?? .empty)
+                    .foregroundColor(.gray600)
+                    .font(.nunitoSemiBold(size: 14))
+            }
+            Spacer()
+            
+            Text(NoisyDateFormatter.durationToNow(dateString: historicTrack.playedAt) ?? .noData)
+                .font(.nunitoSemiBold(size: 12))
+                .foregroundColor(.gray600)
+            
+            Button {
+                viewModel.trackOptionsTapped(for: historicTrack.track)
+            } label: {
+                Image.Shared.threeDots
+                    .foregroundColor(.purple900)
+            }
+        }
+    }
+}
+
 // MARK: - Tracks accordion
 extension HomeView {
     func topTracksAccordion() -> some View {
-        ParameterizedAccordionView(isExpanded: $viewModel.isTopTracksExpanded, count: $viewModel.topTracksCount, timeRange: $viewModel.topTracksTimeRange, title: .Home.topTracks, data: viewModel.topTracks.enumerated(), dataRowView: trackRow, action: viewModel.trackRowSelected, optionsAction: viewModel.trackOptionsTapped)
+        ParameterizedAccordionView(isExpanded: $viewModel.isTopTracksExpanded, limit: $viewModel.topTracksLimit, timeRange: $viewModel.topTracksTimeRange, title: .Home.topTracks, data: viewModel.topTracks.enumerated(), dataRowView: trackRow, action: viewModel.trackRowSelected, optionsAction: viewModel.trackOptionsTapped)
     }
 }
 
 // MARK: - Artists accordion
 extension HomeView {
     func topArtistsAccordion() -> some View {
-        ParameterizedAccordionView(isExpanded: $viewModel.isTopArtistsExpanded, count: $viewModel.topArtistsCount, timeRange: $viewModel.topArtistsTimeRange, title: .Home.topArtists, data: viewModel.topArtists.enumerated(), dataRowView: artistRow, action: viewModel.artistRowSelected, optionsAction: nil)
+        ParameterizedAccordionView(isExpanded: $viewModel.isTopArtistsExpanded, limit: $viewModel.topArtistsLimit, timeRange: $viewModel.topArtistsTimeRange, title: .Home.topArtists, data: viewModel.topArtists.enumerated(), dataRowView: artistRow, action: viewModel.artistRowSelected, optionsAction: nil)
     }
 }
 
 // MARK: - Playlists accordion
 extension HomeView {
     func playlistsAccordion() -> some View {
-        ParameterizedAccordionView(isExpanded: $viewModel.isPlaylistsExpanded, count: $viewModel.playlistsCount, timeRange: nil, title: .Home.playlists, data: viewModel.playlists.enumerated(), dataRowView: playlistRow, action: viewModel.playlistRowSelected, optionsAction: nil)
+        ParameterizedAccordionView(isExpanded: $viewModel.isPlaylistsExpanded, limit: $viewModel.playlistsLimit, timeRange: nil, title: .Home.playlists, data: viewModel.playlists.enumerated(), dataRowView: playlistRow, action: viewModel.playlistRowSelected, optionsAction: nil)
     }
 }
 

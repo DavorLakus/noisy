@@ -36,3 +36,34 @@ struct SliderView: View {
         }
     }
 }
+
+struct SimpleSliderView: View {
+    @Binding var limit: Double
+    let range: ClosedRange<Double>
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("\(String.Home.sliderCount) \(Int(limit))")
+                .font(.nunitoRegular(size: 14))
+            HStack(spacing: Constants.smallSpacing) {
+                Text("\(Int(range.lowerBound))")
+                    .font(.nunitoRegular(size: 12))
+                    .foregroundColor(.white)
+                    .padding(7)
+                    .background {
+                        Color.purple900
+                            .mask(Circle())
+                    }
+                Slider(value: $limit, in: range)
+                Text("\(Int(range.upperBound))")
+                    .font(.nunitoRegular(size: 12))
+                    .foregroundColor(.white)
+                    .padding(4)
+                    .background {
+                        Color.purple900
+                            .mask(Circle())
+                    }
+            }
+        }
+    }
+}

@@ -12,6 +12,7 @@
 		413EEAC22A2F2DE200DC9727 /* DiscoverService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413EEAC12A2F2DE200DC9727 /* DiscoverService.swift */; };
 		413EEAC42A2F2DE900DC9727 /* SearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413EEAC32A2F2DE900DC9727 /* SearchService.swift */; };
 		414F47FA2A9628A9009CC2D0 /* PieGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414F47F92A9628A9009CC2D0 /* PieGraph.swift */; };
+		419142202A97ED36004F25B5 /* RecentlyPlayedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4191421F2A97ED36004F25B5 /* RecentlyPlayedResponse.swift */; };
 		419DD1B82A5736E6005A6708 /* NoisyAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 419DD1B22A5736E6005A6708 /* NoisyAPI.framework */; };
 		419DD1B92A5736E6005A6708 /* NoisyAPI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 419DD1B22A5736E6005A6708 /* NoisyAPI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		419DD1C72A573862005A6708 /* APIConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F8F54C2A26480100F7A2B8 /* APIConstants.swift */; };
@@ -184,6 +185,7 @@
 		413EEAC12A2F2DE200DC9727 /* DiscoverService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverService.swift; sourceTree = "<group>"; };
 		413EEAC32A2F2DE900DC9727 /* SearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchService.swift; sourceTree = "<group>"; };
 		414F47F92A9628A9009CC2D0 /* PieGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieGraph.swift; sourceTree = "<group>"; };
+		4191421F2A97ED36004F25B5 /* RecentlyPlayedResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentlyPlayedResponse.swift; sourceTree = "<group>"; };
 		419DD1B22A5736E6005A6708 /* NoisyAPI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NoisyAPI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		41B145C02A72509800FAE0C0 /* Genre.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Genre.swift; sourceTree = "<group>"; };
 		41B145C22A76E9F600FAE0C0 /* Seed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Seed.swift; sourceTree = "<group>"; };
@@ -422,6 +424,7 @@
 			isa = PBXGroup;
 			children = (
 				41B647822A389FC300C1485C /* Profile.swift */,
+				4191421F2A97ED36004F25B5 /* RecentlyPlayedResponse.swift */,
 				41DE39CE2A6431CC0048CB51 /* Image.swift */,
 			);
 			path = Home;
@@ -1120,6 +1123,7 @@
 				41F8F5942A2678F700F7A2B8 /* Fonts.swift in Sources */,
 				419DD1CD2A573862005A6708 /* NoisyService.swift in Sources */,
 				41E0FB392A6652C200991D31 /* PlayerCoordinator.swift in Sources */,
+				419142202A97ED36004F25B5 /* RecentlyPlayedResponse.swift in Sources */,
 				41E0FB1C2A6442EB00991D31 /* Scope.swift in Sources */,
 				41E0FB622A679A6D00991D31 /* Album.swift in Sources */,
 				41E0FB292A6583BC00991D31 /* MultipleSelectionRow.swift in Sources */,

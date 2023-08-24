@@ -53,7 +53,7 @@ struct SimpleAccordionView<AccordionData: Hashable, Content: View>: View {
 
 struct ParameterizedAccordionView<AccordionData: Hashable, Content: View>: View {
     @Binding var isExpanded: Bool
-    @Binding var count: Double
+    @Binding var limit: Double
     var timeRange: Binding<TimeRange>? 
     let title: String
     let data: EnumeratedSequence<[AccordionData]>
@@ -95,29 +95,8 @@ struct ParameterizedAccordionView<AccordionData: Hashable, Content: View>: View 
                         }
                     }
                 }
-                VStack(alignment: .leading) {
-                    Text("\(String.Home.sliderCount) \(Int(count))")
-                        .font(.nunitoRegular(size: 14))
-                    HStack(spacing: Constants.smallSpacing) {
-                        Text("1")
-                            .font(.nunitoRegular(size: 12))
-                            .foregroundColor(.white)
-                            .padding(7)
-                            .background {
-                                Color.purple900
-                                    .mask(Circle())
-                            }
-                        Slider(value: $count, in: 1...50)
-                        Text("50")
-                            .font(.nunitoRegular(size: 12))
-                            .foregroundColor(.white)
-                            .padding(4)
-                            .background {
-                                Color.purple900
-                                    .mask(Circle())
-                            }
-                    }
-                }
+                
+                SimpleSliderView(limit: $limit, range: 1...50)
                 
                 ForEach(Array(data), id: \.offset) { dataElement in
                     dataRowView(dataElement, optionsAction)

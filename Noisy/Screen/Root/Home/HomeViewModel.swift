@@ -44,17 +44,21 @@ enum TimeRange: Hashable, CaseIterable {
 final class HomeViewModel: ObservableObject {
     // MARK: - Published properties
     @Published var profile: Profile?
+    @Published var recentlyPlayedTracks: [PlayHistoricObject] = []
     @Published var topTracks: [Track] = []
     @Published var topArtists: [Artist] = []
     @Published var playlists: [Playlist] = []
-    @Published var isTopTracksExpanded = true
+    @Published var isRecentlyPlayedSectionExpanded = false
+    @Published var isTopTracksExpanded = false
     @Published var isTopArtistsExpanded = false
     @Published var isPlaylistsExpanded =  false
     @Published var topTracksTimeRange: TimeRange = .shortTerm
     @Published var topArtistsTimeRange: TimeRange = .shortTerm
-    @Published var topTracksCount: Double = 10
-    @Published var topArtistsCount: Double = 10
-    @Published var playlistsCount: Double = 10
+    @Published var recentlyPlayedLimit: Double = 10
+    @Published var topTracksLimit: Double = 10
+    @Published var topArtistsLimit: Double = 10
+    @Published var playlistsLimit: Double = 10
+    @Published var nextRecentlyPlayedUrl: String?
     @Published var isOptionsSheetPresented = false
     @Published var isToastPresented = false
     
@@ -71,6 +75,7 @@ final class HomeViewModel: ObservableObject {
     var toastMessage: String = .empty
 
     // MARK: - Private properties
+    
     private let homeService: HomeService
     private let queueManager: QueueManager
     private var cancellables = Set<AnyCancellable>()
@@ -89,6 +94,7 @@ extension HomeViewModel {
     func viewDidAppear() {
         cancellables.removeAll()
         bind()
+        getRecentlyPlayed()
         getProfile()
         getTopTracks()
         getTopArtists()
@@ -96,6 +102,10 @@ extension HomeViewModel {
     
     func profileButtonTapped() {
         onDidTapProfileButton.send()
+    }
+    
+    func loadMoreTapped() {
+        getNextRecentlyPlayed()
     }
     
     func topTracksTapped() {
@@ -182,6 +192,7 @@ private extension HomeViewModel {
     }
 }
 
+// MARK: - Private extension
 private extension HomeViewModel {
     func bind() {
         $topTracksTimeRange
@@ -198,7 +209,15 @@ private extension HomeViewModel {
             }
             .store(in: &cancellables)
         
-        $topTracksCount
+        $recentlyPlayedLimit
+            .dropFirst()
+            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.getRecentlyPlayed()
+            }
+            .store(in: &cancellables)
+        
+        $topTracksLimit
             .dropFirst()
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .sink { [weak self] _ in
@@ -206,7 +225,7 @@ private extension HomeViewModel {
             }
             .store(in: &cancellables)
         
-        $topArtistsCount
+        $topArtistsLimit
             .dropFirst()
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .sink { [weak self] _ in
@@ -214,7 +233,7 @@ private extension HomeViewModel {
             }
             .store(in: &cancellables)
         
-        $playlistsCount
+        $playlistsLimit
             .dropFirst()
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .sink { [weak self] _ in
@@ -227,6 +246,31 @@ private extension HomeViewModel {
                 self?.viewDidAppear()
             }
             .store(in: &cancellables)
+    }
+    
+    func getRecentlyPlayed() {
+        homeService.getRecentlyPlayed(limit: Int(recentlyPlayedLimit))
+            .sink { [weak self] response in
+                guard let self else { return }
+                self.nextRecentlyPlayedUrl = response.next
+                self.recentlyPlayedTracks = response.items
+            }
+            .store(in: &cancellables)
+    }
+    
+    func getNextRecentlyPlayed() {
+        if let nextURL = nextRecentlyPlayedUrl {
+            homeService.getNextRecentlyPlayed(url: nextURL)
+                .sink { [weak self] response in
+                    guard let self else { return }
+                    self.nextRecentlyPlayedUrl = response.next
+                    self.recentlyPlayedTracks += response.items
+                    self.recentlyPlayedTracks.sort { first, second in
+                        first.playedAt > second.playedAt
+                    }
+                }
+                .store(in: &cancellables)
+        }
     }
     
     func getProfile() {
@@ -245,7 +289,7 @@ private extension HomeViewModel {
     }
     
     func getTopTracks(for timeRange: TimeRange = .shortTerm) {
-        homeService.getTopTracks(count: Int(topTracksCount), timeRange: timeRange != topTracksTimeRange ? timeRange : topTracksTimeRange)
+        homeService.getTopTracks(count: Int(topTracksLimit), timeRange: timeRange != topTracksTimeRange ? timeRange : topTracksTimeRange)
             .sink { [weak self] tracksResponse in
                 withAnimation {
                     self?.topTracks = tracksResponse.items
@@ -255,7 +299,7 @@ private extension HomeViewModel {
     }
     
     func getTopArtists(for timeRange: TimeRange = .shortTerm) {
-        homeService.getTopArtists(count: Int(topArtistsCount), timeRange: timeRange != topArtistsTimeRange ? timeRange : topArtistsTimeRange)
+        homeService.getTopArtists(count: Int(topArtistsLimit), timeRange: timeRange != topArtistsTimeRange ? timeRange : topArtistsTimeRange)
             .sink { [weak self] artistsResponse in
                 withAnimation {
                     self?.topArtists = artistsResponse.items
@@ -265,7 +309,7 @@ private extension HomeViewModel {
     }
     
     func getPlaylists() {
-        homeService.getMyPlaylists(count: Int(playlistsCount))
+        homeService.getMyPlaylists(count: Int(playlistsLimit))
             .sink { [weak self] playlistsResponse in
                 withAnimation {
                     self?.playlists = playlistsResponse.items
