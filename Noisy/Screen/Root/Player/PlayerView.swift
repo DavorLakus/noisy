@@ -22,8 +22,8 @@ struct PlayerView: View {
                 .toolbar(content: toolbarContent)
                 .dynamicSheet(isPresented: $viewModel.isOptionsSheetPresented) {
                     OptionsView(isPresented: $viewModel.isOptionsSheetPresented, options: viewModel.options)
-                        .toast(isPresented: $viewModel.isToastPresented, message: viewModel.toastMessage)
                 }
+                .toast(isPresented: $viewModel.isToastPresented, message: viewModel.toastMessage)
         }
     }
 }

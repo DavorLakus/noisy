@@ -108,8 +108,15 @@ private extension PlayerViewModel {
         let addToQueueSubject = PassthroughSubject<Void, Never>()
         
         addToQueueSubject
-            .sink { [weak self] in
+            .flatMap({ [weak self] in
+                withAnimation {
+                    self?.isOptionsSheetPresented = false
+                }
                 self?.queueManager.append(track)
+                return Just(())
+            })
+            .debounce(for: .seconds(0.2), scheduler: RunLoop.main)
+            .sink { [weak self] in
                 self?.toastMessage = "\(track.name) \(String.Shared.addedToQueue)"
                 withAnimation {
                     self?.isToastPresented = true

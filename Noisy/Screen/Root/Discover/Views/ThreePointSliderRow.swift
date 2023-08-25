@@ -63,7 +63,7 @@ struct ThreePointSliderRow: View {
             .background {
                 if isToggled {
                     background
-                        .opacity(0.3)
+                        .opacity(0.1)
                         .blur(radius: 2)
                         .cornerRadius(4)
                 } else {

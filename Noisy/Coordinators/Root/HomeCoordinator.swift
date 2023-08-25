@@ -19,10 +19,10 @@ final class HomeCoordinator: MusicDetailsCoordinatorProtocol {
     // MARK: - Published properties
     @Published var navigationPath = NavigationPath()
     @Published var isPlayerCoordinatorViewPresented = false
+    @Published var isProfileSheetPresented = false
     @Published var isMiniPlayerPresented = false
     
     // MARK: - Public properties
-    let onDidTapProfileButton = PassthroughSubject<Void, Never>()
     var tokenDidRefresh: PassthroughSubject<Void, Never>?
     
     // MARK: - Internal properties
@@ -31,11 +31,13 @@ final class HomeCoordinator: MusicDetailsCoordinatorProtocol {
     internal var playlistViewModelStack = Stack<PlaylistViewModel>()
     internal var playlistsViewModel: PlaylistsViewModel?
     internal var miniPlayerViewModel: MiniPlayerViewModel?
+    internal var profileViewModel: ProfileViewModel?
     internal var playerCoordinator: PlayerCoordinator?
     
     internal var onDidTapPlayAllButton = PassthroughSubject<Void, Never>()
     internal var onDidTapTrackRow = PassthroughSubject<Void, Never>()
     internal var onDidTapDiscoverButton = PassthroughSubject<Artist, Never>()
+    internal var onDidTapSignOut = PassthroughSubject<Void, Never>()
     internal var musicDetailsService: MusicDetailsService
     internal var playerService: PlayerService
     internal var queueManager: QueueManager
@@ -142,7 +144,7 @@ extension HomeCoordinator {
         
         homeViewModel.onDidTapProfileButton
             .sink { [weak self] in
-                self?.onDidTapProfileButton.send()
+                self?.bindProfileViewModel()
             }
             .store(in: &cancellables)
         
@@ -178,8 +180,8 @@ struct HomeCoordinatorView<Coordinator: MusicDetailsCoordinatorProtocol>: Coordi
     
     var body: some View {
         NavigationStack(path: $coordinator.navigationPath, root: coordinator.rootView)
+            .dynamicModalSheet(isPresented: $coordinator.isProfileSheetPresented, content: coordinator.presentProfileView)
             .miniPlayerView(isPresented: $coordinator.isMiniPlayerPresented, miniPlayer: coordinator.presentMiniPlayer)
-            .navigationViewStyle(StackNavigationViewStyle())
             .fullScreenCover(isPresented: $coordinator.isPlayerCoordinatorViewPresented, content: coordinator.presentPlayerCoordinatorView)
     }
 }

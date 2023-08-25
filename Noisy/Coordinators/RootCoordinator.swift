@@ -22,7 +22,6 @@ final class RootCoordinator: CoordinatorProtocol {
     // MARK: - Published properties
     @Published var tab = RootTab.home
     @Published var isAlertPresented = false
-    @Published var isProfileSheetPresented = false
     @Published var alert: Alert = .signout
     
     // MARK: - Public properties
@@ -42,10 +41,8 @@ final class RootCoordinator: CoordinatorProtocol {
     private var discoverCoordinator: DiscoverCoordinator?
     
     // MARK: - Private properties
-    private var profileViewModel: ProfileViewModel?
     private var cancellables = Set<AnyCancellable>()
     private lazy var queueManager = QueueManager()
-
     
     // MARK: - Class lifecycle
     init(homeService: HomeService, searchService: SearchService, discoverService: DiscoverService, playerService: PlayerService, musicDetailsService: MusicDetailsService) {
@@ -100,9 +97,13 @@ private extension RootCoordinator {
     
     func bindHomeCoordinator() {
         let homeCoordinator = HomeCoordinator(homeService: homeService, playerService: playerService, musicDetailsService: musicDetailsService, queueManager: queueManager, tokenDidRefresh: tokenDidRefresh)
-        homeCoordinator.onDidTapProfileButton
+        
+        homeCoordinator.onDidTapSignOut
             .sink { [weak self] in
-                self?.bindProfileViewModel()
+                self?.alert = .signout
+                withAnimation {
+                    self?.isAlertPresented = true
+                }
             }
             .store(in: &cancellables)
         
@@ -117,9 +118,13 @@ private extension RootCoordinator {
     
     func bindSearchCoordinator() {
         let searchCoordinator = SearchCoordinator(searchService: searchService, playerService: playerService, musicDetailsService: musicDetailsService, queueManager: queueManager)
-        searchCoordinator.onDidTapProfileButton
+        
+        searchCoordinator.onDidTapSignOut
             .sink { [weak self] in
-                self?.bindProfileViewModel()
+                self?.alert = .signout
+                withAnimation {
+                    self?.isAlertPresented = true
+                }
             }
             .store(in: &cancellables)
         
@@ -135,9 +140,12 @@ private extension RootCoordinator {
     func bindDiscoverCoordinator() {
         let discoverCoordinator = DiscoverCoordinator(discoverService: discoverSerivce, playerService: playerService, searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
         
-        discoverCoordinator.onDidTapProfileButton
+        discoverCoordinator.onDidTapSignOut
             .sink { [weak self] in
-                self?.bindProfileViewModel()
+                self?.alert = .signout
+                withAnimation {
+                    self?.isAlertPresented = true
+                }
             }
             .store(in: &cancellables)
         
@@ -169,42 +177,6 @@ private extension RootCoordinator {
         }
         
         discoverCoordinator?.discover(with: artist)
-    }
-}
-
-// MARK: - Profile
-extension RootCoordinator {
-    @ViewBuilder
-    func presentProfileView() -> some View {
-        if let profileViewModel {
-            ProfileView(viewModel: profileViewModel)
-        }
-    }
-    
-    func bindProfileViewModel() {
-        profileViewModel = ProfileViewModel()
-        isProfileSheetPresented = false
-        
-        profileViewModel?.onDidTapBackButton
-            .sink { [weak self] in
-                withAnimation {
-                    self?.isProfileSheetPresented = false
-                }
-            }
-            .store(in: &cancellables)
-        
-        profileViewModel?.onDidTapSignOut
-            .sink { [weak self] in
-                self?.alert = .signout
-                withAnimation {
-                    self?.isAlertPresented = true
-                }
-            }
-            .store(in: &cancellables)
-        
-        withAnimation {
-            isProfileSheetPresented = true
-        }
     }
 }
 

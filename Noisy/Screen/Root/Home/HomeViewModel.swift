@@ -75,7 +75,6 @@ final class HomeViewModel: ObservableObject {
     var toastMessage: String = .empty
 
     // MARK: - Private properties
-    
     private let homeService: HomeService
     private let queueManager: QueueManager
     private var cancellables = Set<AnyCancellable>()

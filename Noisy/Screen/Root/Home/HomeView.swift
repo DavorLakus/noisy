@@ -50,7 +50,7 @@ private extension HomeView {
 // MARK: - Recently played
 extension HomeView {
     func recentlyPlayedSection() -> some View {
-        VStack {
+        VStack(spacing: Constants.margin) {
           recentlyPlayedHeader()
             
             if viewModel.isRecentlyPlayedSectionExpanded {
