@@ -15,11 +15,14 @@ protocol MusicDetailsCoordinatorProtocol: VerticalCoordinatorProtocol {
     var playlistViewModelStack: Stack<PlaylistViewModel> { get set }
     var playlistsViewModel: PlaylistsViewModel? { get set }
     var miniPlayerViewModel: MiniPlayerViewModel? { get set }
+    var profileViewModel: ProfileViewModel? { get set }
     var playerCoordinator: PlayerCoordinator? { get set }
     
     var isPlayerCoordinatorViewPresented: Bool { get set }
+    var isProfileSheetPresented: Bool { get set }
     var isMiniPlayerPresented: Bool { get set }
     var onDidTapDiscoverButton: PassthroughSubject<Artist, Never> { get set }
+    var onDidTapSignOut: PassthroughSubject<Void, Never> { get set }
     var musicDetailsService: MusicDetailsService { get set }
     var playerService: PlayerService { get set }
     var queueManager: QueueManager { get set }
@@ -36,6 +39,7 @@ protocol MusicDetailsCoordinatorProtocol: VerticalCoordinatorProtocol {
     func pushPlaylistsViewModel(with tracks: [Track])
 
     func bindMiniPlayerViewModel(with queueManager: QueueManager)
+    func bindProfileViewModel()
     func bindPlayerCoordinator()
     func getQueueManager() 
     func persistQueueManagerState()
@@ -213,8 +217,38 @@ extension MusicDetailsCoordinatorProtocol {
     }
     
     @ViewBuilder
+    func presentProfileView() -> some View {
+        if let profileViewModel {
+            ProfileView(viewModel: profileViewModel)
+        }
+    }
+    
+    @ViewBuilder
     func presentPlayerCoordinatorView() -> some View {
         playerCoordinator?.start()
+    }
+    
+    func bindProfileViewModel() {
+        profileViewModel = ProfileViewModel()
+        isProfileSheetPresented = false
+        
+        profileViewModel?.onDidTapBackButton
+            .sink { [weak self] in
+                withAnimation {
+                    self?.isProfileSheetPresented = false
+                }
+            }
+            .store(in: &cancellables)
+        
+        profileViewModel?.onDidTapSignOut
+            .sink { [weak self] in
+                self?.onDidTapSignOut.send()
+            }
+            .store(in: &cancellables)
+        
+        withAnimation {
+            isProfileSheetPresented = true
+        }
     }
     
     func bindPlayerCoordinator() {

@@ -22,7 +22,6 @@ extension EnvironmentValues {
 struct RootCoordinatorView: View {
     @StateObject var coordinator: RootCoordinator
     @Namespace var namespace
-    @State var isAlertPresented = false
     
     var body: some View {
         TabView(selection: $coordinator.tab) {
@@ -36,7 +35,6 @@ struct RootCoordinatorView: View {
                 .tabItem { tab(name: .Tabs.search, icon: .Tabs.search) }
                 .tag(RootTab.search)
         }
-        .dynamicModalSheet(isPresented: $coordinator.isProfileSheetPresented, content:  coordinator.presentProfileView)
         .alert(isPresented: $coordinator.isAlertPresented, alert: coordinator.presentAlertView)
         .tint(.purple900)
     }

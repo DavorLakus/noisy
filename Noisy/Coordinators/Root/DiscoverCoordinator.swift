@@ -28,10 +28,8 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol & SheetCoordina
     @Published var navigationPath = NavigationPath()
     @Published var isSheetPresented: Bool = false
     @Published var isMiniPlayerPresented: Bool = false
+    @Published var isProfileSheetPresented = false
     @Published var isPlayerCoordinatorViewPresented: Bool = false
-    
-    // MARK: - Public properties
-    let onDidTapProfileButton = PassthroughSubject<Void, Never>()
     
     // MARK: - Internal properties
     internal var artistViewModelStack = Stack<ArtistViewModel>()
@@ -39,11 +37,13 @@ final class DiscoverCoordinator: MusicDetailsCoordinatorProtocol & SheetCoordina
     internal var playlistViewModelStack = Stack<PlaylistViewModel>()
     internal var playlistsViewModel: PlaylistsViewModel?
     internal var miniPlayerViewModel: MiniPlayerViewModel?
+    internal var profileViewModel: ProfileViewModel?
     internal var playerCoordinator: PlayerCoordinator?
     
     internal var onDidTapPlayAllButton = PassthroughSubject<Void, Never>()
     internal var onDidTapTrackRow = PassthroughSubject<Void, Never>()
     internal var onDidTapDiscoverButton = PassthroughSubject<Artist, Never>()
+    internal var onDidTapSignOut = PassthroughSubject<Void, Never>()
     internal var musicDetailsService: MusicDetailsService
     internal var playerService: PlayerService
     internal var queueManager: QueueManager
@@ -152,7 +152,7 @@ private extension DiscoverCoordinator {
         let discoverViewModel = DiscoverViewModel(discoverService: discoverService, searchService: searchService, musicDetailsService: musicDetailsService, queueManager: queueManager)
         discoverViewModel.onDidTapProfileButton
             .sink { [weak self] in
-                self?.onDidTapProfileButton.send()
+                self?.bindProfileViewModel()
             }
             .store(in: &cancellables)
         
@@ -240,6 +240,7 @@ struct DiscoverCoordinatorView<Coordinator: MusicDetailsCoordinatorProtocol & Sh
     
     var body: some View {
         NavigationStack(path: $coordinator.navigationPath, root: coordinator.rootView)
+            .dynamicModalSheet(isPresented: $coordinator.isProfileSheetPresented, content:  coordinator.presentProfileView)
             .miniPlayerView(isPresented: $coordinator.isMiniPlayerPresented, miniPlayer: coordinator.presentMiniPlayer)
             .fullScreenCover(isPresented: $coordinator.isPlayerCoordinatorViewPresented, content: coordinator.presentPlayerCoordinatorView)
     }
