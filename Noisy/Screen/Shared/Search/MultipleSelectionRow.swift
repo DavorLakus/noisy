@@ -23,13 +23,19 @@ struct MultipleSelectionRow: View {
 
                 (isSelected ? Image.Shared.checkboxFill : Image.Shared.checkbox)
                     .resizable()
-                    .foregroundColor(.green500)
+                    .foregroundColor(.purple600)
                     .frame(width: 16, height: 16)
                     .animation(.none, value: isSelected)
             }
-            .padding(.horizontal, 48)
             .padding(.vertical, Constants.spacing)
-            .background { Color.appBackground.opacity(0.01) }
+            .padding(.horizontal, 30)
+            .background {
+                Color.appBackground
+                    .opacity(0.35)
+                    .blur(radius: 4)
+                    .mask(Capsule())
+            }
+            .padding(.horizontal, 18)
         }
         .buttonStyle(.plain)
     }

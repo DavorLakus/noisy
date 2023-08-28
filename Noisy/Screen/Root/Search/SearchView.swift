@@ -68,7 +68,7 @@ private extension SearchView {
             Image.Search.arrowUp
                 .resizable()
                 .frame(width: Constants.mediumIconSize, height: Constants.mediumIconSize)
-                .foregroundColor(.green400.opacity(0.75))
+                .foregroundColor(.red300)
                 .scaledToFit()
         
             Text(String.Search.tapToStart)

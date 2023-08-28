@@ -13,8 +13,8 @@ struct DiscoverView: View {
     var body: some View {
         ZStack(alignment: .top) {
             Color.appBackground.ignoresSafeArea()
-                .circleOverlay(xOffset: -0.6, yOffset: -0.4, frameMultiplier: 1.0, color: .mint600)
-                .circleOverlay(xOffset: 0.7, yOffset: 0.6, color: .purple900.opacity(0.7))
+                .circleOverlay(xOffset: -0.6, yOffset: -0.4, frameMultiplier: 0.9, color: .mint600.opacity(0.4))
+                .circleOverlay(xOffset: 0.7, yOffset: 0.6, color: .purple900.opacity(0.4))
             
             bodyView()
             headerView()
@@ -90,7 +90,7 @@ extension DiscoverView {
             CurrentSeedSelectionView(viewModel: viewModel, cropTitle: true)
             SliderView(value: $viewModel.limit)
             LargeButton(foregroundColor: .appBackground, backgroundColor: .purple600, title: .Discover.manageSeeds, action: viewModel.manageSeedsButtonTapped)
-            LargeButton(foregroundColor: .appBackground, backgroundColor: .orange400, title: .Discover.changeSeedParameters, action: viewModel.changeSeedParametersButtonTapped)
+            LargeButton(foregroundColor: .appBackground, backgroundColor: .mint600, title: .Discover.changeSeedParameters, action: viewModel.changeSeedParametersButtonTapped)
                 .id(String.Discover.discover)
         }
         .padding(.horizontal, Constants.margin)
