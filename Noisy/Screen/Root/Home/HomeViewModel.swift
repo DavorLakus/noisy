@@ -119,7 +119,12 @@ extension HomeViewModel {
         }
     }
     
-    func trackRowSelected(for track: Track) {
+    func recentlyPlayedTrackRowSelected(for track: PlayHistoricObject, index: Int) {
+        queueManager.setState(with: recentlyPlayedTracks.map(\.track), currentTrackIndex: index)
+        onDidSelectTrackRow?.send()
+    }
+    
+    func topTracksRowSelected(for track: Track) {
         queueManager.setState(with: topTracks, currentTrackIndex: topTracks.firstIndex(of: track))
         onDidSelectTrackRow?.send()
     }

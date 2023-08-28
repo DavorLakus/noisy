@@ -56,10 +56,10 @@ extension HomeView {
             if viewModel.isRecentlyPlayedSectionExpanded {
                 SimpleSliderView(limit: $viewModel.recentlyPlayedLimit, range: 1...50)
                 
-                ForEach(viewModel.recentlyPlayedTracks, id: \.playedAt) { historicTrack in
-                    historicTrackRow(for: historicTrack)
+                ForEach(Array(viewModel.recentlyPlayedTracks.enumerated()), id: \.offset) { enumeratedHistoricTrack in
+                    historicTrackRow(for: enumeratedHistoricTrack.element)
                         .onTapGesture {
-                            viewModel.trackRowSelected(for: historicTrack.track)
+                            viewModel.recentlyPlayedTrackRowSelected(for: enumeratedHistoricTrack.element, index: enumeratedHistoricTrack.offset)
                         }
                 }
                 if viewModel.nextRecentlyPlayedUrl != nil {
@@ -134,7 +134,7 @@ extension HomeView {
 // MARK: - Tracks accordion
 extension HomeView {
     func topTracksAccordion() -> some View {
-        ParameterizedAccordionView(isExpanded: $viewModel.isTopTracksExpanded, limit: $viewModel.topTracksLimit, timeRange: $viewModel.topTracksTimeRange, title: .Home.topTracks, data: viewModel.topTracks.enumerated(), dataRowView: trackRow, action: viewModel.trackRowSelected, optionsAction: viewModel.trackOptionsTapped)
+        ParameterizedAccordionView(isExpanded: $viewModel.isTopTracksExpanded, limit: $viewModel.topTracksLimit, timeRange: $viewModel.topTracksTimeRange, title: .Home.topTracks, data: viewModel.topTracks.enumerated(), dataRowView: trackRow, action: viewModel.topTracksRowSelected, optionsAction: viewModel.trackOptionsTapped)
     }
 }
 
