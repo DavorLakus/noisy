@@ -166,7 +166,7 @@ private extension RootCoordinator {
     }
     
     func switchToDiscoverTab<Coordinator: MusicDetailsCoordinatorProtocol>(for artist: Artist, from coordinator: Coordinator) {
-        discoverCoordinator?.navigationPath.removeLast(coordinator.navigationPath.count)
+        coordinator .navigationPath.removeLast(coordinator.navigationPath.count)
         
         withAnimation {
             coordinator.navigationPath.removeLast(coordinator.navigationPath.count)

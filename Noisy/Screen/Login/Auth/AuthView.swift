@@ -2,50 +2,31 @@
 //  AuthView.swift
 //  Noisy
 //
-//  Created by Davor Lakus on 13.06.2023..
+//  Created by Davor Lakus on 10.10.2023..
 //
 
 import SwiftUI
-import WebKit
 
-struct AuthView: UIViewRepresentable {
+struct AuthView: View {
     @ObservedObject var viewModel: AuthViewModel
-
-    let webView = WKWebView()
-
-    func makeUIView(context: UIViewRepresentableContext<AuthView>) -> WKWebView {
-        self.webView.navigationDelegate = context.coordinator
-        self.webView.load(URLRequest(url: viewModel.link))
-        return self.webView
-    }
-
-    func updateUIView(_ uiView: WKWebView, context: UIViewRepresentableContext<AuthView>) {
-        return
-    }
-
-    class Coordinator: NSObject, WKNavigationDelegate {
-        private var viewModel: AuthViewModel
-
-        init(_ viewModel: AuthViewModel) {
-            self.viewModel = viewModel
-        }
-
-        func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-            guard let url = webView.url else {return}
-            
-            let components = URLComponents(string: url.absoluteString)
-            guard
-                let code = components?.queryItems?.first(where: { $0.name == "code"})?.value
-            else {return}
-            
-            webView.isHidden = true
-            
-            webView.stopLoading()
-            viewModel.codeReceived(code)
+    
+    var body: some View {
+        VStack(alignment: .trailing) {
+                trailingToolbarButton()
+            AuthWebView(viewModel: viewModel)
         }
     }
+}
 
-    func makeCoordinator() -> AuthView.Coordinator {
-        Coordinator(viewModel)
+// MARK: - Private extension
+private extension AuthView {
+    @ViewBuilder
+    func trailingToolbarButton() -> some View {
+        Button(action: viewModel.backButtonTapped) {
+            Text(String.close)
+                .font(.nunitoSemiBold(size: 16))
+                .foregroundColor(.gray600)
+        }
+        .padding(Constants.margin)
     }
 }

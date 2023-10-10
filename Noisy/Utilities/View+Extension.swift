@@ -9,6 +9,13 @@ import SwiftUI
 import Combine
 
 extension View {
+    func alert<AlertContent: View>(isPresented: Binding<Bool>, alert: @escaping (Binding<Bool>) -> AlertContent) -> some View {
+        self.modifier(AlertModifier(isPresented: isPresented, alertContent: alert))
+    }
+}
+
+
+extension View {
     func tab(name: String, icon: Image) -> some View {
         Label { Text(name) } icon: { icon }
     }
@@ -53,10 +60,7 @@ extension View {
         }
     }
     
-    func alert<AlertContent: View>(isPresented: Binding<Bool>, alert: @escaping (Binding<Bool>) -> AlertContent) -> some View {
-        self
-            .modifier(AlertModifier(isPresented: isPresented, alertContent: alert))
-    }
+
     
     func tabBarHidden(_ visibility: Binding<Visibility?>) -> some View {
         self

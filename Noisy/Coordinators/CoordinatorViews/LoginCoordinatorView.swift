@@ -12,8 +12,6 @@ struct LoginCoordinatorView: View {
     
     var body: some View {
         coordinator.loginView()
-        .sheet(isPresented: $coordinator.authSheetIsPresented, content: coordinator.authSheet)
-        .onAppear(perform: coordinator.viewDidAppear)
-        .onDisappear(perform: coordinator.viewDidDisappear)
+            .sheet(isPresented: $coordinator.authSheetIsPresented, content: coordinator.authSheet)
     }
 }

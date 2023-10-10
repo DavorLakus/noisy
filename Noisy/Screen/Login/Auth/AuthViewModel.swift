@@ -15,6 +15,7 @@ class AuthViewModel: ObservableObject {
     
     // MARK: - Public properties
     let onDidAuthorize = PassthroughSubject<Void, Never>()
+    let onDidTapBackButton = PassthroughSubject<Void, Never>()
     
     // MARK: - Private properties
     private let loginService: LoginService
@@ -31,6 +32,10 @@ class AuthViewModel: ObservableObject {
 
 // MARK: - Public extensions
 extension AuthViewModel {
+    func backButtonTapped() {
+        onDidTapBackButton.send()
+    }
+    
     func codeReceived(_ code: String) {
         loginService.postToken(code: code)
             .sink { [weak self ] token in

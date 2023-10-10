@@ -61,6 +61,14 @@ extension LoginCoordinator {
     func bindAuthViewModel() {
         authViewModel = AuthViewModel(loginService: loginService)
         
+        authViewModel?.onDidTapBackButton
+            .sink { [weak self] in
+                withAnimation {
+                    self?.authSheetIsPresented = false
+                }
+            }
+            .store(in: &cancellables)
+        
         authViewModel?.onDidAuthorize
             .sink { [weak self] in
                 withAnimation {
@@ -73,16 +81,5 @@ extension LoginCoordinator {
         withAnimation {
             authSheetIsPresented = true
         }
-    }
-}
-
-// MARK: - CoordinatorView lifecycle
-extension LoginCoordinator {
-    func viewDidAppear() {
-        //        bindErrorHandling()
-    }
-    
-    func viewDidDisappear() {
-//        errorAlertCancellable = nil
     }
 }

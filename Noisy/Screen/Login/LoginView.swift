@@ -14,7 +14,6 @@ struct LoginView: View {
     var body: some View {
         ZStack {
             Color.appBackground.ignoresSafeArea()
-                .opacity(0.9)
             
             bodyView
         }
@@ -31,7 +30,7 @@ private extension LoginView {
                 Spacer()
                 footer
             }
-            .padding(.horizontal, Constants.margin)
+            .padding([.horizontal, .bottom], Constants.margin)
     }
     
     @ViewBuilder
@@ -75,6 +74,7 @@ private extension LoginView {
             Text(String.Login.footer)
                 .foregroundColor(.gray600)
                 .font(.nunitoRegular(size: 14))
+                .padding(Constants.margin)
         }
     }
 }
